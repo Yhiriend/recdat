@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/utils.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -13,16 +14,17 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
 
   Future<void> login(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       await Future.delayed(const Duration(seconds: 3));
-      //if (context.read<AuthProvider>().isSignedIn) {
-      // ignore: use_build_context_synchronously
-      //context.read<AuthProvider>().setUser(response);
-      // ignore: use_build_context_synchronously
-
-      //}
+      final ap = Provider.of<AuthProvider>(context, listen: false);
+      ap
+          .signInWithEmailAndPassword(
+              context, _username.text.trim(), _password.text.trim())
+          .then((value) => {showSnackBar(context, "Has iniciado sesion")});
     }
   }
 
@@ -82,6 +84,7 @@ class _LoginViewState extends State<LoginView> {
                       child: Column(
                         children: [
                           RecdatTextfield(
+                            controller: _username,
                             placeholder: "usuario",
                             icon: Icons.person,
                             validator: (value) {
@@ -95,6 +98,7 @@ class _LoginViewState extends State<LoginView> {
                             height: 20,
                           ),
                           RecdatTextfield(
+                            controller: _password,
                             placeholder: "contraseña",
                             icon: Icons.lock,
                             validator: (value) {

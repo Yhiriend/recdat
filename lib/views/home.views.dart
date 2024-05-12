@@ -20,18 +20,29 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-
-    //final applicationProvider =
-    //    Provider.of<AuthProvider>(context, listen: false);
-    //applicationProvider.isSignedIn
-    //    ? null
-    //    : Navigator.pushNamed(context, '/login');
   }
 
   @override
   Widget build(BuildContext context) {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: RecdatStyles.blueDarkColor,
+          title: Text(
+            ap.user?.name ?? "",
+            style: const TextStyle(color: RecdatStyles.defaultTextColor),
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.logout,
+                  color: RecdatStyles.defaultTextColor,
+                ))
+          ],
+        ),
         body: IndexedStack(
           index: _selectedIndex,
           children: [

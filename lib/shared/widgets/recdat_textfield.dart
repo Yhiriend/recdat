@@ -5,10 +5,14 @@ class RecdatTextfield extends StatefulWidget {
   final String placeholder;
   final IconData? icon;
   final String? Function(String?)? validator;
+  final TextEditingController controller;
+  final TextInputType type;
 
   const RecdatTextfield({
     Key? key,
     required this.placeholder,
+    required this.controller,
+    this.type = TextInputType.text,
     this.icon,
     this.validator,
   }) : super(key: key);
@@ -19,8 +23,14 @@ class RecdatTextfield extends StatefulWidget {
 }
 
 class _RecdatTextfieldState extends State<RecdatTextfield> {
-  bool _hasError =
-      false; // Estado local para indicar si hay un error en el campo
+  bool _hasError = false;
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = widget.controller;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +43,7 @@ class _RecdatTextfieldState extends State<RecdatTextfield> {
       child: Stack(
         children: [
           TextFormField(
+            controller: _controller,
             cursorColor: RecdatStyles.cursorColor,
             style: const TextStyle(
               color: RecdatStyles.defaultTextColor,
@@ -61,6 +72,7 @@ class _RecdatTextfieldState extends State<RecdatTextfield> {
               });
               return widget.validator != null ? widget.validator!(value) : null;
             },
+            keyboardType: widget.type,
           ),
         ],
       ),

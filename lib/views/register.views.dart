@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:recdat/modules/user/user.model.dart';
+import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
 import 'dart:core';
 
+import 'package:recdat/views/home.views.dart';
+
 class RegisterView extends StatefulWidget {
-  RegisterView({super.key});
+  const RegisterView({super.key});
 
   @override
   State<RegisterView> createState() => _RegisterViewState();
@@ -15,6 +20,25 @@ class _RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
   bool _isCodePhoneValidated = false;
   bool _codeSent = false;
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController surnameController = TextEditingController();
+  final TextEditingController instituteController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    codeController.dispose();
+    emailController.dispose();
+    nameController.dispose();
+    surnameController.dispose();
+    instituteController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -25,7 +49,10 @@ class _RegisterViewState extends State<RegisterView> {
 
   Future<void> sendPhoneCode() async {
     if (_formKey.currentState!.validate()) {
-      await Future.delayed(const Duration(seconds: 3));
+      final ap = Provider.of<AuthProvider>(context, listen: false);
+      String phoneNumber = "+57${phoneController.text.trim()}";
+      ap.signInWithPhone(context, phoneNumber);
+      //await Future.delayed(const Duration(seconds: 3));
       setState(() {
         _codeSent = true;
       });
@@ -34,21 +61,71 @@ class _RegisterViewState extends State<RegisterView> {
 
   Future<void> validatePhoneCode() async {
     if (_formKey.currentState!.validate()) {
-      await Future.delayed(const Duration(seconds: 3));
-      setState(() {
-        _isCodePhoneValidated = true;
-      });
+      final ap = Provider.of<AuthProvider>(context, listen: false);
+      final verificationId = ap.verificationId;
+      ap.verifyOtp(
+          context: context,
+          verificationId: verificationId,
+          userOtp: codeController.text.trim(),
+          onSuccess: () {
+            ap.checkExistingUser().then((value) async {
+              if (value == true) {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeView(),
+                    ),
+                    (route) => false);
+              } else {
+                setState(() {
+                  _isCodePhoneValidated = true;
+                });
+              }
+            });
+          });
+      //await Future.delayed(const Duration(seconds: 3));
     }
   }
 
   Future<void> signUp() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushNamed(context, '/home');
+      await storeData();
     }
+  }
+
+  Future<void> storeData() async {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    UserModel userModel = UserModel(
+        uid: "",
+        name: nameController.text.trim(),
+        surname: surnameController.text.trim(),
+        lastSurname: "",
+        email: emailController.text.trim(),
+        phone: phoneController.text.trim(),
+        rol: UserRole.admin.value,
+        createdAt: "",
+        profilePic: "",
+        password: passwordController.text.trim());
+    ap.saveUserDataToFirebase(
+        context: context,
+        userModel: userModel,
+        onSuccess: () {
+          ap.createInstitute(context, instituteController.text.trim(), () {
+            ap.saveUserDataToSP().then((value) =>
+                ap.setSignIn().then((value) => Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeView(),
+                    ),
+                    (route) => false)));
+          });
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading =
+        Provider.of<AuthProvider>(context, listen: true).isLoading;
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFF003366),
@@ -105,6 +182,7 @@ class _RegisterViewState extends State<RegisterView> {
                             child: Column(
                               children: [
                                 RecdatTextfield(
+                                  controller: nameController,
                                   placeholder: "nombre",
                                   icon: Icons.person,
                                   validator: (value) {
@@ -118,6 +196,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   height: 20,
                                 ),
                                 RecdatTextfield(
+                                  controller: surnameController,
                                   placeholder: "apellido",
                                   icon: Icons.person,
                                   validator: (value) {
@@ -131,6 +210,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   height: 20,
                                 ),
                                 RecdatTextfield(
+                                  controller: emailController,
                                   placeholder: "correo",
                                   icon: Icons.mail,
                                   validator: (value) {
@@ -144,6 +224,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   height: 20,
                                 ),
                                 RecdatTextfield(
+                                  controller: passwordController,
                                   placeholder: "contraseña",
                                   icon: Icons.lock,
                                   validator: (value) {
@@ -157,6 +238,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   height: 20,
                                 ),
                                 RecdatTextfield(
+                                  controller: instituteController,
                                   placeholder: "institución",
                                   icon: Icons.school,
                                   validator: (value) {
@@ -202,6 +284,8 @@ class _RegisterViewState extends State<RegisterView> {
                                   height: 20,
                                 ),
                                 RecdatTextfield(
+                                  type: TextInputType.number,
+                                  controller: phoneController,
                                   placeholder: "número de teléfono",
                                   icon: Icons.phone,
                                   validator: (value) {
@@ -218,6 +302,8 @@ class _RegisterViewState extends State<RegisterView> {
                                             height: 20,
                                           ),
                                           RecdatTextfield(
+                                            type: TextInputType.number,
+                                            controller: codeController,
                                             placeholder: "código",
                                             icon: Icons.numbers,
                                             validator: (value) {
