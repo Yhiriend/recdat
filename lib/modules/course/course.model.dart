@@ -21,7 +21,7 @@ class CourseModel {
       required this.name,
       required this.description,
       required this.grade,
-      required this.createdAt,
+      this.createdAt,
       this.updatedAt,
       this.type});
 

@@ -64,20 +64,31 @@ class CourseProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateCourse(CourseModel course) async {
+  Future<void> updateCourse(
+      BuildContext context, CourseModel course, String instituteId) async {
     _isLoading = true;
     notifyListeners();
     try {
-      await _firebaseFirestore
+      QuerySnapshot querySnapshot = await _firebaseFirestore
+          .collection("institutes")
+          .doc(instituteId)
           .collection("courses")
-          .doc(course.uid)
-          .update(course.toMap());
-      int index = _courseList.indexWhere((c) => c.uid == course.uid);
-      if (index != -1) {
-        _courseList[index] = course;
+          .where('uid', isEqualTo: course.uid)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final courseDoc = querySnapshot.docs.first;
+        course.updatedAt = RecdatDateUtils.currentDate();
+        await courseDoc.reference.update(course.toMap());
+        int index = _courseList.indexWhere((c) => c.uid == course.uid);
+        if (index != -1) {
+          _courseList[index] = course;
+        }
+        showSnackBar(context, "Curso actualizado", SnackBarType.success);
       }
     } catch (e) {
-      print("Error updating course: $e");
+      showSnackBar(
+          context, "Ups! no se pudo actualizar el curso", SnackBarType.error);
     } finally {
       _isLoading = false;
       notifyListeners();

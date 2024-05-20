@@ -83,6 +83,7 @@ class _CoursesViewState extends State<CoursesView> {
                     courseType: course.type ?? '',
                     grade: course.grade ?? '',
                     courseUid: course.uid ?? '',
+                    createdAt: course.createdAt ?? '',
                   );
                 },
               );

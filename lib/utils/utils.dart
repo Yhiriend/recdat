@@ -69,3 +69,35 @@ class RecdatDateUtils {
     return DateFormat('yyyy-MM-ddTHH:mm:ss').format(now);
   }
 }
+
+class CourseOptionsUtils {
+  CourseOptionsUtils._();
+
+  static List<String> areas() {
+    return [
+      'INFORMATICA',
+      'FISICA',
+      'BIOLOGIA',
+      'MATEMATICAS',
+      'QUIMICA',
+      'FILOSOFIA',
+      'ETICA Y VALORES',
+      'GEOGRAFIA',
+      'ECONOMIA',
+      'ARTISTICA',
+      'HISTORIA',
+      'LITERATURA'
+    ];
+  }
+
+  static List<String> grades() {
+    return [
+      'VI (6º grado)',
+      'VII (7º grado)',
+      'VIII (8º grado)',
+      'IX (9º grado)',
+      'X (10º grado)',
+      'XI (11º grado)',
+    ];
+  }
+}

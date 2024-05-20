@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/model/course.model.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
+import 'package:recdat/modules/course/widgets/modal_edit_course.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_alert.dart';
@@ -12,6 +13,7 @@ class CardCourseWidget extends StatelessWidget {
   final String courseType;
   final String grade;
   final String courseUid;
+  final String createdAt;
 
   const CardCourseWidget({
     required this.title,
@@ -19,6 +21,7 @@ class CardCourseWidget extends StatelessWidget {
     required this.courseType,
     required this.grade,
     required this.courseUid,
+    required this.createdAt,
     Key? key,
   }) : super(key: key);
 
@@ -95,7 +98,18 @@ class CardCourseWidget extends StatelessWidget {
               top: 0,
               right: 0,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) => ModalEditCourseWidget(
+                            courseName: title,
+                            courseDescription: description,
+                            courseArea: courseType,
+                            courseGrade: grade,
+                            courseUid: courseUid,
+                            courseCreatedAt: createdAt,
+                          ));
+                },
                 icon: const Icon(
                   Icons.edit,
                   color: RecdatStyles.iconDefaulColor,
@@ -149,14 +163,41 @@ class CardCourseWidget extends StatelessWidget {
     Color badgeColor;
 
     switch (courseType) {
-      case CourseType.math:
-        badgeColor = Colors.blue;
+      case CourseType.informatic:
+        badgeColor = Colors.orange;
+        break;
+      case CourseType.physical:
+        badgeColor = Colors.red;
         break;
       case CourseType.biology:
         badgeColor = Colors.green;
         break;
-      case CourseType.informatic:
-        badgeColor = Colors.orange;
+      case CourseType.math:
+        badgeColor = Colors.blue;
+        break;
+      case CourseType.chemistry:
+        badgeColor = Colors.purple;
+        break;
+      case CourseType.geography:
+        badgeColor = Colors.teal;
+        break;
+      case CourseType.economy:
+        badgeColor = Colors.amber;
+        break;
+      case CourseType.art:
+        badgeColor = Colors.pink;
+        break;
+      case CourseType.philosophy:
+        badgeColor = Colors.indigo;
+        break;
+      case CourseType.history:
+        badgeColor = Colors.brown;
+        break;
+      case CourseType.ethics:
+        badgeColor = Colors.grey;
+        break;
+      case CourseType.literature:
+        badgeColor = Colors.deepOrange;
         break;
       default:
         badgeColor = Colors.grey;

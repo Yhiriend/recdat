@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
@@ -10,15 +9,35 @@ import 'package:recdat/shared/widgets/recdat_dropdown.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
 import 'package:recdat/utils/utils.dart';
 
-class ModalCreateCourseWidget extends StatelessWidget {
+class ModalEditCourseWidget extends StatelessWidget {
   final TextEditingController courseNameController = TextEditingController();
   final TextEditingController courseDescriptionController =
       TextEditingController();
   final TextEditingController courseAreaController = TextEditingController();
   final TextEditingController courseGradeController = TextEditingController();
 
+  final String courseName;
+  final String courseDescription;
+  final String courseArea;
+  final String courseGrade;
+  final String courseUid;
+  final String courseCreatedAt;
+
+  ModalEditCourseWidget(
+      {super.key,
+      required this.courseName,
+      required this.courseArea,
+      required this.courseDescription,
+      required this.courseGrade,
+      required this.courseUid,
+      required this.courseCreatedAt});
+
   @override
   Widget build(BuildContext context) {
+    courseNameController.text = courseName;
+    courseDescriptionController.text = courseDescription;
+    courseAreaController.text = courseArea;
+    courseGradeController.text = courseGrade;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -30,7 +49,7 @@ class ModalCreateCourseWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Nuevo curso',
+                'Editar curso',
                 style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
@@ -76,19 +95,23 @@ class ModalCreateCourseWidget extends StatelessWidget {
                   final courseProvider =
                       Provider.of<CourseProvider>(context, listen: false);
                   final course = CourseModel(
-                      name: courseNameController.text.trim().toString(),
+                      uid: courseUid,
+                      createdAt: courseCreatedAt,
+                      name: courseNameController.text
+                          .trim()
+                          .toString()
+                          .toUpperCase(),
                       description:
                           courseDescriptionController.text.trim().toString(),
                       grade: courseGradeController.text.trim().toString(),
-                      type: courseAreaController.text.trim().toString(),
-                      createdAt: "");
+                      type: courseAreaController.text.trim().toString());
                   final userUid = authProvider.user?.uid ?? "";
-                  await courseProvider.addCourse(context, course, userUid);
+                  await courseProvider.updateCourse(context, course, userUid);
                   await courseProvider
                       .fetchCourses(context, userUid)
                       .then((_) => Navigator.of(context).pop());
                 },
-                text: "Registrar curso",
+                text: "Guardar cambios",
               )
             ],
           ),
