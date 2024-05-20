@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/utils/utils.dart';
+import 'package:uuid/uuid.dart';
 
 class CourseProvider with ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -30,9 +31,7 @@ class CourseProvider with ChangeNotifier {
       _courseList = snapshot.docs
           .map((doc) => CourseModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
-      print("COURSE TYPE FETCHING: ${_courseList[0].type}");
-      showSnackBar(
-          context, "Todos los cursos han sido cargados", SnackBarType.success);
+      showSnackBar(context, "Cursos actualizados", SnackBarType.success);
     } catch (e) {
       showSnackBar(
           context, "Ups! no pudimos cargar los cursos", SnackBarType.error);
@@ -51,6 +50,8 @@ class CourseProvider with ChangeNotifier {
           _firebaseFirestore.collection("institutes").doc(instituteId);
 
       course.createdAt = RecdatDateUtils.currentDate();
+      String courseUid = const Uuid().v4();
+      course.uid = courseUid;
 
       await instituteRef.collection("courses").add(course.toMap());
 
@@ -83,14 +84,30 @@ class CourseProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteCourse(String courseId) async {
+  Future<void> deleteCourse(
+      BuildContext context, String courseId, String instituteId) async {
     _isLoading = true;
     notifyListeners();
     try {
-      await _firebaseFirestore.collection("courses").doc(courseId).delete();
-      _courseList.removeWhere((course) => course.uid == courseId);
+      QuerySnapshot querySnapshot = await _firebaseFirestore
+          .collection("institutes")
+          .doc(instituteId)
+          .collection("courses")
+          .where('uid', isEqualTo: courseId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final courseDoc = querySnapshot.docs.first;
+        await courseDoc.reference.delete();
+        _courseList.removeWhere((course) => course.uid == courseId);
+        showSnackBar(context, "Curso eliminado", SnackBarType.warning);
+      } else {
+        showSnackBar(
+            context, "El curso no fue encontrado", SnackBarType.warning);
+      }
     } catch (e) {
-      print("Error deleting course: $e");
+      showSnackBar(
+          context, "Ups! no se pudo eliminar el curso", SnackBarType.error);
     } finally {
       _isLoading = false;
       notifyListeners();

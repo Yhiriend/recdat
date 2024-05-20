@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/model/course.model.dart';
+import 'package:recdat/modules/course/providers/course.provider.dart';
+import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/shared/widgets/recdat_alert.dart';
 
 class CardCourseWidget extends StatelessWidget {
   final String title;
   final String description;
   final String courseType;
   final String grade;
+  final String courseUid;
 
   const CardCourseWidget({
     required this.title,
     required this.description,
     required this.courseType,
     required this.grade,
+    required this.courseUid,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userUid = authProvider.user?.uid;
+    final courseProvider = Provider.of<CourseProvider>(context, listen: false);
     return Card(
       color: RecdatStyles.whiteColor,
       shape: RoundedRectangleBorder(
@@ -97,7 +106,23 @@ class CardCourseWidget extends StatelessWidget {
               bottom: 0,
               right: 0,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  showDialog(
+                      context: context,
+                      builder: (context) => RecdatAlert(
+                            title: "Eliminar curso",
+                            message:
+                                "Estas seguro de querer eliminar el curso de $title?",
+                            onSubmit: () async {
+                              await courseProvider
+                                  .deleteCourse(context, courseUid, userUid!)
+                                  .then((_) => courseProvider.fetchCourses(
+                                      context, userUid));
+                            },
+                            buttonText: "Si, eliminar",
+                            alertType: "warning",
+                          ));
+                },
                 icon: const Icon(Icons.delete,
                     color: RecdatStyles.iconDefaulColor),
               ),

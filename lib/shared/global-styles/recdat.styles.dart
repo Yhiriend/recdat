@@ -37,7 +37,7 @@ class RecdatStyles {
 
   //SnackbarColor
   static const Color snackbarSuccesColor = Color(0xFF107839);
-  static const Color snackbarWarningColor = Color(0xFFFFD500);
+  static const Color snackbarWarningColor = Color.fromARGB(255, 204, 133, 0);
   static const Color snackbarErrorColor = Color(0xFFAC1212);
 
   //Sized
