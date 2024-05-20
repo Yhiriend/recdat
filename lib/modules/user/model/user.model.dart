@@ -9,15 +9,15 @@ class UserRole {
 
 class UserModel {
   String? uid;
-  String? name;
-  String? surname;
+  String name;
+  String surname;
   String? lastSurname;
   String? email;
   String? phone;
   String? rol;
   String? createdAt;
   String? profilePic;
-  String? password;
+  String password;
 
   UserModel(
       {required this.uid,

@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:recdat/modules/institute/institute.model.dart';
-import 'package:recdat/modules/user/user.model.dart' as user_model;
+import 'package:recdat/modules/user/model/user.model.dart' as user_model;
 import 'package:recdat/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -64,7 +64,7 @@ class AuthProvider with ChangeNotifier {
           },
           codeAutoRetrievalTimeout: (verificationId) {});
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
+      showSnackBar(context, e.message.toString(), SnackBarType.error);
     }
   }
 
@@ -86,7 +86,7 @@ class AuthProvider with ChangeNotifier {
         onSuccess();
       }
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
+      showSnackBar(context, e.message.toString(), SnackBarType.error);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -97,10 +97,10 @@ class AuthProvider with ChangeNotifier {
     DocumentSnapshot snapshot =
         await _firebaseFirestore.collection("users").doc(_uid).get();
     if (snapshot.exists) {
-      print("USER EXISTS");
+      //print("USER EXISTS");
       return true;
     } else {
-      print("NEW USER");
+      //print("NEW USER");
       return false;
     }
   }
@@ -109,7 +109,7 @@ class AuthProvider with ChangeNotifier {
       {required BuildContext context,
       required user_model.UserModel userModel,
       required Function onSuccess}) async {
-    showSnackBar(context, "Creando usuario");
+    showSnackBar(context, "Creando usuario", SnackBarType.none);
     _isLoading = true;
     notifyListeners();
     try {
@@ -121,11 +121,11 @@ class AuthProvider with ChangeNotifier {
           .doc(_uid)
           .set(userModel.toMap())
           .then((value) {
-        showSnackBar(context, "Usuario creado");
+        showSnackBar(context, "Usuario creado", SnackBarType.success);
         onSuccess();
       });
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
+      showSnackBar(context, e.message.toString(), SnackBarType.error);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -135,7 +135,7 @@ class AuthProvider with ChangeNotifier {
   void createInstitute(
       BuildContext context, String instituteName, Function onSuccess) async {
     _isLoading = true;
-    showSnackBar(context, "Creando instituto");
+    showSnackBar(context, "Creando instituto", SnackBarType.none);
     try {
       InstituteModel instituteModel = InstituteModel(
           uid: _uid,
@@ -147,11 +147,11 @@ class AuthProvider with ChangeNotifier {
           .doc(_uid)
           .set(instituteModel.toMap())
           .then((value) {
-        showSnackBar(context, "Instituto creado");
+        showSnackBar(context, "Instituto creado", SnackBarType.success);
         onSuccess();
       });
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message.toString());
+      showSnackBar(context, e.message.toString(), SnackBarType.error);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -171,7 +171,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signInWithEmailAndPassword(
+  Future<bool> signInWithEmailAndPassword(
       BuildContext context, String email, String password) async {
     _isLoading = true;
     notifyListeners();
@@ -205,10 +205,11 @@ class AuthProvider with ChangeNotifier {
           await setSignIn();
 
           // Mostrar un mensaje de inicio de sesión exitoso
-          showSnackBar(context, "Inicio de sesión exitoso");
+          //showSnackBar(context, "Inicio de sesión exitoso");
 
-          return;
+          return true;
         }
+        return false;
       }
 
       // Si no se encuentra el usuario o la contraseña no coincide, mostrar un mensaje de error
@@ -217,8 +218,13 @@ class AuthProvider with ChangeNotifier {
         message: 'Credenciales inválidas',
       );
     } catch (e) {
+      String errorMessage = 'Ocurrió un error. Inténtalo de nuevo.';
+      if (e is FirebaseAuthException && e.code == 'invalid-credentials') {
+        errorMessage = 'Credenciales inválidas';
+      }
       // Mostrar un mensaje de error en caso de cualquier excepción
-      showSnackBar(context, e.toString());
+      showSnackBar(context, errorMessage, SnackBarType.error);
+      return false;
     } finally {
       // Establecer isLoading en false y notificar a los oyentes
       _isLoading = false;

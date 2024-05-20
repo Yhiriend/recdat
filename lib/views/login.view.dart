@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
-import 'package:recdat/utils/utils.dart';
+import 'package:recdat/views/home.view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -24,7 +24,16 @@ class _LoginViewState extends State<LoginView> {
       ap
           .signInWithEmailAndPassword(
               context, _username.text.trim(), _password.text.trim())
-          .then((value) => {showSnackBar(context, "Has iniciado sesion")});
+          .then((value) {
+        if (value) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomeView(),
+              ),
+              (route) => false);
+        }
+      });
     }
   }
 

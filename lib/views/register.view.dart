@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:recdat/modules/user/user.model.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
 import 'dart:core';
 
-import 'package:recdat/views/home.views.dart';
+import 'package:recdat/views/home.view.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -124,8 +124,8 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading =
-        Provider.of<AuthProvider>(context, listen: true).isLoading;
+    //final isLoading =
+    Provider.of<AuthProvider>(context, listen: true).isLoading;
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFF003366),

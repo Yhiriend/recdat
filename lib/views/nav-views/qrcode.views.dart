@@ -3,6 +3,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:recdat/modules/qr/qr_frame.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
+import 'package:recdat/utils/routes.dart';
 
 class QrcodeView extends StatefulWidget {
   const QrcodeView({super.key});
@@ -77,14 +78,18 @@ class _QrcodeViewState extends State<QrcodeView> {
         children: [
           SpeedDialChild(
               foregroundColor: RecdatStyles.blueDarkColor,
-              child: const Icon(Icons.mail),
-              label: "mail",
-              onTap: () {}),
+              child: const Icon(Icons.school),
+              label: "Cursos",
+              onTap: () {
+                Navigator.pushNamed(context, RecdatRoutes.courses);
+              }),
           SpeedDialChild(
               foregroundColor: RecdatStyles.blueDarkColor,
-              child: const Icon(Icons.person_add_alt_1_rounded),
-              label: "nuevo profesor",
-              onTap: () {})
+              child: const Icon(Icons.groups_rounded),
+              label: "Profesores",
+              onTap: () {
+                Navigator.pushNamed(context, RecdatRoutes.createTeacher);
+              })
         ],
       ),
     );

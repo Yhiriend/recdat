@@ -1,37 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 
-class RecdatTextfield extends StatefulWidget {
+class RecdatDropdown extends StatefulWidget {
   final String placeholder;
+  final List<String> options;
+  final TextEditingController controller;
   final IconData? icon;
   final String? color;
   final String? Function(String?)? validator;
-  final TextEditingController controller;
-  final TextInputType type;
 
-  const RecdatTextfield({
+  const RecdatDropdown({
     Key? key,
     required this.placeholder,
     required this.controller,
-    this.type = TextInputType.text,
+    required this.options,
     this.icon,
     this.validator,
     this.color = RecdatStyles.textFieldDark,
   }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _RecdatTextfieldState createState() => _RecdatTextfieldState();
+  _RecdatDropdownState createState() => _RecdatDropdownState();
 }
 
-class _RecdatTextfieldState extends State<RecdatTextfield> {
+class _RecdatDropdownState extends State<RecdatDropdown> {
+  String? _selectedOption;
   bool _hasError = false;
-  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller;
+    _selectedOption = widget.options.contains(widget.controller.text)
+        ? widget.controller.text
+        : null;
   }
 
   @override
@@ -44,18 +45,24 @@ class _RecdatTextfieldState extends State<RecdatTextfield> {
       height: height,
       child: Stack(
         children: [
-          TextFormField(
-            controller: _controller,
-            cursorColor: RecdatStyles.cursorColor,
-            style: TextStyle(
-              color: widget.color == RecdatStyles.textFieldLight
-                  ? RecdatStyles.blueDarkColor
-                  : RecdatStyles.defaultTextColor,
-              fontSize: RecdatStyles.textFieldFontSize,
-            ),
+          DropdownButtonFormField<String>(
+            value: _selectedOption,
+            items: widget.options
+                .map((option) => DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(option),
+                    ))
+                .toList(),
+            onChanged: (newValue) {
+              setState(() {
+                _selectedOption = newValue;
+                widget.controller.text = newValue!;
+              });
+            },
             decoration: InputDecoration(
               hintText: widget.placeholder,
-              hintStyle: const TextStyle(color: RecdatStyles.hintTextColorDark),
+              hintStyle: const TextStyle(
+                  color: RecdatStyles.hintTextColorDark, fontSize: 20),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(RecdatStyles.borderRadius),
                 borderSide: BorderSide.none,
@@ -78,7 +85,6 @@ class _RecdatTextfieldState extends State<RecdatTextfield> {
               });
               return widget.validator != null ? widget.validator!(value) : null;
             },
-            keyboardType: widget.type,
           ),
         ],
       ),

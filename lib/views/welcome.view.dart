@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
-import 'package:recdat/views/home.views.dart';
-import 'package:recdat/views/login.views.dart';
+import 'package:recdat/views/home.view.dart';
+import 'package:recdat/views/login.view.dart';
 
 class WelcomeView extends StatelessWidget {
   const WelcomeView({super.key});
