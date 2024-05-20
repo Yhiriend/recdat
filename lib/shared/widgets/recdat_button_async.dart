@@ -53,7 +53,7 @@ class _RecdatButtonAsyncState extends State<RecdatButtonAsync> {
                 height: 20,
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    RecdatStyles.defaultColor,
+                    RecdatStyles.whiteColor,
                   ),
                 ),
               )

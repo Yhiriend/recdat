@@ -153,7 +153,10 @@ class CardDialog extends StatelessWidget {
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) => const CircularProgressIndicator(),
+                    builder: (context) => const Center(
+                        child: CircularProgressIndicator(
+                      color: RecdatStyles.whiteColor,
+                    )),
                   );
 
                   onSubmit().then((_) {

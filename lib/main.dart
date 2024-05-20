@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/course/views/courses.view.dart';
+import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/modules/user/views/create_teacher.view.dart';
+import 'package:recdat/modules/user/views/teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/utils/routes.dart';
 import 'package:recdat/views/home.view.dart';
@@ -36,7 +38,8 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => CourseProvider())
+        ChangeNotifierProvider(create: (_) => CourseProvider()),
+        ChangeNotifierProvider(create: (_) => TeacherProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -62,6 +65,9 @@ class MainApp extends StatelessWidget {
                 break;
               case RecdatRoutes.courses:
                 builder = (BuildContext context) => CoursesView();
+                break;
+              case RecdatRoutes.teachers:
+                builder = (BuildContext context) => TeachersView();
                 break;
               default:
                 throw Exception('Invalid route: ${settings.name}');

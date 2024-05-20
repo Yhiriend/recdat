@@ -15,26 +15,41 @@ class SnackBarType {
 
 void showSnackBar(BuildContext context, String text, SnackBarType type) {
   Color backgroundColor;
+  IconData icon;
 
   switch (type) {
     case SnackBarType.warning:
       backgroundColor = RecdatStyles.snackbarWarningColor;
+      icon = Icons.error_outline;
       break;
     case SnackBarType.error:
       backgroundColor = RecdatStyles.snackbarErrorColor;
+      icon = Icons.cloud_off_outlined;
       break;
     case SnackBarType.success:
       backgroundColor = RecdatStyles.snackbarSuccesColor;
+      icon = Icons.check;
       break;
     default:
       backgroundColor = Colors.blueGrey;
+      icon = Icons.face_unlock_outlined;
   }
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(
-        text,
-        style: const TextStyle(color: RecdatStyles.whiteColor),
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(
+            text,
+            style: const TextStyle(color: RecdatStyles.whiteColor),
+          ),
+          Icon(
+            icon,
+            color: RecdatStyles.whiteColor,
+          )
+        ],
       ),
       backgroundColor: backgroundColor,
       behavior: SnackBarBehavior.floating,
@@ -58,6 +73,10 @@ class RecdatCollections {
 
   static String courses() {
     return "courses";
+  }
+
+  static String users() {
+    return "users";
   }
 }
 

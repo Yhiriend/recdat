@@ -4,4 +4,5 @@ class RecdatRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String courses = '/courses';
+  static const String teachers = '/teachers';
 }

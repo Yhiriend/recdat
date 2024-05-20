@@ -88,7 +88,7 @@ class _QrcodeViewState extends State<QrcodeView> {
               child: const Icon(Icons.groups_rounded),
               label: "Profesores",
               onTap: () {
-                Navigator.pushNamed(context, RecdatRoutes.createTeacher);
+                Navigator.pushNamed(context, RecdatRoutes.teachers);
               })
         ],
       ),

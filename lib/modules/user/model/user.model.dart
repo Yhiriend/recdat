@@ -9,6 +9,7 @@ class UserRole {
 
 class UserModel {
   String? uid;
+  String? instituteUid;
   String name;
   String surname;
   String? lastSurname;
@@ -20,7 +21,8 @@ class UserModel {
   String password;
 
   UserModel(
-      {required this.uid,
+      {this.uid,
+      this.instituteUid,
       required this.name,
       required this.surname,
       required this.lastSurname,
@@ -34,6 +36,7 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
         uid: map['uid'] ?? '',
+        instituteUid: map['instituteUid'] ?? '',
         name: map['name'] ?? '',
         surname: map['surname'] ?? '',
         lastSurname: map['lastSurname'] ?? '',
@@ -48,6 +51,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       "uid": uid,
+      "instituteUid": instituteUid,
       "name": name,
       "surname": surname,
       "lastSurname": lastSurname,

@@ -25,7 +25,7 @@ class RecdatButton extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-                color: RecdatStyles.defaultColor,
+                color: RecdatStyles.whiteColor,
                 fontSize: RecdatStyles.buttonFontSize),
           ),
         ));

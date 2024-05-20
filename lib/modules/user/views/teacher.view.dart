@@ -4,31 +4,34 @@ import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/course/widgets/card_courses.widget.dart';
 import 'package:recdat/modules/course/widgets/modal_create_course.widget.dart';
+import 'package:recdat/modules/user/providers/teacher.provider.dart';
+import 'package:recdat/modules/user/widgets/card_teacher.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 
-class CoursesView extends StatefulWidget {
-  const CoursesView({super.key});
+class TeachersView extends StatefulWidget {
+  const TeachersView({super.key});
 
   @override
-  State<CoursesView> createState() => _CoursesViewState();
+  State<TeachersView> createState() => _TeachersViewState();
 }
 
-class _CoursesViewState extends State<CoursesView> {
+class _TeachersViewState extends State<TeachersView> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchCourses();
+      _fetchTeachers();
     });
   }
 
-  void _fetchCourses() async {
+  void _fetchTeachers() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final courseProvider = Provider.of<CourseProvider>(context, listen: false);
+    final teacherProvider =
+        Provider.of<TeacherProvider>(context, listen: false);
     final userUid = authProvider.user?.uid;
     if (userUid != null) {
-      await courseProvider.fetchCourses(context, userUid);
+      await teacherProvider.fetchUsers(context, userUid);
     }
   }
 
@@ -41,22 +44,22 @@ class _CoursesViewState extends State<CoursesView> {
           backgroundColor: RecdatStyles.blueDarkColor,
           foregroundColor: RecdatStyles.defaultTextColor,
           title: const Text(
-            "Cursos",
+            "Profesores",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-          child: Consumer<CourseProvider>(
-            builder: (context, courseProvider, child) {
-              if (courseProvider.isLoading) {
+          child: Consumer<TeacherProvider>(
+            builder: (context, teacherProvider, child) {
+              if (teacherProvider.isLoading) {
                 return const Center(
                     child: CircularProgressIndicator(
                   color: RecdatStyles.whiteColor,
                 ));
               }
 
-              if (courseProvider.courseList.isEmpty) {
+              if (teacherProvider.userList.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -68,7 +71,7 @@ class _CoursesViewState extends State<CoursesView> {
                         child: Image.asset('assets/images/book.png'),
                       ),
                       const Text(
-                        "No hay cursos",
+                        "No hay profesores",
                         style: TextStyle(
                             color: RecdatStyles.darkTextColor, fontSize: 30),
                       ),
@@ -77,16 +80,16 @@ class _CoursesViewState extends State<CoursesView> {
                 );
               }
               return ListView.builder(
-                itemCount: courseProvider.courseList.length,
+                itemCount: teacherProvider.userList.length,
                 itemBuilder: (context, index) {
-                  final course = courseProvider.courseList[index];
-                  return CardCourseWidget(
-                    title: course.name ?? '',
-                    description: course.description ?? '',
-                    courseType: course.type ?? '',
-                    grade: course.grade ?? '',
-                    courseUid: course.uid ?? '',
-                    createdAt: course.createdAt ?? '',
+                  final teacher = teacherProvider.userList[index];
+                  return CardTeacherWidget(
+                    name: teacher.name ?? '',
+                    surname: teacher.surname ?? '',
+                    email: teacher.email ?? '',
+                    teacherUid: teacher.uid ?? '',
+                    totalCourses: 5,
+                    createdAt: teacher.createdAt ?? '',
                   );
                 },
               );

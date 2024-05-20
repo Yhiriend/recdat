@@ -85,6 +85,9 @@ class CourseProvider with ChangeNotifier {
           _courseList[index] = course;
         }
         showSnackBar(context, "Curso actualizado", SnackBarType.success);
+      } else {
+        showSnackBar(
+            context, "Ups! parece que hubo un error", SnackBarType.error);
       }
     } catch (e) {
       showSnackBar(
@@ -114,7 +117,7 @@ class CourseProvider with ChangeNotifier {
         showSnackBar(context, "Curso eliminado", SnackBarType.warning);
       } else {
         showSnackBar(
-            context, "El curso no fue encontrado", SnackBarType.warning);
+            context, "Ups! parece que hubo un error", SnackBarType.error);
       }
     } catch (e) {
       showSnackBar(
