@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
@@ -15,39 +16,32 @@ class WelcomeView extends StatefulWidget {
 
 class _WelcomeViewState extends State<WelcomeView> {
   Future<void> checkAuthentication(BuildContext context) async {
-    await Future.delayed(const Duration(seconds: 3));
-    final ap = Provider.of<AuthProvider>(context, listen: false);
-    if (ap.uid.isEmpty) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginView(),
-          ),
-          (route) => false);
-    } else {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomeView(),
-          ),
-          (route) => false);
-    }
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.getDataFromSP().then((_) {
+      final bool isSignedIn = authProvider.isSignedIn;
+      print("USER AT WELCOME VIEW: $isSignedIn");
+      if (isSignedIn) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HomeView(),
+            ),
+            (route) => false);
+      } else {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginView(),
+            ),
+            (route) => false);
+      }
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final String uid = authProvider.uid;
-    print("USER AT WELCOME VIEW: $uid");
-    if (uid.isNotEmpty) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomeView(),
-          ),
-          (route) => false);
-    }
+    checkAuthentication(context);
   }
 
   @override

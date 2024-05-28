@@ -166,8 +166,16 @@ class AuthProvider with ChangeNotifier {
   Future getDataFromSP() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String data = sharedPreferences.getString("user_model") ?? "";
+    final decodedData = jsonDecode(data);
+    print("SHARED PREFERENCES $decodedData");
     _user = user_model.UserModel.fromMap(jsonDecode(data));
-    _uid = _user!.uid;
+    print("USER DATA $_user");
+    _uid = _user!.uid ?? "";
+    print("USER UID $_uid");
+    if (_uid != "") {
+      print("INSIDE CONDITION");
+      await setSignIn();
+    }
     notifyListeners();
   }
 
