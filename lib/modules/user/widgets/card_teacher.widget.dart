@@ -2,24 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/model/course.model.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
+import 'package:recdat/modules/user/views/edit_teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 
 class CardTeacherWidget extends StatelessWidget {
-  final String name;
-  final String surname;
-  final String email;
-  final int totalCourses;
-  final String teacherUid;
-  final String createdAt;
+  final UserModel teacher;
 
   const CardTeacherWidget({
-    required this.name,
-    required this.surname,
-    required this.email,
-    required this.totalCourses,
-    required this.teacherUid,
-    required this.createdAt,
+    required this.teacher,
     Key? key,
   }) : super(key: key);
 
@@ -50,16 +42,18 @@ class CardTeacherWidget extends StatelessWidget {
                     color: RecdatStyles.opaquePrimaryBackgroundColor,
                   ),
                   child: Center(
-                    child: Text(
-                      totalCourses.toString(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: RecdatStyles
-                            .opaquePrimaryForegroundColor, // Puedes cambiar el color del texto aquí
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: teacher.profilePic!.isNotEmpty
+                        ? Image.network(
+                            teacher.profilePic!,
+                            width: 58,
+                            height: 58,
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(
+                            Icons.face_rounded,
+                            size: 58,
+                            color: RecdatStyles.opaquePrimaryForegroundColor,
+                          ),
                   ),
                 ),
                 const SizedBox(
@@ -69,7 +63,7 @@ class CardTeacherWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _truncateText(name, 3),
+                      "${teacher.name} ${teacher.surname}",
                       style: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.normal,
@@ -78,16 +72,16 @@ class CardTeacherWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 10.0),
                     Text(
-                      _truncateText(surname, 3),
+                      _getTotalCourses(teacher.courses),
                       style: const TextStyle(
                         fontSize: 16.0,
-                        color: RecdatStyles.defaultTextColor,
+                        color: RecdatStyles.parraphLightColor,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
                     const SizedBox(height: 10.0),
-                    _buildCourseTypeBadge(email),
+                    _buildCourseTypeBadge(teacher.email!),
                   ],
                 ),
               ],
@@ -96,7 +90,13 @@ class CardTeacherWidget extends StatelessWidget {
               top: 0,
               right: 0,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditTeacherWiew(teacher: teacher)));
+                },
                 icon: const Icon(
                   Icons.edit,
                   color: RecdatStyles.iconDefaulColor,
@@ -116,6 +116,20 @@ class CardTeacherWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getTotalCourses(List<dynamic>? courses) {
+    if (courses != null) {
+      int total = courses.length;
+      if (total == 0) {
+        return "sin cursos";
+      } else if (total == 1) {
+        return "+1 curso";
+      } else {
+        return "+$total cursos";
+      }
+    }
+    return "sin cursos";
   }
 
   String _truncateText(String text, int maxWords) {

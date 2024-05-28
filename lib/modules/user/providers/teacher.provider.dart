@@ -41,13 +41,12 @@ class TeacherProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addUser(
+  Future<void> addTeacher(
       BuildContext context, UserModel user, String instituteId) async {
     _isLoading = true;
     notifyListeners();
     try {
       user.instituteUid = instituteId;
-      user.uid = _firebaseFirestore.collection("users").doc().id;
 
       await _firebaseFirestore
           .collection("users")
@@ -66,7 +65,7 @@ class TeacherProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateUser(BuildContext context, UserModel user) async {
+  Future<void> updateTeacher(BuildContext context, UserModel user) async {
     _isLoading = true;
     notifyListeners();
     try {
@@ -90,7 +89,7 @@ class TeacherProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteUser(BuildContext context, String userId) async {
+  Future<void> deleteTeacher(BuildContext context, String userId) async {
     _isLoading = true;
     notifyListeners();
     try {
@@ -107,7 +106,7 @@ class TeacherProvider with ChangeNotifier {
     }
   }
 
-  Future<void> assignCourseToUser(
+  Future<void> assignCourseToTeacher(
       BuildContext context, String userId, CourseModel course) async {
     _isLoading = true;
     notifyListeners();

@@ -141,7 +141,7 @@ class AuthProvider with ChangeNotifier {
           uid: _uid,
           name: instituteName,
           courses: [],
-          createdAt: DateTime.now().millisecondsSinceEpoch.toString());
+          createdAt: RecdatDateUtils.currentDate());
       await _firebaseFirestore
           .collection("institutes")
           .doc(_uid)
@@ -164,8 +164,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future getDataFromSP() async {
-    SharedPreferences s = await SharedPreferences.getInstance();
-    String data = s.getString("user_model") ?? "";
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String data = sharedPreferences.getString("user_model") ?? "";
     _user = user_model.UserModel.fromMap(jsonDecode(data));
     _uid = _user!.uid;
     notifyListeners();

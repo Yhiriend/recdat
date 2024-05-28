@@ -1,67 +1,136 @@
 import 'package:flutter/material.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
-import 'package:recdat/utils/utils.dart';
+import 'package:recdat/shared/global-styles/recdat.styles.dart';
 
-class RecdatMultiselectTextField extends StatefulWidget {
-  final List<GeneralOptionsSelectWidget> options;
-  final TextEditingController controller;
-  final TextInputType type;
-  final String placeholder;
-  final int maxSelections;
+class RecdatMultiselectController {
+  final List<String> _selectedOptions = [];
 
-  const RecdatMultiselectTextField({
+  List<String> get selectedOptions => _selectedOptions;
+
+  bool isSelected(String option) {
+    return _selectedOptions.contains(option);
+  }
+
+  void selectOption(String option) {
+    if (!_selectedOptions.contains(option)) {
+      _selectedOptions.add(option);
+    }
+  }
+
+  void deselectOption(String option) {
+    _selectedOptions.remove(option);
+  }
+}
+
+class Entry {
+  final String title;
+  final List<Entry> children;
+  final IconData? icon;
+  final bool isCourse;
+
+  Entry(this.title,
+      [this.children = const <Entry>[], this.icon, this.isCourse = false]);
+}
+
+class RecdatMultiselect extends StatelessWidget {
+  final List<Entry> data;
+  final RecdatMultiselectController controller;
+  final Color? color;
+
+  const RecdatMultiselect({
     Key? key,
-    required this.options,
+    required this.data,
     required this.controller,
-    this.type = TextInputType.text,
-    this.placeholder = 'Select',
-    this.maxSelections = 1,
+    this.color = RecdatStyles.blueDarkColor,
   }) : super(key: key);
 
   @override
-  _RecdatMultiselectTextFieldState createState() =>
-      _RecdatMultiselectTextFieldState();
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraint) {
+        return ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 300),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(RecdatStyles.borderRadius),
+              color: color == RecdatStyles.textFieldLight
+                  ? RecdatStyles.textFieldColorGray
+                  : RecdatStyles.textFieldColorBlue,
+            ),
+            child: ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (BuildContext context, int index) {
+                return EntryItem(
+                  entry: data[index],
+                  isSelected: controller.isSelected(data[index].title),
+                  onSelected: (selected) {
+                    if (selected == true) {
+                      controller.selectOption(data[index].title);
+                    } else {
+                      controller.deselectOption(data[index].title);
+                    }
+                  },
+                );
+              },
+              shrinkWrap: true,
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _RecdatMultiselectTextFieldState
-    extends State<RecdatMultiselectTextField> {
-  late final List<MultiSelectItem<GeneralOptionsSelectWidget>> _items;
-  final _multiSelectKey = GlobalKey<FormFieldState>();
+class EntryItem extends StatelessWidget {
+  final Entry entry;
+  final bool isSelected;
+  final ValueChanged<bool?> onSelected;
 
-  @override
-  void initState() {
-    super.initState();
-    _items = widget.options
-        .map((option) => MultiSelectItem<GeneralOptionsSelectWidget>(
-              option,
-              option.label,
-            ))
-        .toList();
-  }
+  const EntryItem({
+    Key? key,
+    required this.entry,
+    required this.isSelected,
+    required this.onSelected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiSelectBottomSheetField<GeneralOptionsSelectWidget>(
-        key: _multiSelectKey,
-        initialChildSize: 0.7,
-        maxChildSize: 0.95,
-        title: const Text("Cursos"),
-        buttonText: const Text("Favorite Animals"),
-        items: _items,
-        validator: (values) {
-          if (values == null || values.isEmpty) {
-            return "Required";
-          }
-          List<String> names = values.map((e) => e.label).toList();
-          if (names.contains("Frog")) {
-            return "Frogs are weird!";
-          }
-          return null;
-        },
-        onConfirm: (values) {
-          setState(() {
-            //_selectedOptions = values;
-          });
-        });
+    return entry.isCourse
+        ? ListTile(
+            title: Row(
+              children: [
+                if (entry.icon != null)
+                  Icon(
+                    entry.icon,
+                    color: RecdatStyles.defaultColor,
+                  ),
+                Text(entry.title),
+                Spacer(),
+                Checkbox(
+                  value: isSelected,
+                  onChanged: onSelected,
+                ),
+              ],
+            ),
+          )
+        : ExpansionTile(
+            key: PageStorageKey<Entry>(entry),
+            title: Row(
+              children: [
+                if (entry.icon != null)
+                  Icon(
+                    entry.icon,
+                    color: RecdatStyles.defaultColor,
+                  ),
+                Text(entry.title),
+              ],
+            ),
+            children: entry.children
+                .map((subEntry) => EntryItem(
+                      entry: subEntry,
+                      isSelected: isSelected,
+                      onSelected: onSelected,
+                    ))
+                .toList(),
+          );
   }
 }

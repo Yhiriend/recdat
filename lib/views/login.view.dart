@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/home.view.dart';
 
 class LoginView extends StatefulWidget {
@@ -19,19 +20,24 @@ class _LoginViewState extends State<LoginView> {
 
   Future<void> login(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      await Future.delayed(const Duration(seconds: 3));
+      //await Future.delayed(const Duration(seconds: 3));
       final ap = Provider.of<AuthProvider>(context, listen: false);
-      ap
+      await ap
           .signInWithEmailAndPassword(
               context, _username.text.trim(), _password.text.trim())
-          .then((value) {
+          .then((value) async {
         if (value) {
+          await ap.saveUserDataToSP();
+
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
                 builder: (context) => const HomeView(),
               ),
               (route) => false);
+        } else {
+          showSnackBar(
+              context, "Credenciales invalidas 😥", SnackBarType.error);
         }
       });
     }
@@ -42,13 +48,10 @@ class _LoginViewState extends State<LoginView> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFF003366),
-        body: Stack(
-          children: [
-            Positioned(
-              top: -80,
-              right: 0,
-              left: 0,
-              child: Column(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Column(
                 children: [
                   FractionalTranslation(
                     translation: const Offset(0.5, 0.0),
@@ -80,10 +83,10 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ],
               ),
-            ),
-            Positioned.fill(
-              top: MediaQuery.of(context).size.height * 0.3,
-              child: Form(
+              const SizedBox(
+                height: 20,
+              ),
+              Form(
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -120,6 +123,9 @@ class _LoginViewState extends State<LoginView> {
                         ],
                       ),
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: RecdatButtonAsync(
@@ -148,8 +154,8 @@ class _LoginViewState extends State<LoginView> {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

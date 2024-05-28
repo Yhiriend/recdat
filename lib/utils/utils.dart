@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/standalone.dart' as tz;
 
 class SnackBarType {
   final String value;
@@ -84,8 +86,12 @@ class RecdatDateUtils {
   RecdatDateUtils._();
 
   static String currentDate() {
-    DateTime now = DateTime.now().toUtc().add(Duration(hours: -5));
-    return DateFormat('yyyy-MM-ddTHH:mm:ss').format(now);
+    tz.initializeTimeZones();
+    final location = tz.getLocation('America/Bogota');
+    final now = tz.TZDateTime.now(location);
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    final String formatted = formatter.format(now);
+    return formatted;
   }
 }
 

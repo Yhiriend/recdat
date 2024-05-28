@@ -1,10 +1,12 @@
+import 'package:recdat/modules/course/course.model.dart';
+
 class UserRole {
   final String value;
 
   const UserRole._(this.value);
 
   static const UserRole admin = UserRole._('admin');
-  static const UserRole user = UserRole._('user');
+  static const UserRole teacher = UserRole._('teacher');
 }
 
 class UserModel {
@@ -18,6 +20,7 @@ class UserModel {
   String? rol;
   String? createdAt;
   String? profilePic;
+  List<CourseModel>? courses;
   String password;
 
   UserModel(
@@ -25,12 +28,13 @@ class UserModel {
       this.instituteUid,
       required this.name,
       required this.surname,
-      required this.lastSurname,
+      this.lastSurname,
       required this.email,
-      required this.phone,
+      this.phone,
       required this.rol,
-      required this.createdAt,
-      required this.profilePic,
+      this.createdAt,
+      this.profilePic,
+      this.courses,
       required this.password});
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -45,6 +49,10 @@ class UserModel {
         rol: map['rol'] ?? '',
         createdAt: map['createdAt'] ?? '',
         profilePic: map['profilePic'] ?? '',
+        courses: map['courses'] != null
+            ? List<CourseModel>.from((map['courses'] as List)
+                .map((item) => CourseModel.fromMap(item)))
+            : [],
         password: map['password'] ?? '');
   }
 
@@ -60,7 +68,16 @@ class UserModel {
       "rol": rol,
       "createdAt": createdAt,
       "profilePic": profilePic,
+      "courses": courses?.map((course) => course.toMap()).toList(),
       "password": password,
     };
+  }
+
+  bool isComplete() {
+    return (uid!.isNotEmpty &&
+        name.isNotEmpty &&
+        surname.isNotEmpty &&
+        email!.isNotEmpty &&
+        rol!.isNotEmpty);
   }
 }

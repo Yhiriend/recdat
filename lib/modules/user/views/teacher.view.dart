@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
-import 'package:recdat/modules/course/widgets/card_courses.widget.dart';
-import 'package:recdat/modules/course/widgets/modal_create_course.widget.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/modules/user/widgets/card_teacher.widget.dart';
+import 'package:recdat/modules/user/widgets/modal_create_teacher.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 
@@ -22,7 +21,16 @@ class _TeachersViewState extends State<TeachersView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchTeachers();
+      _fetchCourses();
     });
+  }
+
+  void _fetchCourses() async {
+    final courseProvider = Provider.of<CourseProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userUid = authProvider.user?.uid;
+    print("USER UUID: $userUid");
+    await courseProvider.fetchCourses(context, userUid!);
   }
 
   void _fetchTeachers() async {
@@ -55,7 +63,7 @@ class _TeachersViewState extends State<TeachersView> {
               if (teacherProvider.isLoading) {
                 return const Center(
                     child: CircularProgressIndicator(
-                  color: RecdatStyles.whiteColor,
+                  color: RecdatStyles.darkTextColor,
                 ));
               }
 
@@ -83,14 +91,7 @@ class _TeachersViewState extends State<TeachersView> {
                 itemCount: teacherProvider.userList.length,
                 itemBuilder: (context, index) {
                   final teacher = teacherProvider.userList[index];
-                  return CardTeacherWidget(
-                    name: teacher.name ?? '',
-                    surname: teacher.surname ?? '',
-                    email: teacher.email ?? '',
-                    teacherUid: teacher.uid ?? '',
-                    totalCourses: 5,
-                    createdAt: teacher.createdAt ?? '',
-                  );
+                  return CardTeacherWidget(teacher: teacher);
                 },
               );
             },
@@ -104,7 +105,7 @@ class _TeachersViewState extends State<TeachersView> {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return ModalCreateCourseWidget();
+                return ModalCreateTeacherWidget();
               },
             );
           },

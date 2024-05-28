@@ -60,7 +60,7 @@ class _RecdatButtonAsyncState extends State<RecdatButtonAsync> {
             : Text(
                 widget.text,
                 style: const TextStyle(
-                  color: RecdatStyles.defaultColor,
+                  color: RecdatStyles.whiteColor,
                   fontSize: RecdatStyles.buttonFontSize,
                 ),
               ),

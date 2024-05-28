@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:provider/provider.dart';
+import 'package:recdat/modules/qr/model/qr.model.dart';
 import 'package:recdat/modules/qr/qr_frame.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
+import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/utils/routes.dart';
+import 'package:recdat/utils/utils.dart';
 
 class QrcodeView extends StatefulWidget {
   const QrcodeView({super.key});
@@ -14,18 +21,40 @@ class QrcodeView extends StatefulWidget {
 
 class _QrcodeViewState extends State<QrcodeView> {
   late String lastQRDate;
+  late String lastQRData;
 
   Future<void> generateQRCode(BuildContext context) async {
-    await Future.delayed(const Duration(seconds: 3));
-    setState(() {
-      lastQRDate = DateTime.now().toString().split('.')[0];
-    });
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final UserModel? userData = authProvider.user;
+      if (userData!.isComplete() == true) {
+        final String currentDate = RecdatDateUtils.currentDate();
+        final QRModel qrData = QRModel(
+            uid: userData.uid,
+            name: userData.name,
+            surname: userData.surname,
+            email: userData.email ?? "",
+            rol: userData.rol ?? "none",
+            date: currentDate);
+        final String qrDataStringified = jsonEncode(qrData);
+        await Future.delayed(const Duration(seconds: 3));
+        setState(() {
+          lastQRData = qrDataStringified;
+          lastQRDate = currentDate;
+        });
+        showSnackBar(context, "QR actualizado 😉", SnackBarType.success);
+      }
+      print("STEP 2");
+    } catch (e) {
+      showSnackBar(context, "Ups! vuelve a intentarlo 😥", SnackBarType.error);
+    }
   }
 
   @override
   void initState() {
     super.initState();
     lastQRDate = "";
+    lastQRData = "";
   }
 
   @override
@@ -41,9 +70,9 @@ class _QrcodeViewState extends State<QrcodeView> {
                 Stack(alignment: Alignment.center, children: [
                   Image.asset('assets/images/frameqr.png'),
                   Container(
-                    child: lastQRDate.isEmpty
+                    child: lastQRData.isEmpty
                         ? Image.asset('assets/images/recdat_blue.png')
-                        : QRFrame(qrData: lastQRDate),
+                        : QRFrame(qrData: lastQRData),
                   )
                 ]),
                 Positioned(

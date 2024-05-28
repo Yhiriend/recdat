@@ -65,10 +65,6 @@ class _CreateTeacherViewState extends State<CreateTeacherView> {
                     const SizedBox(
                       height: 20,
                     ),
-                    RecdatMultiselectTextField(
-                      options: const [],
-                      controller: selectorController,
-                    )
                   ],
                 ),
                 RecdatButtonAsync(

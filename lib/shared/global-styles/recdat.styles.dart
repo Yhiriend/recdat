@@ -11,6 +11,7 @@ class RecdatStyles {
   static const Color segundaryButtonColor = segundaryColor;
   static const Color defaultButtonColor = defaultColor;
   static const Color cursorColor = primaryColor;
+  static const Color parraphLightColor = Color.fromARGB(255, 151, 151, 151);
 
   static const String textFieldDark = 'DARK';
   static const String textFieldLight = 'LIGHT';
