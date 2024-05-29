@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/views/login.view.dart';
 
 class RecdatAlert extends StatelessWidget {
   final String alertType;
@@ -160,8 +163,19 @@ class CardDialog extends StatelessWidget {
                   );
 
                   onSubmit().then((_) {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
+                    final authProvider =
+                        Provider.of<AuthProvider>(context, listen: false);
+                    final bool isSignedIn = authProvider.isSignedIn;
+                    if (isSignedIn) {
+                      Navigator.of(context).pop();
+                    } else {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginView(),
+                          ),
+                          (route) => false);
+                    }
                   });
                 },
                 child: Text(buttonText),

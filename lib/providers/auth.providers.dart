@@ -43,6 +43,7 @@ class AuthProvider with ChangeNotifier {
 
   Future setSignIn() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
+    await saveUserDataToSP();
     s.setBool("is_signedin", true);
     _isSignedIn = true;
     notifyListeners();
@@ -166,6 +167,7 @@ class AuthProvider with ChangeNotifier {
   Future getDataFromSP() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String data = sharedPreferences.getString("user_model") ?? "";
+    if (data.isEmpty) return;
     final decodedData = jsonDecode(data);
     print("SHARED PREFERENCES $decodedData");
     _user = user_model.UserModel.fromMap(jsonDecode(data));
@@ -185,35 +187,23 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // Obtener una referencia a la colección "users" en Firestore
       final CollectionReference usersCollection =
           _firebaseFirestore.collection("users");
 
-      // Obtener los documentos de la colección "users" donde el campo "email" es igual al email proporcionado
       final QuerySnapshot userSnapshot =
           await usersCollection.where('email', isEqualTo: email).get();
 
-      // Verificar si se encontró un usuario con el email proporcionado
       if (userSnapshot.docs.isNotEmpty) {
-        // Obtener el primer documento encontrado
         final userDoc = userSnapshot.docs.first;
 
-        // Obtener los datos del usuario
         final userData = userDoc.data() as Map<String, dynamic>;
 
-        // Verificar si la contraseña coincide
         if (userData['password'] == password) {
-          // Crear un objeto UserModel a partir de los datos del usuario
           final userModel = user_model.UserModel.fromMap(userData);
 
-          // Establecer el usuario actual
           setUser(userModel);
 
-          // Guardar el estado de inicio de sesión en Shared Preferences
           await setSignIn();
-
-          // Mostrar un mensaje de inicio de sesión exitoso
-          //showSnackBar(context, "Inicio de sesión exitoso");
 
           return true;
         }
@@ -237,6 +227,22 @@ class AuthProvider with ChangeNotifier {
       // Establecer isLoading en false y notificar a los oyentes
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    try {
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      await sharedPreferences.remove("user_model");
+      await sharedPreferences.setBool("is_signedin", false);
+      _user = null;
+      _isSignedIn = false;
+      _uid = null;
+      await _firebaseAuth.signOut();
+      notifyListeners();
+    } catch (e) {
+      showSnackBar(context, "Error al cerrar sesión: $e", SnackBarType.error);
     }
   }
 }

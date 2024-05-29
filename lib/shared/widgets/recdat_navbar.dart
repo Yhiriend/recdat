@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
+import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 
 class RecdatNavbar extends StatelessWidget {
@@ -9,6 +12,9 @@ class RecdatNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userRol = authProvider.user?.rol;
+    final isAdmin = userRol == UserRole.admin.value;
     return Container(
       color: RecdatStyles.blueDarkColor,
       child: Padding(
@@ -21,27 +27,45 @@ class RecdatNavbar extends StatelessWidget {
           gap: 5,
           padding: const EdgeInsets.all(12.0),
           onTabChange: (index) {
-            onTabChanged(
-                index); // Llama al callback cuando se cambia de pestaña
+            onTabChanged(index);
           },
-          tabs: const [
-            GButton(
-              icon: Icons.qr_code,
-              text: 'Qrcode',
-            ),
-            GButton(
-              icon: Icons.insert_chart_outlined_outlined,
-              text: 'Stadistic',
-            ),
-            GButton(
-              icon: Icons.notifications,
-              text: 'Notifications',
-            ),
-            GButton(
-              icon: Icons.settings,
-              text: 'Settings',
-            )
-          ],
+          tabs: isAdmin
+              ? const [
+                  GButton(
+                    icon: Icons.qr_code,
+                    text: 'Qrcode',
+                  ),
+                  GButton(
+                    icon: Icons.insert_chart_outlined_outlined,
+                    text: 'Stadistic',
+                  ),
+                  GButton(
+                    icon: Icons.notifications,
+                    text: 'Notifications',
+                  ),
+                  GButton(
+                    icon: Icons.settings,
+                    text: 'Settings',
+                  )
+                ]
+              : const [
+                  GButton(
+                    icon: Icons.qr_code,
+                    text: 'Qrcode',
+                  ),
+                  GButton(
+                    icon: Icons.list,
+                    text: 'Attendance',
+                  ),
+                  GButton(
+                    icon: Icons.notifications,
+                    text: 'Notifications',
+                  ),
+                  GButton(
+                    icon: Icons.settings,
+                    text: 'Settings',
+                  )
+                ],
         ),
       ),
     );

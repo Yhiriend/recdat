@@ -59,6 +59,9 @@ class _QrcodeViewState extends State<QrcodeView> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userRol = authProvider.user?.rol;
+    final isAdmin = userRol == UserRole.admin.value;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50.0),
@@ -97,30 +100,32 @@ class _QrcodeViewState extends State<QrcodeView> {
           ],
         ),
       ),
-      floatingActionButton: SpeedDial(
-        animatedIcon: AnimatedIcons.menu_close,
-        backgroundColor: RecdatStyles.blueDarkColor,
-        foregroundColor: RecdatStyles.defaultTextColor,
-        overlayColor: RecdatStyles.blueDarkColor,
-        overlayOpacity: 0.4,
-        spacing: 8,
-        children: [
-          SpeedDialChild(
-              foregroundColor: RecdatStyles.blueDarkColor,
-              child: const Icon(Icons.school),
-              label: "Cursos",
-              onTap: () {
-                Navigator.pushNamed(context, RecdatRoutes.courses);
-              }),
-          SpeedDialChild(
-              foregroundColor: RecdatStyles.blueDarkColor,
-              child: const Icon(Icons.groups_rounded),
-              label: "Profesores",
-              onTap: () {
-                Navigator.pushNamed(context, RecdatRoutes.teachers);
-              })
-        ],
-      ),
+      floatingActionButton: isAdmin
+          ? SpeedDial(
+              animatedIcon: AnimatedIcons.menu_close,
+              backgroundColor: RecdatStyles.blueDarkColor,
+              foregroundColor: RecdatStyles.defaultTextColor,
+              overlayColor: RecdatStyles.blueDarkColor,
+              overlayOpacity: 0.4,
+              spacing: 8,
+              children: [
+                SpeedDialChild(
+                    foregroundColor: RecdatStyles.blueDarkColor,
+                    child: const Icon(Icons.school),
+                    label: "Cursos",
+                    onTap: () {
+                      Navigator.pushNamed(context, RecdatRoutes.courses);
+                    }),
+                SpeedDialChild(
+                    foregroundColor: RecdatStyles.blueDarkColor,
+                    child: const Icon(Icons.groups_rounded),
+                    label: "Profesores",
+                    onTap: () {
+                      Navigator.pushNamed(context, RecdatRoutes.teachers);
+                    })
+              ],
+            )
+          : null,
     );
   }
 }
