@@ -19,7 +19,9 @@ class UserModel {
   String? phone;
   String? rol;
   String? createdAt;
+  String? updatedAt;
   String? profilePic;
+  bool isActive;
   List<CourseModel>? courses;
   String password;
 
@@ -33,8 +35,10 @@ class UserModel {
       this.phone,
       required this.rol,
       this.createdAt,
+      this.updatedAt,
       this.profilePic,
       this.courses,
+      required this.isActive,
       required this.password});
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -48,7 +52,9 @@ class UserModel {
         phone: map['phone'] ?? '',
         rol: map['rol'] ?? '',
         createdAt: map['createdAt'] ?? '',
-        profilePic: map['profilePic'] ?? '',
+        updatedAt: map['updatedAt'] ?? '',
+        profilePic: map['profilePic'],
+        isActive: map['isActive'] ?? false,
         courses: map['courses'] != null
             ? List<CourseModel>.from((map['courses'] as List)
                 .map((item) => CourseModel.fromMap(item)))
@@ -67,7 +73,9 @@ class UserModel {
       "phone": phone,
       "rol": rol,
       "createdAt": createdAt,
+      "updatedAt": updatedAt,
       "profilePic": profilePic,
+      "isActive": isActive,
       "courses": courses?.map((course) => course.toMap()).toList(),
       "password": password,
     };

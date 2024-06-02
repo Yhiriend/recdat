@@ -69,6 +69,7 @@ class TeacherProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      print(user.uid);
       await _firebaseFirestore
           .collection("users")
           .doc(user.uid)

@@ -4,6 +4,7 @@ class RecdatStyles {
   //Colors
   static const Color primaryColor = Color(0xFF0080ff);
   static const Color segundaryColor = Color(0xFF0080ff);
+  static const Color warningColor = Color.fromARGB(255, 204, 133, 0);
   static const Color defaultColor = Color(0xFFCCCCCC);
   static const Color backPageWhiteColor = Color.fromARGB(255, 245, 248, 255);
   static const Color blueDarkColor = Color(0xFF003366);
@@ -12,6 +13,8 @@ class RecdatStyles {
   static const Color defaultButtonColor = defaultColor;
   static const Color cursorColor = primaryColor;
   static const Color parraphLightColor = Color.fromARGB(255, 151, 151, 151);
+  static const Color activePill = Color.fromARGB(255, 16, 120, 58);
+  static const Color inactivePill = warningColor;
 
   static const String textFieldDark = 'DARK';
   static const String textFieldLight = 'LIGHT';
@@ -37,9 +40,9 @@ class RecdatStyles {
   static const double buttonFontSize = 22;
 
   //SnackbarColor
-  static const Color snackbarSuccesColor = Color(0xFF107839);
-  static const Color snackbarWarningColor = Color.fromARGB(255, 204, 133, 0);
-  static const Color snackbarErrorColor = Color(0xFFAC1212);
+  static const Color snackbarSuccesColor = Color.fromARGB(174, 16, 120, 58);
+  static const Color snackbarWarningColor = Color.fromARGB(174, 204, 133, 0);
+  static const Color snackbarErrorColor = Color.fromARGB(174, 172, 18, 18);
 
   //Sized
   static const double commonHeight = 60;

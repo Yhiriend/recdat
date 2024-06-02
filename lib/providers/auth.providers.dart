@@ -114,7 +114,6 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      userModel.createdAt = DateTime.now().millisecondsSinceEpoch.toString();
       userModel.uid = _uid;
       _user = userModel;
       await _firebaseFirestore

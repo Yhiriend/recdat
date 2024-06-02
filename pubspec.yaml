@@ -24,6 +24,7 @@ dependencies:
   uuid: ^4.4.0
   timezone: ^0.9.3
   flutter_typeahead: ^5.2.0
+  file_picker: ^8.0.3
 
 dev_dependencies:
   flutter_test:

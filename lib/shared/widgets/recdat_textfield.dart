@@ -8,9 +8,11 @@ class RecdatTextfield extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextEditingController controller;
   final TextInputType type;
+  final bool enabled;
 
   const RecdatTextfield({
     Key? key,
+    this.enabled = true,
     required this.placeholder,
     required this.controller,
     this.type = TextInputType.text,
@@ -45,14 +47,19 @@ class _RecdatTextfieldState extends State<RecdatTextfield> {
       child: Stack(
         children: [
           TextFormField(
+            enabled: widget.enabled,
             controller: _controller,
             cursorColor: RecdatStyles.cursorColor,
-            style: TextStyle(
-              color: widget.color == RecdatStyles.textFieldLight
-                  ? RecdatStyles.blueDarkColor
-                  : RecdatStyles.defaultTextColor,
-              fontSize: RecdatStyles.textFieldFontSize,
-            ),
+            style: widget.enabled
+                ? TextStyle(
+                    color: widget.color == RecdatStyles.textFieldLight
+                        ? RecdatStyles.blueDarkColor
+                        : RecdatStyles.defaultTextColor,
+                    fontSize: RecdatStyles.textFieldFontSize,
+                  )
+                : const TextStyle(
+                    color: RecdatStyles.defaultTextColor,
+                    fontSize: RecdatStyles.textFieldFontSize),
             decoration: InputDecoration(
               hintText: widget.placeholder,
               hintStyle: const TextStyle(color: RecdatStyles.hintTextColorDark),

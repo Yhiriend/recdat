@@ -51,7 +51,6 @@ class _ModalCreateTeacherWidgetState extends State<ModalCreateTeacherWidget> {
     setState(() {
       _currentAreas = tags;
     });
-    print('Current tags: $_currentAreas');
   }
 
   @override
@@ -121,13 +120,18 @@ class _ModalCreateTeacherWidgetState extends State<ModalCreateTeacherWidget> {
                       email: teacherEmailController.text.trim(),
                       rol: UserRole.teacher.value,
                       createdAt: RecdatDateUtils.currentDate(),
+                      updatedAt: RecdatDateUtils.currentDate(),
                       password: defaultPassword,
                       uid: const Uuid().v4(),
+                      isActive: true,
                       courses: _currentAreas);
                   final userUid = authProvider.user?.uid ?? "";
                   await teacherProvider
                       .addTeacher(context, teacher, userUid)
-                      .then((_) => Navigator.of(context).pop());
+                      .then((_) async {
+                    await teacherProvider.fetchUsers(context, userUid);
+                    Navigator.of(context).pop();
+                  });
                 },
                 text: "Registrar profesor",
               )

@@ -141,7 +141,6 @@ class CardDialog extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text("Cancel"),
                 style: OutlinedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
@@ -150,6 +149,7 @@ class CardDialog extends StatelessWidget {
                     color: RecdatStyles.darkTextColor,
                   ),
                 ),
+                child: const Text("Cancel"),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -167,6 +167,7 @@ class CardDialog extends StatelessWidget {
                         Provider.of<AuthProvider>(context, listen: false);
                     final bool isSignedIn = authProvider.isSignedIn;
                     if (isSignedIn) {
+                      Navigator.of(context).pop();
                       Navigator.of(context).pop();
                     } else {
                       Navigator.pushAndRemoveUntil(

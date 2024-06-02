@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/model/course.model.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
+import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/modules/user/views/edit_teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/shared/widgets/recdat_alert.dart';
 
 class CardTeacherWidget extends StatelessWidget {
   final UserModel teacher;
@@ -20,6 +22,8 @@ class CardTeacherWidget extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userUid = authProvider.user?.uid;
     final courseProvider = Provider.of<CourseProvider>(context, listen: false);
+    final teacherProvider =
+        Provider.of<TeacherProvider>(context, listen: false);
     return Card(
       color: RecdatStyles.whiteColor,
       shape: RoundedRectangleBorder(
@@ -42,7 +46,7 @@ class CardTeacherWidget extends StatelessWidget {
                     color: RecdatStyles.opaquePrimaryBackgroundColor,
                   ),
                   child: Center(
-                    child: teacher.profilePic!.isNotEmpty
+                    child: teacher.profilePic != null
                         ? Image.network(
                             teacher.profilePic!,
                             width: 58,
@@ -81,7 +85,7 @@ class CardTeacherWidget extends StatelessWidget {
                       maxLines: 1,
                     ),
                     const SizedBox(height: 10.0),
-                    _buildCourseTypeBadge(teacher.email!),
+                    _buildCourseTypeBadge(teacher.email!, teacher.isActive),
                   ],
                 ),
               ],
@@ -89,27 +93,45 @@ class CardTeacherWidget extends StatelessWidget {
             Positioned(
               top: 0,
               right: 0,
-              child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              EditTeacherWiew(teacher: teacher)));
-                },
-                icon: const Icon(
-                  Icons.edit,
-                  color: RecdatStyles.iconDefaulColor,
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: IconButton(
-                onPressed: () async {},
-                icon: const Icon(Icons.delete,
-                    color: RecdatStyles.iconDefaulColor),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  EditTeacherWiew(teacher: teacher)));
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      color: RecdatStyles.iconDefaulColor,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) => RecdatAlert(
+                                title: "Eliminar profesor",
+                                message:
+                                    "Estas seguro de querer eliminar al profesor ${teacher.name} ${teacher.surname}?",
+                                onSubmit: () async {
+                                  await teacherProvider
+                                      .deleteTeacher(context, teacher.uid!)
+                                      .then((_) => teacherProvider.fetchUsers(
+                                          context, teacher.instituteUid!));
+                                },
+                                buttonText: "Si, eliminar",
+                                alertType: "warning",
+                              ));
+                    },
+                    icon: const Icon(Icons.delete,
+                        color: RecdatStyles.iconDefaulColor),
+                  ),
+                ],
               ),
             ),
           ],
@@ -144,48 +166,13 @@ class CardTeacherWidget extends StatelessWidget {
     return grade.split(" ")[0].trim().toString();
   }
 
-  Widget _buildCourseTypeBadge(String courseType) {
+  Widget _buildCourseTypeBadge(String email, bool isActive) {
     Color badgeColor;
 
-    switch (courseType) {
-      case CourseType.informatic:
-        badgeColor = Colors.orange;
-        break;
-      case CourseType.physical:
-        badgeColor = Colors.red;
-        break;
-      case CourseType.biology:
-        badgeColor = Colors.green;
-        break;
-      case CourseType.math:
-        badgeColor = Colors.blue;
-        break;
-      case CourseType.chemistry:
-        badgeColor = Colors.purple;
-        break;
-      case CourseType.geography:
-        badgeColor = Colors.teal;
-        break;
-      case CourseType.economy:
-        badgeColor = Colors.amber;
-        break;
-      case CourseType.art:
-        badgeColor = Colors.pink;
-        break;
-      case CourseType.philosophy:
-        badgeColor = Colors.indigo;
-        break;
-      case CourseType.history:
-        badgeColor = Colors.brown;
-        break;
-      case CourseType.ethics:
-        badgeColor = Colors.grey;
-        break;
-      case CourseType.literature:
-        badgeColor = Colors.deepOrange;
-        break;
-      default:
-        badgeColor = Colors.grey;
+    if (isActive) {
+      badgeColor = Colors.teal;
+    } else {
+      badgeColor = Colors.grey;
     }
 
     return Container(
@@ -195,7 +182,7 @@ class CardTeacherWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Text(
-        courseType,
+        email,
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,

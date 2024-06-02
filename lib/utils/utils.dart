@@ -117,6 +117,11 @@ class CourseOptionsUtils {
 
   static List<String> grades() {
     return [
+      'I (1º grado)',
+      'II (2º grado)',
+      'III (3º grado)',
+      'IV (4º grado)',
+      'V (5º grado)',
       'VI (6º grado)',
       'VII (7º grado)',
       'VIII (8º grado)',

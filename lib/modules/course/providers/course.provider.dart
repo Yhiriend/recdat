@@ -31,7 +31,6 @@ class CourseProvider with ChangeNotifier {
       _courseList = snapshot.docs
           .map((doc) => CourseModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
-      showSnackBar(context, "Cursos actualizados", SnackBarType.success);
     } catch (e) {
       showSnackBar(
           context, "Ups! no pudimos cargar los cursos", SnackBarType.error);

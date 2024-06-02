@@ -29,7 +29,6 @@ class _TeachersViewState extends State<TeachersView> {
     final courseProvider = Provider.of<CourseProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userUid = authProvider.user?.uid;
-    print("USER UUID: $userUid");
     await courseProvider.fetchCourses(context, userUid!);
   }
 
@@ -98,17 +97,32 @@ class _TeachersViewState extends State<TeachersView> {
           ),
         ),
         floatingActionButton: SpeedDial(
-          icon: Icons.add,
+          animatedIcon: AnimatedIcons.view_list,
           backgroundColor: RecdatStyles.blueDarkColor,
           foregroundColor: RecdatStyles.defaultTextColor,
-          onPress: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return ModalCreateTeacherWidget();
+          overlayColor: RecdatStyles.blueDarkColor,
+          overlayOpacity: 0.4,
+          spacing: 8,
+          children: [
+            SpeedDialChild(
+              foregroundColor: RecdatStyles.blueDarkColor,
+              child: const Icon(Icons.person_add_alt_rounded),
+              label: "Agregar profesor",
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ModalCreateTeacherWidget();
+                  },
+                );
               },
-            );
-          },
+            ),
+            SpeedDialChild(
+              foregroundColor: RecdatStyles.blueDarkColor,
+              child: const Icon(Icons.assignment_add),
+              label: "Asignacion de horarios",
+            )
+          ],
         ),
       ),
     );

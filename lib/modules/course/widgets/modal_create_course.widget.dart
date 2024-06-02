@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
@@ -76,12 +75,12 @@ class ModalCreateCourseWidget extends StatelessWidget {
                   final courseProvider =
                       Provider.of<CourseProvider>(context, listen: false);
                   final course = CourseModel(
-                      name: courseNameController.text.trim().toString(),
+                      name: courseNameController.text.trim().toUpperCase(),
                       description:
                           courseDescriptionController.text.trim().toString(),
                       grade: courseGradeController.text.trim().toString(),
                       type: courseAreaController.text.trim().toString(),
-                      createdAt: "");
+                      createdAt: RecdatDateUtils.currentDate());
                   final userUid = authProvider.user?.uid ?? "";
                   await courseProvider.addCourse(context, course, userUid);
                   await courseProvider

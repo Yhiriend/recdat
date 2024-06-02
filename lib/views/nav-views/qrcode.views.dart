@@ -75,7 +75,10 @@ class _QrcodeViewState extends State<QrcodeView> {
                   Container(
                     child: lastQRData.isEmpty
                         ? Image.asset('assets/images/recdat_blue.png')
-                        : QRFrame(qrData: lastQRData),
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: QRFrame(qrData: lastQRData),
+                          ),
                   )
                 ]),
                 Positioned(

@@ -6,6 +6,7 @@ import 'package:recdat/modules/course/widgets/card_courses.widget.dart';
 import 'package:recdat/modules/course/widgets/modal_create_course.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/utils/utils.dart';
 
 class CoursesView extends StatefulWidget {
   const CoursesView({super.key});
@@ -28,7 +29,9 @@ class _CoursesViewState extends State<CoursesView> {
     final courseProvider = Provider.of<CourseProvider>(context, listen: false);
     final userUid = authProvider.user?.uid;
     if (userUid != null) {
-      await courseProvider.fetchCourses(context, userUid);
+      await courseProvider.fetchCourses(context, userUid).then((_) {
+        showSnackBar(context, "Cursos actualizados", SnackBarType.success);
+      });
     }
   }
 
