@@ -1,13 +1,14 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/utils/utils.dart';
 
 class TeacherProvider with ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   List<UserModel> _userList = [];
   bool _isLoading = false;
@@ -125,6 +126,60 @@ class TeacherProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<String> uploadFile(
+      BuildContext context, File file, String userId) async {
+    try {
+      String fileName = 'profile_pictures/$userId/profilepic';
+      UploadTask uploadTask =
+          FirebaseStorage.instance.ref().child(fileName).putFile(file);
+
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      showSnackBar(context, "Error al subir la imagen", SnackBarType.error);
+      return "";
+    }
+  }
+
+  Future<String> uploadPDFFile(
+      BuildContext context, File file, String userId) async {
+    try {
+      // Nombre del archivo en el almacenamiento de Firebase
+      String fileName = 'teacher_schedules/$userId/horario.pdf';
+
+      // Subir el archivo al almacenamiento de Firebase
+      UploadTask uploadTask =
+          FirebaseStorage.instance.ref().child(fileName).putFile(file);
+
+      // Esperar a que la carga se complete y obtener la URL de descarga
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      showSnackBar(context, "Archivo subido con exito!", SnackBarType.success);
+      return downloadUrl;
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante la carga
+      showSnackBar(
+          context, "Error al subir el archivo PDF", SnackBarType.error);
+      return "";
+    }
+  }
+
+  Future<File?> getTeacherSchedule(
+      BuildContext context, String teacherUid) async {
+    try {
+      String pdfPath = 'teacher_schedules/$teacherUid/horario.pdf';
+      File pdfFile = File('${(await Directory.systemTemp).path}/horario.pdf');
+
+      await FirebaseStorage.instance.ref(pdfPath).writeToFile(pdfFile);
+
+      return pdfFile;
+    } catch (e) {
+      showSnackBar(context, "Error al cargar el horario", SnackBarType.error);
+      return null;
     }
   }
 }

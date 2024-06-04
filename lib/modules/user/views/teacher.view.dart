@@ -7,6 +7,7 @@ import 'package:recdat/modules/user/widgets/card_teacher.widget.dart';
 import 'package:recdat/modules/user/widgets/modal_create_teacher.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/utils/routes.dart';
 
 class TeachersView extends StatefulWidget {
   const TeachersView({super.key});
@@ -118,10 +119,12 @@ class _TeachersViewState extends State<TeachersView> {
               },
             ),
             SpeedDialChild(
-              foregroundColor: RecdatStyles.blueDarkColor,
-              child: const Icon(Icons.assignment_add),
-              label: "Asignacion de horarios",
-            )
+                foregroundColor: RecdatStyles.blueDarkColor,
+                child: const Icon(Icons.assignment_add),
+                label: "Asignacion de horarios",
+                onTap: () {
+                  Navigator.pushNamed(context, RecdatRoutes.scheduleAssigment);
+                })
           ],
         ),
       ),

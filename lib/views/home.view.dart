@@ -9,6 +9,7 @@ import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_alert.dart';
 import 'package:recdat/shared/widgets/recdat_navbar.dart';
 import 'package:recdat/views/nav-views/qrcode.views.dart';
+import 'package:recdat/views/settings.view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -36,7 +37,7 @@ class _HomeViewState extends State<HomeView> {
         appBar: AppBar(
           backgroundColor: RecdatStyles.blueDarkColor,
           title: Text(
-            authProvider.user?.name ?? "",
+            authProvider.user?.rol ?? "",
             style: const TextStyle(color: RecdatStyles.defaultTextColor),
           ),
           actions: [
@@ -86,7 +87,7 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                   Container(
-                    color: Colors.yellow,
+                    color: RecdatStyles.whiteColor,
                     child: const Center(
                       child: Text('Settings'),
                     ),
@@ -115,10 +116,8 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                   Container(
-                    color: Colors.yellow,
-                    child: const Center(
-                      child: Text('Settings'),
-                    ),
+                    color: RecdatStyles.whiteColor,
+                    child: SettingsView(),
                   ),
                 ],
               ),

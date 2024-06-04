@@ -1,15 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
+import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_multiselect.dart';
 import 'package:recdat/shared/widgets/recdat_tagging.widget.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
 import 'package:recdat/utils/utils.dart';
+import 'package:recdat/views/pdf_viewer.view.dart';
 
 class EditTeacherWiew extends StatefulWidget {
   final UserModel teacher;
@@ -87,9 +91,26 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
     await teacherProvider.updateTeacher(context, teacherUpdate);
   }
 
+  Future<File?> _getSchedulePDF() async {
+    final teacherProvider =
+        Provider.of<TeacherProvider>(context, listen: false);
+    return await teacherProvider.getTeacherSchedule(context, _teacher.uid!);
+  }
+
+  Future<void> _openSchedule() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PdfViewerView(pdfFuture: _getSchedulePDF()),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _setTeacherValues();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final userRol = authProvider.user!.rol;
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -107,26 +128,29 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
               ),
               Stack(
                 children: [
-                  Container(
-                    width: 100.0,
-                    height: 100.0,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: RecdatStyles.opaquePrimaryBackgroundColor,
-                    ),
-                    child: Center(
-                      child: _teacher.profilePic != null
-                          ? Image.network(
-                              _teacher.profilePic!,
-                              width: 98,
-                              height: 98,
-                              fit: BoxFit.cover,
-                            )
-                          : const Icon(
-                              Icons.face_rounded,
-                              size: 98,
-                              color: RecdatStyles.opaquePrimaryForegroundColor,
-                            ),
+                  ClipOval(
+                    child: Container(
+                      width: 100.0,
+                      height: 100.0,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: RecdatStyles.opaquePrimaryBackgroundColor,
+                      ),
+                      child: Center(
+                        child: _teacher.profilePic != null
+                            ? Image.network(
+                                _teacher.profilePic!,
+                                width: 98,
+                                height: 98,
+                                fit: BoxFit.cover,
+                              )
+                            : const Icon(
+                                Icons.face_rounded,
+                                size: 98,
+                                color:
+                                    RecdatStyles.opaquePrimaryForegroundColor,
+                              ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -158,7 +182,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
                 controller: widget.teacherNameController,
                 icon: Icons.person,
                 color: RecdatStyles.textFieldLight,
-                enabled: false,
+                enabled: userRol == UserRole.admin.value,
               ),
               const SizedBox(
                 height: 20,
@@ -168,6 +192,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
                 controller: widget.teacherSurnameController,
                 icon: Icons.person,
                 color: RecdatStyles.textFieldLight,
+                enabled: userRol == UserRole.admin.value,
               ),
               const SizedBox(
                 height: 20,
@@ -177,6 +202,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
                 controller: widget.teacherSecondSurnameController,
                 icon: Icons.person,
                 color: RecdatStyles.textFieldLight,
+                enabled: userRol == UserRole.admin.value,
               ),
               const SizedBox(
                 height: 20,
@@ -187,6 +213,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
                 type: TextInputType.number,
                 icon: Icons.phone,
                 color: RecdatStyles.textFieldLight,
+                enabled: userRol == UserRole.teacher.value,
               ),
               const SizedBox(
                 height: 20,
@@ -196,6 +223,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
                 controller: widget.teacherEmailController,
                 icon: Icons.mail,
                 color: RecdatStyles.textFieldLight,
+                enabled: userRol == UserRole.teacher.value,
               ),
               const SizedBox(
                 height: 20,
@@ -223,8 +251,8 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
                 height: 20,
               ),
               RecdatButtonAsync(
-                onPressed: () async => {},
-                text: "Asignar horario",
+                onPressed: () async => _openSchedule(),
+                text: "Ver horario",
               ),
               const SizedBox(
                 height: 20,

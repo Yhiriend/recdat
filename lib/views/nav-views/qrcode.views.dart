@@ -44,7 +44,6 @@ class _QrcodeViewState extends State<QrcodeView> {
         });
         showSnackBar(context, "QR actualizado 😉", SnackBarType.success);
       }
-      print("STEP 2");
     } catch (e) {
       showSnackBar(context, "Ups! vuelve a intentarlo 😥", SnackBarType.error);
     }

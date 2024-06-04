@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/shared/widgets/recdat_dropdown.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/standalone.dart' as tz;
 
@@ -98,7 +99,7 @@ class RecdatDateUtils {
 class CourseOptionsUtils {
   CourseOptionsUtils._();
 
-  static List<String> areas() {
+  static List<DropdownOption> areas() {
     return [
       'INFORMATICA',
       'FISICA',
@@ -112,10 +113,10 @@ class CourseOptionsUtils {
       'ARTISTICA',
       'HISTORIA',
       'LITERATURA'
-    ];
+    ].map((value) => DropdownOption(value: value, label: value)).toList();
   }
 
-  static List<String> grades() {
+  static List<DropdownOption> grades() {
     return [
       'I (1º grado)',
       'II (2º grado)',
@@ -128,6 +129,6 @@ class CourseOptionsUtils {
       'IX (9º grado)',
       'X (10º grado)',
       'XI (11º grado)',
-    ];
+    ].map((value) => DropdownOption(value: value, label: value)).toList();
   }
 }

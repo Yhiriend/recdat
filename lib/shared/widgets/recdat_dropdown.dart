@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/utils/iterable_extension.dart';
+
+class DropdownOption {
+  final String value;
+  final String label;
+
+  DropdownOption({required this.value, required this.label});
+}
 
 class RecdatDropdown extends StatefulWidget {
   final String placeholder;
-  final List<String> options;
+  final List<DropdownOption> options;
   final TextEditingController controller;
   final IconData? icon;
   final String? color;
-  final String? Function(String?)? validator;
+  final void Function(DropdownOption)? onChange;
 
   const RecdatDropdown({
     Key? key,
@@ -15,7 +23,7 @@ class RecdatDropdown extends StatefulWidget {
     required this.controller,
     required this.options,
     this.icon,
-    this.validator,
+    this.onChange,
     this.color = RecdatStyles.textFieldDark,
   }) : super(key: key);
 
@@ -24,15 +32,15 @@ class RecdatDropdown extends StatefulWidget {
 }
 
 class _RecdatDropdownState extends State<RecdatDropdown> {
-  String? _selectedOption;
+  DropdownOption? _selectedOption;
   bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedOption = widget.options.contains(widget.controller.text)
-        ? widget.controller.text
-        : null;
+    _selectedOption = widget.options.firstWhereOrNull(
+      (option) => option.value == widget.controller.text,
+    );
   }
 
   @override
@@ -45,18 +53,21 @@ class _RecdatDropdownState extends State<RecdatDropdown> {
       height: height,
       child: Stack(
         children: [
-          DropdownButtonFormField<String>(
+          DropdownButtonFormField<DropdownOption>(
             value: _selectedOption,
             items: widget.options
-                .map((option) => DropdownMenuItem<String>(
+                .map((option) => DropdownMenuItem<DropdownOption>(
                       value: option,
-                      child: Text(option),
+                      child: Text(option.label),
                     ))
                 .toList(),
             onChanged: (newValue) {
               setState(() {
                 _selectedOption = newValue;
-                widget.controller.text = newValue!;
+                widget.controller.text = newValue!.value;
+                if (widget.onChange != null) {
+                  widget.onChange!(newValue);
+                }
               });
             },
             decoration: InputDecoration(
@@ -78,13 +89,6 @@ class _RecdatDropdownState extends State<RecdatDropdown> {
                     )
                   : null,
             ),
-            validator: (value) {
-              setState(() {
-                _hasError = widget.validator != null &&
-                    widget.validator!(value) != null;
-              });
-              return widget.validator != null ? widget.validator!(value) : null;
-            },
           ),
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/course/views/courses.view.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/modules/user/views/create_teacher.view.dart';
+import 'package:recdat/modules/user/views/schedule_assigment.view.dart';
 import 'package:recdat/modules/user/views/teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/utils/routes.dart';
@@ -17,10 +18,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: const FirebaseOptions(
-          apiKey: "AIzaSyDUONtNp_DQHaV4l0Dp_IHBtkVSuTNaiLw",
-          appId: "1:563746096021:android:1eccd6ef91897cd1302c9c",
-          messagingSenderId: "",
-          projectId: "recdat-app"));
+    apiKey: "AIzaSyDUONtNp_DQHaV4l0Dp_IHBtkVSuTNaiLw",
+    appId: "1:563746096021:android:1eccd6ef91897cd1302c9c",
+    messagingSenderId: "",
+    projectId: "recdat-app",
+    storageBucket: "recdat-app.appspot.com",
+  ));
   //await FirebaseAppCheck.instance.activate(
   //    webProvider: ReCaptchaV3Provider(siteKey),
   //    androidProvider: AndroidProvider.debug,
@@ -64,10 +67,13 @@ class MainApp extends StatelessWidget {
                 builder = (BuildContext context) => const CreateTeacherView();
                 break;
               case RecdatRoutes.courses:
-                builder = (BuildContext context) => CoursesView();
+                builder = (BuildContext context) => const CoursesView();
                 break;
               case RecdatRoutes.teachers:
-                builder = (BuildContext context) => TeachersView();
+                builder = (BuildContext context) => const TeachersView();
+                break;
+              case RecdatRoutes.scheduleAssigment:
+                builder = (BuildContext context) => ScheduleAssigmentView();
                 break;
               default:
                 throw Exception('Invalid route: ${settings.name}');

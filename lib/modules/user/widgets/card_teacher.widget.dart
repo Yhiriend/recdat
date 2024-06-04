@@ -38,26 +38,28 @@ class CardTeacherWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Container(
-                  width: 60.0,
-                  height: 60.0,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: RecdatStyles.opaquePrimaryBackgroundColor,
-                  ),
-                  child: Center(
-                    child: teacher.profilePic != null
-                        ? Image.network(
-                            teacher.profilePic!,
-                            width: 58,
-                            height: 58,
-                            fit: BoxFit.cover,
-                          )
-                        : const Icon(
-                            Icons.face_rounded,
-                            size: 58,
-                            color: RecdatStyles.opaquePrimaryForegroundColor,
-                          ),
+                ClipOval(
+                  child: Container(
+                    width: 60.0,
+                    height: 60.0,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: RecdatStyles.opaquePrimaryBackgroundColor,
+                    ),
+                    child: Center(
+                      child: teacher.profilePic != null
+                          ? Image.network(
+                              teacher.profilePic!,
+                              width: 58,
+                              height: 58,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(
+                              Icons.face_rounded,
+                              size: 58,
+                              color: RecdatStyles.opaquePrimaryForegroundColor,
+                            ),
+                    ),
                   ),
                 ),
                 const SizedBox(

@@ -117,7 +117,7 @@ class _ModalCreateTeacherWidgetState extends State<ModalCreateTeacherWidget> {
                       name: teacherNameController.text.trim().toUpperCase(),
                       surname:
                           teacherSurnameController.text.trim().toUpperCase(),
-                      email: teacherEmailController.text.trim(),
+                      email: teacherEmailController.text.trim().toLowerCase(),
                       rol: UserRole.teacher.value,
                       createdAt: RecdatDateUtils.currentDate(),
                       updatedAt: RecdatDateUtils.currentDate(),
