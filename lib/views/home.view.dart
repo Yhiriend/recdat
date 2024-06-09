@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recdat/modules/attendance/views/attendance.view.dart';
 import 'package:recdat/modules/qr/qr_frame.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/providers/auth.providers.dart';
@@ -67,7 +68,7 @@ class _HomeViewState extends State<HomeView> {
                 index: _selectedIndex,
                 children: [
                   Container(
-                    color: RecdatStyles.defaultColor,
+                    color: RecdatStyles.whiteColor,
                     child: const Center(
                       child: QrcodeView(),
                     ),
@@ -98,16 +99,14 @@ class _HomeViewState extends State<HomeView> {
                 index: _selectedIndex,
                 children: [
                   Container(
-                    color: RecdatStyles.defaultColor,
+                    color: RecdatStyles.whiteColor,
                     child: const Center(
                       child: QrcodeView(),
                     ),
                   ),
                   Container(
-                    color: Colors.pink,
-                    child: const Center(
-                      child: Text('Attendance'),
-                    ),
+                    color: RecdatStyles.whiteColor,
+                    child: const AttendanceView(),
                   ),
                   Container(
                     color: Colors.blue,
