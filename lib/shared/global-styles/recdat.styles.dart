@@ -22,7 +22,13 @@ class RecdatStyles {
   static const Color opaquePrimaryBackgroundColor =
       Color.fromARGB(78, 0, 128, 255);
 
+  static const Color opaqueGrayBackgroundColor =
+      Color.fromARGB(78, 122, 122, 122);
+
   static const Color opaquePrimaryForegroundColor = Color(0xFF0080ff);
+
+  static const Color opaqueGrayForegroundColor =
+      Color.fromARGB(255, 128, 128, 128);
 
   static const Color textFieldColorBlue = Color.fromARGB(47, 0, 128, 255);
   static const Color textFieldColorGray = Color.fromARGB(131, 216, 216, 216);

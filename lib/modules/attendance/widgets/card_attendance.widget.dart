@@ -1,18 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:recdat/modules/user/model/user.model.dart';
-import 'package:recdat/modules/user/views/edit_teacher.view.dart';
+import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 
-class CardAttendanceWidget extends StatelessWidget {
-  final UserModel teacher;
+class CardAttendanceWidget extends StatefulWidget {
+  final bool isAttendance;
+  final Attendance attendance;
+  const CardAttendanceWidget(
+      {Key? key, required this.isAttendance, required this.attendance})
+      : super(key: key);
 
-  const CardAttendanceWidget({
-    required this.teacher,
-    Key? key,
-  }) : super(key: key);
+  @override
+  State<CardAttendanceWidget> createState() => _CardAttendanceWidgetState();
+}
+
+class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
+  bool _canEdit = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _canEdit = true;
+    isChangeEnabled();
+  }
+
+  void isChangeEnabled() {
+    _canEdit = true;
+    Future.delayed(const Duration(minutes: 1), () {
+      setState(() {
+        _canEdit = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final _isAttendance = widget.isAttendance;
+    Attendance _attendance = widget.attendance;
     return Card(
       color: RecdatStyles.whiteColor,
       shape: RoundedRectangleBorder(
@@ -31,37 +54,45 @@ class CardAttendanceWidget extends StatelessWidget {
                   child: Container(
                     width: 60.0,
                     height: 60.0,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: RecdatStyles.opaquePrimaryBackgroundColor,
+                      color: _isAttendance
+                          ? RecdatStyles.opaquePrimaryBackgroundColor
+                          : RecdatStyles.opaqueGrayBackgroundColor,
                     ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.check,
-                        size: 58,
-                        color: RecdatStyles.opaquePrimaryForegroundColor,
-                      ),
+                    child: Center(
+                      child: _isAttendance
+                          ? const Icon(
+                              Icons.check,
+                              size: 58,
+                              color: RecdatStyles.opaquePrimaryForegroundColor,
+                            )
+                          : const Icon(
+                              Icons.error_outline,
+                              size: 58,
+                              color: RecdatStyles.opaqueGrayForegroundColor,
+                            ),
                     ),
                   ),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Inasistencia",
-                      style: TextStyle(
+                      _attendance.title,
+                      style: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.normal,
                         color: RecdatStyles.darkTextColor,
                       ),
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     Text(
-                      "Esta es la descripcion para una inasistencia, por ejemplo puede ser que haya sido por cuestiones de cita medica o algo parecido.",
-                      style: TextStyle(
+                      _attendance.createdAt,
+                      style: const TextStyle(
                         fontSize: 16.0,
                         color: RecdatStyles.parraphLightColor,
                       ),
@@ -72,52 +103,33 @@ class CardAttendanceWidget extends StatelessWidget {
                 ),
               ],
             ),
-            Positioned(
-              top: 0,
-              right: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  EditTeacherWiew(teacher: teacher)));
-                    },
-                    icon: const Icon(
-                      Icons.edit,
-                      color: RecdatStyles.iconDefaulColor,
+            if (_canEdit)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.edit,
+                        color: RecdatStyles.iconDefaulColor,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () async {},
-                    icon: const Icon(Icons.delete,
-                        color: RecdatStyles.iconDefaulColor),
-                  ),
-                ],
+                    IconButton(
+                      onPressed: () async {},
+                      icon: const Icon(Icons.delete,
+                          color: RecdatStyles.iconDefaulColor),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),
     );
-  }
-
-  String _getTotalCourses(List<dynamic>? courses) {
-    if (courses != null) {
-      int total = courses.length;
-      if (total == 0) {
-        return "sin cursos";
-      } else if (total == 1) {
-        return "+1 curso";
-      } else {
-        return "+$total cursos";
-      }
-    }
-    return "sin cursos";
   }
 
   String _truncateText(String text, int maxWords) {
@@ -126,10 +138,6 @@ class CardAttendanceWidget extends StatelessWidget {
       return text;
     }
     return '${words.sublist(0, maxWords).join(' ')}...';
-  }
-
-  String _splitText(String grade) {
-    return grade.split(" ")[0].trim().toString();
   }
 
   Widget _buildCourseTypeBadge(String email, bool isActive) {

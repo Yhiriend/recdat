@@ -31,29 +31,15 @@ class _ModalCreateAttendanceWidgetState
   final TextEditingController attendanceDescriptionController =
       TextEditingController();
 
-  final TextEditingController teacherSurnameController =
-      TextEditingController();
-
   final TextEditingController attendanceTitleController =
       TextEditingController();
 
-  final TextEditingController teacherCoursesAsignedController =
-      TextEditingController();
-
-  final RecdatMultiselectController multiselectController =
-      RecdatMultiselectController();
-
-  late List<CourseModel> _currentAreas = [];
-  late List<CourseModel> _suggestionAreas = [];
   File? _selectedFile;
   String? _fileName;
 
   @override
   void initState() {
     super.initState();
-    final courseProvider = Provider.of<CourseProvider>(context, listen: false);
-    _suggestionAreas = courseProvider.courseList;
-    _currentAreas = [];
   }
 
   Future<void> _openFilePicker() async {
@@ -74,12 +60,6 @@ class _ModalCreateAttendanceWidgetState
   _onFileChange(File file) {
     setState(() {
       _selectedFile = file;
-    });
-  }
-
-  void _handleTagChange(List<CourseModel> tags) {
-    setState(() {
-      _currentAreas = tags;
     });
   }
 
@@ -155,7 +135,8 @@ class _ModalCreateAttendanceWidgetState
                   }
                   await teacherProvider
                       .addAttendance(context, userUid, attendance)
-                      .then((_) {
+                      .then((_) async {
+                    await authProvider.syncUserDataByUid(context, userUid);
                     Navigator.of(context).pop();
                   });
                 },

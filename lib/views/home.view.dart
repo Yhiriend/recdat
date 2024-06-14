@@ -44,6 +44,15 @@ class _HomeViewState extends State<HomeView> {
           actions: [
             IconButton(
                 onPressed: () async {
+                  await authProvider.syncUserDataByUid(
+                      context, authProvider.uid);
+                },
+                icon: const Icon(
+                  Icons.sync,
+                  color: RecdatStyles.defaultTextColor,
+                )),
+            IconButton(
+                onPressed: () async {
                   showDialog(
                       context: context,
                       builder: (context) => RecdatAlert(

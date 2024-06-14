@@ -244,4 +244,21 @@ class AuthProvider with ChangeNotifier {
       showSnackBar(context, "Error al cerrar sesión: $e", SnackBarType.error);
     }
   }
+
+  Future<void> syncUserDataByUid(BuildContext context, String uid) async {
+    try {
+      DocumentSnapshot doc =
+          await _firebaseFirestore.collection("users").doc(uid).get();
+      if (doc.exists) {
+        _user =
+            user_model.UserModel.fromMap(doc.data() as Map<String, dynamic>);
+        await saveUserDataToSP();
+        showSnackBar(context, "Usuario sincronizado", SnackBarType.success);
+        notifyListeners();
+      }
+    } catch (e) {
+      showSnackBar(
+          context, "Ups! no fue posible sincronizar", SnackBarType.error);
+    }
+  }
 }
