@@ -1,3 +1,4 @@
+import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/modules/course/course.model.dart';
 
 class UserRole {
@@ -23,6 +24,7 @@ class UserModel {
   String? profilePic;
   bool isActive;
   List<CourseModel>? courses;
+  List<Attendance>? attendances;
   String password;
 
   UserModel(
@@ -38,6 +40,7 @@ class UserModel {
       this.updatedAt,
       this.profilePic,
       this.courses,
+      this.attendances,
       required this.isActive,
       required this.password});
 
@@ -59,6 +62,10 @@ class UserModel {
             ? List<CourseModel>.from((map['courses'] as List)
                 .map((item) => CourseModel.fromMap(item)))
             : [],
+        attendances: map['attendances'] != null
+            ? List<Attendance>.from((map['attendances'] as List)
+                .map((item) => Attendance.fromMap(item)))
+            : [],
         password: map['password'] ?? '');
   }
 
@@ -77,6 +84,8 @@ class UserModel {
       "profilePic": profilePic,
       "isActive": isActive,
       "courses": courses?.map((course) => course.toMap()).toList(),
+      'attendances':
+          attendances?.map((attendance) => attendance.toMap()).toList(),
       "password": password,
     };
   }

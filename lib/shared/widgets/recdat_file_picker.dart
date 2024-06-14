@@ -10,9 +10,13 @@ class RecdatFilePicker extends StatefulWidget {
   final FileType fileType;
   final List<String>? allowedExtensions;
   final Function(File?) onChanged;
+  final IconData? defaultIcon;
+  final String? visualiceText;
 
   const RecdatFilePicker({
     Key? key,
+    this.visualiceText,
+    this.defaultIcon,
     required this.fileType,
     this.allowedExtensions,
     required this.onChanged,
@@ -25,6 +29,8 @@ class RecdatFilePicker extends StatefulWidget {
 class _RecdatFilePickerState extends State<RecdatFilePicker> {
   File? _selectedFile;
   String? _fileName;
+  IconData? _defaultIcon;
+  String? _visualiceText;
 
   Future<void> _openFilePicker() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -51,8 +57,18 @@ class _RecdatFilePickerState extends State<RecdatFilePicker> {
     );
   }
 
+  void _removeFile() {
+    setState(() {
+      _selectedFile = null;
+      _fileName = null;
+    });
+    widget.onChanged(null);
+  }
+
   @override
   Widget build(BuildContext context) {
+    _defaultIcon = widget.defaultIcon;
+    _visualiceText = widget.visualiceText;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -61,25 +77,34 @@ class _RecdatFilePickerState extends State<RecdatFilePicker> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Nombre del archivo: $_fileName',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _truncateText(_fileName ?? "", 30),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: _removeFile,
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               _buildPreview(),
             ],
           ),
         if (_selectedFile == null)
-          const Center(
+          Center(
             child: Icon(
-              Icons.date_range,
+              _defaultIcon ?? Icons.date_range,
               color: RecdatStyles.defaultTextColor,
               size: 200,
             ),
           ),
         const SizedBox(height: 20),
         if (_fileName != null)
-          const Text(
+          Text(_visualiceText ??
               "Para visualizar el contenido presiona sobre el icono PDF"),
         const SizedBox(
           height: 10,
@@ -93,6 +118,13 @@ class _RecdatFilePickerState extends State<RecdatFilePicker> {
         ),
       ],
     );
+  }
+
+  String _truncateText(String text, int maxLetters) {
+    if (text.length <= maxLetters) {
+      return text;
+    }
+    return '${text.substring(0, maxLetters)}...';
   }
 
   String getFileExtension(String fileName) {

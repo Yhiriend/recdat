@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/utils/utils.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 class TeacherProvider with ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -180,6 +183,137 @@ class TeacherProvider with ChangeNotifier {
     } catch (e) {
       showSnackBar(context, "Error al cargar el horario", SnackBarType.error);
       return null;
+    }
+  }
+
+  Future<String> uploadAttendanceFile(
+      BuildContext context, File file, String userId) async {
+    try {
+      String fileUUID = const Uuid().v4();
+      // Nombre del archivo en el almacenamiento de Firebase
+      String fileName = 'attendances/$userId/$fileUUID';
+
+      // Subir el archivo al almacenamiento de Firebase
+      UploadTask uploadTask =
+          FirebaseStorage.instance.ref().child(fileName).putFile(file);
+
+      // Esperar a que la carga se complete y obtener la URL de descarga
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      showSnackBar(context, "Archivo subido con éxito!", SnackBarType.success);
+      return downloadUrl;
+    } catch (e) {
+      // Manejar cualquier error que pueda ocurrir durante la carga
+      showSnackBar(context, "Error al subir el archivo", SnackBarType.error);
+      return "";
+    }
+  }
+
+  Future<void> addAttendance(
+      BuildContext context, String userId, Attendance attendance) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      DocumentReference userRef =
+          _firebaseFirestore.collection("users").doc(userId);
+
+      // Obtener el documento del usuario actual
+      DocumentSnapshot userSnapshot = await userRef.get();
+      if (userSnapshot.exists) {
+        UserModel user =
+            UserModel.fromMap(userSnapshot.data() as Map<String, dynamic>);
+
+        // Agregar el nuevo Attendance
+        user.attendances?.add(attendance);
+
+        // Actualizar el documento del usuario
+        await userRef.update({
+          'attendances': user.attendances?.map((att) => att.toMap()).toList()
+        });
+
+        // Actualizar la lista local
+        int userIndex = _userList.indexWhere((user) => user.uid == userId);
+        if (userIndex != -1) {
+          _userList[userIndex] = user;
+        }
+
+        showSnackBar(
+            context, "Attendance agregado exitosamente!", SnackBarType.success);
+      } else {
+        showSnackBar(context, "Usuario no encontrado", SnackBarType.error);
+      }
+    } catch (e) {
+      showSnackBar(
+          context, "Ups! no se pudo agregar el attendance", SnackBarType.error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateAttendance(
+      BuildContext context, String userId, Attendance attendance) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      DocumentReference attendanceRef = _firebaseFirestore
+          .collection("users")
+          .doc(userId)
+          .collection("attendances")
+          .doc(attendance.uuid);
+
+      await attendanceRef.update(attendance.toMap());
+
+      int userIndex = _userList.indexWhere((user) => user.uid == userId);
+      if (userIndex != -1) {
+        int attendanceIndex = _userList[userIndex]
+                .attendances
+                ?.indexWhere((a) => a.uuid == attendance.uuid) ??
+            -1;
+        if (attendanceIndex != -1) {
+          _userList[userIndex].attendances?[attendanceIndex] = attendance;
+        }
+      }
+
+      showSnackBar(context, "Attendance actualizado exitosamente!",
+          SnackBarType.success);
+    } catch (e) {
+      showSnackBar(context, "Ups! no se pudo actualizar el attendance",
+          SnackBarType.error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteAttendance(
+      BuildContext context, String userId, String attendanceId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      DocumentReference attendanceRef = _firebaseFirestore
+          .collection("users")
+          .doc(userId)
+          .collection("attendances")
+          .doc(attendanceId);
+
+      await attendanceRef.delete();
+
+      int userIndex = _userList.indexWhere((user) => user.uid == userId);
+      if (userIndex != -1) {
+        _userList[userIndex]
+            .attendances
+            ?.removeWhere((attendance) => attendance.uuid == attendanceId);
+      }
+
+      showSnackBar(
+          context, "Attendance eliminado exitosamente!", SnackBarType.warning);
+    } catch (e) {
+      showSnackBar(context, "Ups! no se pudo eliminar el attendance",
+          SnackBarType.error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 }
