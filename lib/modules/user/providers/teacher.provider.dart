@@ -8,7 +8,6 @@ import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 
 class TeacherProvider with ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -251,32 +250,43 @@ class TeacherProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateAttendance(
-      BuildContext context, String userId, Attendance attendance) async {
+  Future<void> updateAttendanceCanEdit(
+      BuildContext context, String userUid, String attendanceUid) async {
     _isLoading = true;
     notifyListeners();
+
     try {
-      DocumentReference attendanceRef = _firebaseFirestore
-          .collection("users")
-          .doc(userId)
-          .collection("attendances")
-          .doc(attendance.uuid);
+      DocumentReference userRef =
+          _firebaseFirestore.collection("users").doc(userUid);
 
-      await attendanceRef.update(attendance.toMap());
+      DocumentSnapshot userSnapshot = await userRef.get();
+      if (userSnapshot.exists) {
+        UserModel user =
+            UserModel.fromMap(userSnapshot.data() as Map<String, dynamic>);
 
-      int userIndex = _userList.indexWhere((user) => user.uid == userId);
-      if (userIndex != -1) {
-        int attendanceIndex = _userList[userIndex]
-                .attendances
-                ?.indexWhere((a) => a.uuid == attendance.uuid) ??
-            -1;
+        int attendanceIndex =
+            user.attendances?.indexWhere((att) => att.uuid == attendanceUid) ??
+                -1;
         if (attendanceIndex != -1) {
-          _userList[userIndex].attendances?[attendanceIndex] = attendance;
-        }
-      }
+          user.attendances![attendanceIndex].canEdit = false;
 
-      showSnackBar(context, "Attendance actualizado exitosamente!",
-          SnackBarType.success);
+          await userRef.update({
+            'attendances': user.attendances?.map((att) => att.toMap()).toList()
+          });
+
+          int userIndex = _userList.indexWhere((user) => user.uid == userUid);
+          if (userIndex != -1) {
+            _userList[userIndex] = user;
+          }
+
+          showSnackBar(context, "Attendance actualizado exitosamente!",
+              SnackBarType.success);
+        } else {
+          showSnackBar(context, "Attendance no encontrado", SnackBarType.error);
+        }
+      } else {
+        showSnackBar(context, "Usuario no encontrado", SnackBarType.error);
+      }
     } catch (e) {
       showSnackBar(context, "Ups! no se pudo actualizar el attendance",
           SnackBarType.error);
@@ -287,27 +297,32 @@ class TeacherProvider with ChangeNotifier {
   }
 
   Future<void> deleteAttendance(
-      BuildContext context, String userId, String attendanceId) async {
+      {required BuildContext context,
+      required String userUid,
+      required String attendanceUid}) async {
     _isLoading = true;
     notifyListeners();
+
     try {
-      DocumentReference attendanceRef = _firebaseFirestore
-          .collection("users")
-          .doc(userId)
-          .collection("attendances")
-          .doc(attendanceId);
+      DocumentReference userRef =
+          _firebaseFirestore.collection("users").doc(userUid);
 
-      await attendanceRef.delete();
+      DocumentSnapshot userSnapshot = await userRef.get();
+      if (userSnapshot.exists) {
+        UserModel user =
+            UserModel.fromMap(userSnapshot.data() as Map<String, dynamic>);
 
-      int userIndex = _userList.indexWhere((user) => user.uid == userId);
-      if (userIndex != -1) {
-        _userList[userIndex]
-            .attendances
-            ?.removeWhere((attendance) => attendance.uuid == attendanceId);
+        user.attendances?.removeWhere((att) => att.uuid == attendanceUid);
+
+        await userRef.update({
+          'attendances': user.attendances?.map((att) => att.toMap()).toList()
+        });
+
+        int userIndex = _userList.indexWhere((user) => user.uid == userUid);
+        if (userIndex != -1) {
+          _userList[userIndex] = user;
+        }
       }
-
-      showSnackBar(
-          context, "Attendance eliminado exitosamente!", SnackBarType.warning);
     } catch (e) {
       showSnackBar(context, "Ups! no se pudo eliminar el attendance",
           SnackBarType.error);

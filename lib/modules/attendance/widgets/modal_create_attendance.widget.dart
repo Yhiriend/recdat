@@ -118,6 +118,7 @@ class _ModalCreateAttendanceWidgetState
                       Provider.of<TeacherProvider>(context, listen: false);
 
                   Attendance attendance = Attendance(
+                      canEdit: true,
                       uuid: const Uuid().v4(),
                       title:
                           attendanceTitleController.text.trim().toUpperCase(),

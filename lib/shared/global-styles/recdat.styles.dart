@@ -15,6 +15,7 @@ class RecdatStyles {
   static const Color parraphLightColor = Color.fromARGB(255, 151, 151, 151);
   static const Color activePill = Color.fromARGB(255, 16, 120, 58);
   static const Color inactivePill = warningColor;
+  static const Color backgroundLoader = Color.fromARGB(66, 0, 0, 0);
 
   static const String textFieldDark = 'DARK';
   static const String textFieldLight = 'LIGHT';
@@ -22,11 +23,16 @@ class RecdatStyles {
   static const Color opaquePrimaryBackgroundColor =
       Color.fromARGB(78, 0, 128, 255);
 
+  static const Color opaqueGreenBackgroundColor =
+      Color.fromARGB(78, 16, 120, 58);
+
   static const Color opaqueGrayBackgroundColor =
       Color.fromARGB(78, 122, 122, 122);
 
   static const Color opaquePrimaryForegroundColor = Color(0xFF0080ff);
 
+  static const Color opaqueGreenForegroundColor =
+      Color.fromARGB(255, 0, 131, 52);
   static const Color opaqueGrayForegroundColor =
       Color.fromARGB(255, 128, 128, 128);
 

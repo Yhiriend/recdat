@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
@@ -16,7 +18,7 @@ class SnackBarType {
   static const SnackBarType none = SnackBarType._('default');
 }
 
-void showSnackBar(BuildContext context, String text, SnackBarType type) {
+void showSnackBar(BuildContext? context, String text, SnackBarType type) {
   Color backgroundColor;
   IconData icon;
 
@@ -38,26 +40,28 @@ void showSnackBar(BuildContext context, String text, SnackBarType type) {
       icon = Icons.face_unlock_outlined;
   }
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Text(
-            text,
-            style: const TextStyle(color: RecdatStyles.whiteColor),
-          ),
-          Icon(
-            icon,
-            color: RecdatStyles.whiteColor,
-          )
-        ],
+  if (context!.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(color: RecdatStyles.whiteColor),
+              ),
+            ),
+            Icon(
+              icon,
+              color: RecdatStyles.whiteColor,
+            ),
+          ],
+        ),
+        backgroundColor: backgroundColor,
+        duration: Duration(seconds: 3),
       ),
-      backgroundColor: backgroundColor,
-      behavior: SnackBarBehavior.floating,
-    ),
-  );
+    );
+  }
 }
 
 class GeneralOptionsSelectWidget {

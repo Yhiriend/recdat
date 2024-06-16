@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
-import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/modules/attendance/widgets/card_attendance.widget.dart';
 import 'package:recdat/modules/attendance/widgets/modal_create_attendance.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
@@ -15,11 +16,23 @@ class AttendanceView extends StatefulWidget {
 }
 
 class _AttendanceViewState extends State<AttendanceView> {
+  final List<ValueNotifier<bool>> _isDeletedNotifiers = [];
+
+  @override
+  void dispose() {
+    for (var notifier in _isDeletedNotifiers) {
+      notifier.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    print("USER ATTENDANCES: ${authProvider.user?.attendances}");
+    final authProvider = Provider.of<AuthProvider>(context, listen: true);
     return Scaffold(
+      backgroundColor: authProvider.isLoading
+          ? RecdatStyles.backgroundLoader
+          : RecdatStyles.whiteColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
         child: Consumer<AuthProvider>(
@@ -52,12 +65,25 @@ class _AttendanceViewState extends State<AttendanceView> {
               );
             }
             return ListView.builder(
-              itemCount: authProvider.user?.attendances?.length,
+              itemCount: authProvider.user!.attendances!.length,
               itemBuilder: (context, index) {
-                final attendance = authProvider.user?.attendances![index];
-                return CardAttendanceWidget(
-                  isAttendance: attendance?.type == "ATTENDANCE",
-                  attendance: attendance!,
+                final attendance = authProvider.user!.attendances![index];
+                final isDeletedNotifier = ValueNotifier<bool>(false);
+                _isDeletedNotifiers.add(isDeletedNotifier);
+                return ValueListenableBuilder<bool>(
+                  valueListenable: isDeletedNotifier,
+                  builder: (context, isDeleted, child) {
+                    if (isDeleted) {
+                      return SizedBox(); // Widget vacío si se ha eliminado
+                    }
+                    return CardAttendanceWidget(
+                      key: UniqueKey(),
+                      isAttendance: attendance.type == "ATTENDANCE",
+                      attendance: attendance,
+                      userUUID: authProvider.user!.uid ?? "",
+                      isDeletedNotifier: isDeletedNotifier,
+                    );
+                  },
                 );
               },
             );

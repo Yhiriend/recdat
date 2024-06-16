@@ -5,8 +5,10 @@ class Attendance {
   String createdAt;
   String filepath;
   String type;
+  bool canEdit;
 
   Attendance({
+    required this.canEdit,
     required this.uuid,
     required this.title,
     required this.description,
@@ -18,6 +20,7 @@ class Attendance {
   factory Attendance.fromMap(Map<String, dynamic> map) {
     return Attendance(
       uuid: map['uuid'] ?? '',
+      canEdit: map['canEdit'] ?? false,
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       createdAt: map['createdAt'] ?? '',
@@ -29,6 +32,7 @@ class Attendance {
   Map<String, dynamic> toMap() {
     return {
       'uuid': uuid,
+      'canEdit': canEdit,
       'title': title,
       'description': description,
       'createdAt': createdAt,

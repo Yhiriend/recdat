@@ -246,6 +246,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> syncUserDataByUid(BuildContext context, String uid) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       DocumentSnapshot doc =
           await _firebaseFirestore.collection("users").doc(uid).get();
@@ -259,6 +261,9 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       showSnackBar(
           context, "Ups! no fue posible sincronizar", SnackBarType.error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 }
