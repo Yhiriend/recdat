@@ -29,12 +29,14 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
   int _counter = 60;
   Timer? _timer;
   String _userUUID = "";
+  Attendance? _attendance;
 
   @override
   void initState() {
     super.initState();
     _canEdit = widget.attendance.canEdit;
     _userUUID = widget.userUUID;
+    _attendance = widget.attendance;
     isChangeEnabled();
   }
 
@@ -54,6 +56,11 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
         if (mounted) {
           setState(() {
             _canEdit = false;
+            final teacherProvider =
+                Provider.of<TeacherProvider>(context, listen: false);
+
+            teacherProvider.updateAttendanceCanEdit(
+                context, _userUUID, _attendance!.uuid);
           });
         }
       });
@@ -69,7 +76,6 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
   @override
   Widget build(BuildContext context) {
     final _isAttendance = widget.isAttendance;
-    Attendance _attendance = widget.attendance;
     return ValueListenableBuilder(
       valueListenable: widget.isDeletedNotifier,
       builder: (context, isDeleted, child) {
@@ -145,7 +151,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _attendance.title,
+                          _attendance!.title,
                           style: const TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.normal,
@@ -154,7 +160,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                         ),
                         const SizedBox(height: 10.0),
                         Text(
-                          _attendance.createdAt,
+                          _attendance!.createdAt,
                           style: const TextStyle(
                             fontSize: 16.0,
                             color: RecdatStyles.parraphLightColor,
@@ -184,7 +190,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                                   .deleteAttendance(
                                       context: context,
                                       userUid: _userUUID,
-                                      attendanceUid: _attendance.uuid)
+                                      attendanceUid: _attendance!.uuid)
                                   .then((_) {
                                 final authProvider = Provider.of<AuthProvider>(
                                     context,
