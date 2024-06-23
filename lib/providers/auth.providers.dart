@@ -15,6 +15,7 @@ class AuthProvider with ChangeNotifier {
   bool _isSignedIn = false;
   String _verificationId = "";
   bool _isLoading = false;
+  bool? _isFirstTimeInRecdat;
   String? _uid;
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -25,9 +26,21 @@ class AuthProvider with ChangeNotifier {
   String get verificationId => _verificationId;
   bool get isLoading => _isLoading;
   String get uid => _uid ?? "";
+  bool get isFirstTimeInRecdat => _isFirstTimeInRecdat ?? false;
 
   AuthProvider() {
+    checkFirstTimeInRecdat();
     checkSign();
+  }
+
+  Future<void> checkFirstTimeInRecdat() async {
+    final SharedPreferences s = await SharedPreferences.getInstance();
+    _isFirstTimeInRecdat = s.getBool("isFirstTimeInRecdat");
+    if (_isFirstTimeInRecdat == null) {
+      // Es la primera vez que se abre la aplicación
+      await s.setBool("isFirstTimeInRecdat", true);
+      // Puedes hacer cualquier acción adicional aquí si es necesario
+    }
   }
 
   void setUser(user_model.UserModel user) {
@@ -49,7 +62,9 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void signInWithPhone(BuildContext context, String phoneNumber) async {
+  Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       await _firebaseAuth.verifyPhoneNumber(
           phoneNumber: phoneNumber,
@@ -58,14 +73,20 @@ class AuthProvider with ChangeNotifier {
             await _firebaseAuth.signInWithCredential(phoneAuthCredential);
           },
           verificationFailed: (error) {
-            throw Exception(error.message);
+            showSnackBar(context, error.message ?? 'Error de autenticación',
+                SnackBarType.error);
           },
           codeSent: (verificationId, forceResendingToken) {
             _verificationId = verificationId;
+            showSnackBar(context, "Código de verificación enviado",
+                SnackBarType.success);
           },
           codeAutoRetrievalTimeout: (verificationId) {});
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message.toString(), SnackBarType.error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -208,8 +229,6 @@ class AuthProvider with ChangeNotifier {
         }
         return false;
       }
-
-      // Si no se encuentra el usuario o la contraseña no coincide, mostrar un mensaje de error
       throw FirebaseAuthException(
         code: 'invalid-credentials',
         message: 'Credenciales inválidas',

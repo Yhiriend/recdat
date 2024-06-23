@@ -73,21 +73,21 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
     final teacherProvider =
         Provider.of<TeacherProvider>(context, listen: false);
     final teacherUpdate = UserModel(
-      instituteUid: _teacher.instituteUid,
-      uid: _teacher.uid,
-      name: widget.teacherNameController.text.trim().toUpperCase(),
-      surname: widget.teacherSurnameController.text.trim().toUpperCase(),
-      lastSurname:
-          widget.teacherSecondSurnameController.text.trim().toUpperCase(),
-      email: widget.teacherEmailController.text.trim().toUpperCase(),
-      phone: widget.teacherPhoneController.text.trim(),
-      rol: _teacher.rol,
-      isActive: _isActive,
-      createdAt: _teacher.createdAt,
-      updatedAt: RecdatDateUtils.currentDate(),
-      password: _teacher.password,
-      courses: _currentAreas,
-    );
+        instituteUid: _teacher.instituteUid,
+        uid: _teacher.uid,
+        name: widget.teacherNameController.text.trim().toUpperCase(),
+        surname: widget.teacherSurnameController.text.trim().toUpperCase(),
+        lastSurname:
+            widget.teacherSecondSurnameController.text.trim().toUpperCase(),
+        email: widget.teacherEmailController.text.trim().toLowerCase(),
+        phone: widget.teacherPhoneController.text.trim(),
+        rol: _teacher.rol,
+        isActive: _isActive,
+        createdAt: _teacher.createdAt,
+        updatedAt: RecdatDateUtils.currentDate(),
+        password: _teacher.password,
+        courses: _currentAreas,
+        profilePic: _teacher.profilePic);
     await teacherProvider.updateTeacher(context, teacherUpdate);
   }
 

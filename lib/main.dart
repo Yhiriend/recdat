@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,16 +19,25 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: const FirebaseOptions(
-    apiKey: "AIzaSyDUONtNp_DQHaV4l0Dp_IHBtkVSuTNaiLw",
-    appId: "1:563746096021:android:1eccd6ef91897cd1302c9c",
+    apiKey: "AIzaSyCUj_GZeUXG9DENa-OUrT_FI-2om8gNsHQ",
+    appId: "1:1079332323494:android:0617d92da12fa13e667467",
     messagingSenderId: "",
-    projectId: "recdat-app",
-    storageBucket: "recdat-app.appspot.com",
+    projectId: "recdat-device",
+    storageBucket: "recdat-device.appspot.com",
   ));
-  //await FirebaseAppCheck.instance.activate(
-  //    webProvider: ReCaptchaV3Provider(siteKey),
-  //    androidProvider: AndroidProvider.debug,
-  //   );
+  // await Firebase.initializeApp(
+  //     options: const FirebaseOptions(
+  //   apiKey: "AIzaSyDUONtNp_DQHaV4l0Dp_IHBtkVSuTNaiLw",
+  //   appId: "1:563746096021:android:1eccd6ef91897cd1302c9c",
+  //   messagingSenderId: "",
+  //   projectId: "recdat-app",
+  //   storageBucket: "recdat-app.appspot.com",
+  // ));
+  await FirebaseAppCheck.instance.activate(
+    webProvider:
+        ReCaptchaV3Provider("6Levq_8pAAAAAKTk7RjB6qpIdCDCcaNiHqIJTQ-r"),
+    androidProvider: AndroidProvider.debug,
+  );
   runApp(
     const MainApp(),
   );

@@ -15,6 +15,11 @@ class WelcomeView extends StatefulWidget {
 }
 
 class _WelcomeViewState extends State<WelcomeView> {
+  bool isFirstTimeInRecdat() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    return authProvider.isFirstTimeInRecdat;
+  }
+
   Future<void> checkAuthentication(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.getDataFromSP().then((_) {
@@ -41,7 +46,9 @@ class _WelcomeViewState extends State<WelcomeView> {
   @override
   void initState() {
     super.initState();
-    checkAuthentication(context);
+    if (isFirstTimeInRecdat()) {
+      checkAuthentication(context);
+    }
   }
 
   @override
@@ -86,7 +93,10 @@ class _WelcomeViewState extends State<WelcomeView> {
                 ],
               ),
               RecdatButtonAsync(
-                onPressed: () => checkAuthentication(context),
+                onPressed: () async {
+                  await Future.delayed(const Duration(seconds: 3));
+                  checkAuthentication(context);
+                },
                 text: "Iniciar",
               )
             ],

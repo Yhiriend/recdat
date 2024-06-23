@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "563746096021",
-    "project_id": "recdat-app",
-    "storage_bucket": "recdat-app.appspot.com"
+    "project_number": "1079332323494",
+    "project_id": "recdat-device",
+    "storage_bucket": "recdat-device.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:563746096021:android:1eccd6ef91897cd1302c9c",
+        "mobilesdk_app_id": "1:1079332323494:android:0617d92da12fa13e667467",
         "android_client_info": {
           "package_name": "com.example.recdat"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDUONtNp_DQHaV4l0Dp_IHBtkVSuTNaiLw"
+          "current_key": "AIzaSyCXzThFTVy96zy8_95pcUSsnbgrF6U2g-s"
         }
       ],
       "services": {

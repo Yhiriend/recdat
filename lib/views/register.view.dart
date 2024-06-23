@@ -52,7 +52,7 @@ class _RegisterViewState extends State<RegisterView> {
     if (_formKey.currentState!.validate()) {
       final ap = Provider.of<AuthProvider>(context, listen: false);
       String phoneNumber = "+57${phoneController.text.trim()}";
-      ap.signInWithPhone(context, phoneNumber);
+      await ap.signInWithPhone(context, phoneNumber);
       //await Future.delayed(const Duration(seconds: 3));
       setState(() {
         _codeSent = true;
@@ -106,7 +106,6 @@ class _RegisterViewState extends State<RegisterView> {
         rol: UserRole.admin.value,
         isActive: true,
         createdAt: RecdatDateUtils.currentDate(),
-        profilePic: "",
         password: passwordController.text.trim());
     ap.saveUserDataToFirebase(
         context: context,

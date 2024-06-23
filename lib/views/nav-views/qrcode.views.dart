@@ -69,19 +69,29 @@ class _QrcodeViewState extends State<QrcodeView> {
           children: [
             Stack(
               children: [
-                Stack(alignment: Alignment.center, children: [
-                  Image.asset('assets/images/frameqr.png'),
-                  Container(
-                    child: lastQRData.isEmpty
-                        ? Image.asset('assets/images/recdat_blue.png')
-                        : Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: QRFrame(qrData: lastQRData),
-                          ),
-                  )
-                ]),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 260,
+                      height: 260,
+                      child: Image.asset(
+                        'assets/images/frameqr.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: lastQRData.isEmpty
+                            ? Image.asset('assets/images/recdat_blue.png')
+                            : QRFrame(qrData: lastQRData),
+                      ),
+                    ),
+                  ],
+                ),
                 Positioned(
-                    bottom: -5,
+                    bottom: -4,
                     left: 0,
                     right: 0,
                     child: Row(

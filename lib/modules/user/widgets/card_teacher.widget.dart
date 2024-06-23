@@ -47,7 +47,8 @@ class CardTeacherWidget extends StatelessWidget {
                       color: RecdatStyles.opaquePrimaryBackgroundColor,
                     ),
                     child: Center(
-                      child: teacher.profilePic != null
+                      child: teacher.profilePic != null ||
+                              teacher.profilePic != ""
                           ? Image.network(
                               teacher.profilePic!,
                               width: 58,

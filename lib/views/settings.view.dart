@@ -2,16 +2,17 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
-import 'package:recdat/modules/user/views/edit_teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
+import 'package:recdat/shared/widgets/recdat_dropdown.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/resize_image.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/pdf_viewer.view.dart';
 
@@ -36,6 +37,14 @@ class _SettingsViewState extends State<SettingsView> {
 
   final TextEditingController _userEmailController = TextEditingController();
 
+  final TextEditingController _userPasswordController = TextEditingController();
+
+  final TextEditingController _userSecurityQuestionController =
+      TextEditingController();
+
+  final TextEditingController _userSecurityAnswerController =
+      TextEditingController();
+
   File? _selectedImage;
   dynamic _profilePic;
 
@@ -55,6 +64,9 @@ class _SettingsViewState extends State<SettingsView> {
     _userEmailController.text = user.email ?? "";
     _isActive = user.isActive;
     _courses = user.courses ?? [];
+    _userSecurityQuestionController.text = user.question ?? "";
+    _userSecurityAnswerController.text = user.answer ?? "";
+    _userPasswordController.text = user.password;
   }
 
   void _openFilePicker() async {
@@ -81,14 +93,16 @@ class _SettingsViewState extends State<SettingsView> {
         name: _teacher!.name,
         surname: _teacher!.surname,
         lastSurname: _teacher!.lastSurname,
-        email: _userEmailController.text.trim().toUpperCase(),
+        email: _userEmailController.text.trim().toLowerCase(),
         phone: _userPhoneController.text.trim(),
         rol: _teacher!.rol,
         isActive: _teacher!.isActive,
         createdAt: _teacher!.createdAt,
         updatedAt: RecdatDateUtils.currentDate(),
-        password: _teacher!.password,
+        password: _userPasswordController.text.trim(),
         courses: _teacher!.courses,
+        question: _userSecurityQuestionController.text.trim().toLowerCase(),
+        answer: _userSecurityAnswerController.text.trim().toLowerCase(),
         profilePic: _profilePic);
     await teacherProvider.updateTeacher(context, teacherUpdate);
   }
@@ -125,7 +139,7 @@ class _SettingsViewState extends State<SettingsView> {
                   height: 100.0,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: RecdatStyles.opaquePrimaryBackgroundColor,
+                    color: RecdatStyles.backgroundLoader,
                     image: _teacher!.profilePic != null
                         ? DecorationImage(
                             image: NetworkImage(_teacher!.profilePic!),
@@ -136,7 +150,11 @@ class _SettingsViewState extends State<SettingsView> {
                                 image: FileImage(_selectedImage!),
                                 fit: BoxFit.cover,
                               )
-                            : null,
+                            : const DecorationImage(
+                                image: AssetImage(
+                                    'assets/images/recdat_blue.png'), // Cambia por la ruta correcta de tu imagen local
+                                fit: BoxFit.contain,
+                              ),
                   ),
                 ),
                 Positioned(
@@ -203,17 +221,13 @@ class _SettingsViewState extends State<SettingsView> {
             const SizedBox(
               height: 20,
             ),
-            _teacher?.lastSurname != ""
-                ? RecdatTextfield(
-                    placeholder: "Segundo apellido",
-                    controller: _userSecondSurnameController,
-                    icon: Icons.person,
-                    color: RecdatStyles.textFieldLight,
-                    enabled: false,
-                  )
-                : const SizedBox(
-                    height: 0.0,
-                  ),
+            RecdatTextfield(
+              placeholder: "Segundo apellido",
+              controller: _userSecondSurnameController,
+              icon: Icons.person,
+              color: RecdatStyles.textFieldLight,
+              enabled: false,
+            ),
             const SizedBox(
               height: 20,
             ),
@@ -233,7 +247,16 @@ class _SettingsViewState extends State<SettingsView> {
               icon: Icons.mail,
               color: RecdatStyles.textFieldLight,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
+            const SizedBox(
+              width: double.infinity,
+              child: Text(
+                "Cursos asignados:",
+                textAlign: TextAlign.left,
+              ),
+            ),
             Wrap(
               spacing: 8.0,
               children: _courses.map((course) {
@@ -243,6 +266,51 @@ class _SettingsViewState extends State<SettingsView> {
                   deleteIcon: const Icon(Icons.numbers),
                 );
               }).toList(),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const SizedBox(
+              width: double.infinity,
+              child: Text(
+                "Si cambias la contraseña te recomendamos cerrar y volver a iniciar sesión",
+                textAlign: TextAlign.left,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            RecdatTextfield(
+              placeholder: "Contraseña",
+              controller: _userPasswordController,
+              icon: Icons.lock,
+              color: RecdatStyles.textFieldLight,
+            ),
+            const SizedBox(height: 20),
+            const SizedBox(
+              width: double.infinity,
+              child: Text(
+                "Para registro manual llena los siguientes campos",
+                textAlign: TextAlign.left,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            RecdatDropdown(
+                color: RecdatStyles.textFieldLight,
+                placeholder: "Pregunta de seguridad",
+                controller: _userSecurityQuestionController,
+                options: securityQuestions),
+            const SizedBox(
+              height: 20,
+            ),
+            RecdatTextfield(
+              placeholder: "Respuesta de seguridad",
+              controller: _userSecurityAnswerController,
+              icon: Icons.lock_person,
+              color: RecdatStyles.textFieldLight,
+              enabled: true,
             ),
             const SizedBox(
               height: 40,
@@ -267,4 +335,32 @@ class _SettingsViewState extends State<SettingsView> {
       ),
     );
   }
+
+  List<DropdownOption> securityQuestions = [
+    DropdownOption(
+        value: 'color_favorito', label: '¿Cuál es tu color favorito?'),
+    DropdownOption(
+        value: 'nombre_mascota',
+        label: '¿Cuál es el nombre de tu primera mascota?'),
+    DropdownOption(
+        value: 'ciudad_nacimiento', label: '¿En qué ciudad naciste?'),
+    DropdownOption(
+        value: 'escuela_primaria',
+        label: '¿Cuál fue el nombre de tu escuela primaria?'),
+    DropdownOption(
+        value: 'primer_coche', label: '¿Cuál fue la marca de tu primer coche?'),
+    DropdownOption(
+        value: 'comida_favorita', label: '¿Cuál es tu comida favorita?'),
+    DropdownOption(
+        value: 'nombre_padre', label: '¿Cuál es el nombre de tu padre?'),
+    DropdownOption(
+        value: 'nombre_madre', label: '¿Cuál es el nombre de tu madre?'),
+    DropdownOption(
+        value: 'primer_trabajo', label: '¿Cuál fue tu primer trabajo?'),
+    DropdownOption(
+        value: 'mejor_amigo',
+        label: '¿Cuál es el nombre de tu mejor amigo de la infancia?'),
+    DropdownOption(
+        value: 'libro_favorito', label: '¿Cuál es tu libro favorito?')
+  ];
 }

@@ -30,7 +30,7 @@ class _QRFrameState extends State<QRFrame> {
             child: QrImageView(
               data: _qrData,
               version: QrVersions.auto,
-              size: 280.0,
+              size: 230.0,
             ),
           ),
         ),

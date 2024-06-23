@@ -26,9 +26,13 @@ class UserModel {
   List<CourseModel>? courses;
   List<Attendance>? attendances;
   String password;
+  String? question;
+  String? answer;
 
   UserModel(
       {this.uid,
+      this.question,
+      this.answer,
       this.instituteUid,
       required this.name,
       required this.surname,
@@ -47,6 +51,8 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
         uid: map['uid'] ?? '',
+        question: map['question'],
+        answer: map['answer'],
         instituteUid: map['instituteUid'] ?? '',
         name: map['name'] ?? '',
         surname: map['surname'] ?? '',
@@ -72,6 +78,8 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       "uid": uid,
+      "question": question,
+      "answer": answer,
       "instituteUid": instituteUid,
       "name": name,
       "surname": surname,

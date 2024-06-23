@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/routes.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/home.view.dart';
 
@@ -35,9 +36,6 @@ class _LoginViewState extends State<LoginView> {
                 builder: (context) => const HomeView(),
               ),
               (route) => false);
-        } else {
-          showSnackBar(
-              context, "Credenciales invalidas 😥", SnackBarType.error);
         }
       });
     }
@@ -143,7 +141,8 @@ class _LoginViewState extends State<LoginView> {
                             )),
                         TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/register');
+                              Navigator.pushNamed(
+                                  context, RecdatRoutes.register);
                             },
                             child: const Text(
                               "Registrarse como administrador",
