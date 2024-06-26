@@ -35,8 +35,7 @@ class _TeachersViewState extends State<TeachersView> {
 
   void _fetchTeachers() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final teacherProvider =
-        Provider.of<TeacherProvider>(context, listen: false);
+    final teacherProvider = Provider.of<UserProvider>(context, listen: false);
     final userUid = authProvider.user?.uid;
     if (userUid != null) {
       await teacherProvider.fetchUsers(context, userUid);
@@ -58,7 +57,7 @@ class _TeachersViewState extends State<TeachersView> {
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-          child: Consumer<TeacherProvider>(
+          child: Consumer<UserProvider>(
             builder: (context, teacherProvider, child) {
               if (teacherProvider.isLoading) {
                 return const Center(
@@ -91,6 +90,7 @@ class _TeachersViewState extends State<TeachersView> {
                 itemCount: teacherProvider.userList.length,
                 itemBuilder: (context, index) {
                   final teacher = teacherProvider.userList[index];
+                  print("TEACHER PIC: ${teacher.profilePic}");
                   return CardTeacherWidget(teacher: teacher);
                 },
               );

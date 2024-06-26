@@ -45,53 +45,69 @@ class _RecdatDropdownState extends State<RecdatDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    final double height = _hasError
-        ? RecdatStyles.textFieldHeight + 25
-        : RecdatStyles.textFieldHeight;
-
-    return SizedBox(
-      height: height,
-      child: Stack(
-        children: [
-          DropdownButtonFormField<DropdownOption>(
-            value: _selectedOption,
-            items: widget.options
-                .map((option) => DropdownMenuItem<DropdownOption>(
-                      value: option,
-                      child: Text(option.label),
-                    ))
-                .toList(),
-            onChanged: (newValue) {
-              setState(() {
-                _selectedOption = newValue;
-                widget.controller.text = newValue!.value;
-                if (widget.onChange != null) {
-                  widget.onChange!(newValue);
-                }
-              });
-            },
-            decoration: InputDecoration(
-              hintText: widget.placeholder,
-              hintStyle: const TextStyle(
-                  color: RecdatStyles.hintTextColorDark, fontSize: 20),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(RecdatStyles.borderRadius),
-                borderSide: BorderSide.none,
-              ),
-              fillColor: widget.color == RecdatStyles.textFieldLight
-                  ? RecdatStyles.textFieldColorGray
-                  : RecdatStyles.textFieldColorBlue,
-              filled: true,
-              prefixIcon: widget.icon != null
-                  ? Icon(
-                      widget.icon,
-                      color: RecdatStyles.defaultColor,
-                    )
-                  : null,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DropdownButtonFormField<DropdownOption>(
+          value: _selectedOption,
+          items: widget.options
+              .map((option) => DropdownMenuItem<DropdownOption>(
+                    value: option,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width - 100,
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          option.label,
+                          maxLines: 3,
+                          softWrap: true,
+                          style: const TextStyle(
+                            height: 0.8,
+                            overflow: TextOverflow.visible, // No overflow
+                          ),
+                        ),
+                      ),
+                    ),
+                  ))
+              .toList(),
+          onChanged: (newValue) {
+            setState(() {
+              _selectedOption = newValue;
+              widget.controller.text = newValue!.value;
+              if (widget.onChange != null) {
+                widget.onChange!(newValue);
+              }
+            });
+          },
+          decoration: InputDecoration(
+            contentPadding:
+                const EdgeInsets.only(left: 8, right: 0, top: 0, bottom: 15),
+            hintText: widget.placeholder,
+            hintStyle: const TextStyle(
+                color: RecdatStyles.hintTextColorDark, fontSize: 20),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(RecdatStyles.borderRadius),
+              borderSide: BorderSide.none,
             ),
+            fillColor: widget.color == RecdatStyles.textFieldLight
+                ? RecdatStyles.textFieldColorGray
+                : RecdatStyles.textFieldColorBlue,
+            filled: true,
+            prefixIcon: widget.icon != null
+                ? Icon(
+                    widget.icon,
+                    color: RecdatStyles.defaultColor,
+                  )
+                : null,
           ),
-        ],
-      ),
+        ),
+        if (_hasError)
+          const Text(
+            'Error message',
+            style: TextStyle(color: Colors.red),
+          ),
+      ],
     );
   }
 }

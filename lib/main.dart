@@ -52,7 +52,7 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CourseProvider()),
-        ChangeNotifierProvider(create: (_) => TeacherProvider())
+        ChangeNotifierProvider(create: (_) => UserProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

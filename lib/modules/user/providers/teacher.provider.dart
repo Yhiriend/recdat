@@ -9,7 +9,7 @@ import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
-class TeacherProvider with ChangeNotifier {
+class UserProvider with ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   List<UserModel> _userList = [];
@@ -18,7 +18,7 @@ class TeacherProvider with ChangeNotifier {
   List<UserModel> get userList => _userList;
   bool get isLoading => _isLoading;
 
-  TeacherProvider() {}
+  UserProvider() {}
 
   Future<void> fetchUsers(BuildContext context, String instituteId) async {
     _isLoading = true;

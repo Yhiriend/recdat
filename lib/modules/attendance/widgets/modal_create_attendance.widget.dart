@@ -115,7 +115,7 @@ class _ModalCreateAttendanceWidgetState
                   final authProvider =
                       Provider.of<AuthProvider>(context, listen: false);
                   final teacherProvider =
-                      Provider.of<TeacherProvider>(context, listen: false);
+                      Provider.of<UserProvider>(context, listen: false);
 
                   Attendance attendance = Attendance(
                       canEdit: true,

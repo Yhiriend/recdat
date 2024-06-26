@@ -91,7 +91,7 @@ class _TaggingWidgetState extends State<TaggingWidget> {
               controller: textEditingController,
               focusNode: focusNode,
               decoration: InputDecoration(
-                hintText: "Asigna cursos",
+                hintText: "Asignar cursos",
                 hintStyle:
                     const TextStyle(color: RecdatStyles.hintTextColorDark),
                 border: OutlineInputBorder(

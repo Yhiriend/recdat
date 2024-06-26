@@ -12,7 +12,6 @@ import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_dropdown.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
-import 'package:recdat/utils/resize_image.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/pdf_viewer.view.dart';
 
@@ -24,7 +23,7 @@ class SettingsView extends StatefulWidget {
 }
 
 class _SettingsViewState extends State<SettingsView> {
-  late UserModel? _teacher;
+  late UserModel? _userLogged;
   late bool _isActive;
   late List<CourseModel> _courses;
 
@@ -52,14 +51,14 @@ class _SettingsViewState extends State<SettingsView> {
   void initState() {
     super.initState();
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    _teacher = authProvider.user;
-    _setTeacherValues(_teacher!);
+    _userLogged = authProvider.user;
+    _setUserValues(_userLogged!);
   }
 
-  void _setTeacherValues(UserModel user) async {
+  void _setUserValues(UserModel user) async {
     _userNameController.text = user.name;
     _userSurnameController.text = user.surname;
-    _userSecondSurnameController.text = user.lastSurname!;
+    _userSecondSurnameController.text = user.lastSurname ?? "";
     _userPhoneController.text = user.phone ?? "";
     _userEmailController.text = user.email ?? "";
     _isActive = user.isActive;
@@ -81,36 +80,34 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   void _updateUser() async {
-    final teacherProvider =
-        Provider.of<TeacherProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (_selectedImage != null) {
-      _profilePic = await teacherProvider.uploadFile(
-          context, _selectedImage!, _teacher!.uid!);
+      _profilePic = await userProvider.uploadFile(
+          context, _selectedImage!, _userLogged!.uid!);
     }
-    final teacherUpdate = UserModel(
-        instituteUid: _teacher!.instituteUid,
-        uid: _teacher!.uid,
-        name: _teacher!.name,
-        surname: _teacher!.surname,
-        lastSurname: _teacher!.lastSurname,
+    final userUpdated = UserModel(
+        instituteUid: _userLogged!.instituteUid,
+        uid: _userLogged!.uid,
+        name: _userLogged!.name,
+        surname: _userLogged!.surname,
+        lastSurname: _userLogged!.lastSurname,
         email: _userEmailController.text.trim().toLowerCase(),
         phone: _userPhoneController.text.trim(),
-        rol: _teacher!.rol,
-        isActive: _teacher!.isActive,
-        createdAt: _teacher!.createdAt,
+        rol: _userLogged!.rol,
+        isActive: _userLogged!.isActive,
+        createdAt: _userLogged!.createdAt,
         updatedAt: RecdatDateUtils.currentDate(),
         password: _userPasswordController.text.trim(),
-        courses: _teacher!.courses,
+        courses: _userLogged!.courses,
         question: _userSecurityQuestionController.text.trim().toLowerCase(),
         answer: _userSecurityAnswerController.text.trim().toLowerCase(),
         profilePic: _profilePic);
-    await teacherProvider.updateTeacher(context, teacherUpdate);
+    await userProvider.updateTeacher(context, userUpdated);
   }
 
   Future<File?> _getSchedulePDF() async {
-    final teacherProvider =
-        Provider.of<TeacherProvider>(context, listen: false);
-    return await teacherProvider.getTeacherSchedule(context, _teacher!.uid!);
+    final teacherProvider = Provider.of<UserProvider>(context, listen: false);
+    return await teacherProvider.getTeacherSchedule(context, _userLogged!.uid!);
   }
 
   Future<void> _openSchedule() async {
@@ -138,49 +135,51 @@ class _SettingsViewState extends State<SettingsView> {
                   width: 100.0,
                   height: 100.0,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: RecdatStyles.backgroundLoader,
-                    image: _teacher!.profilePic != null
-                        ? DecorationImage(
-                            image: NetworkImage(_teacher!.profilePic!),
-                            fit: BoxFit.cover,
-                          )
-                        : _selectedImage != null
-                            ? DecorationImage(
-                                image: FileImage(_selectedImage!),
-                                fit: BoxFit.cover,
-                              )
-                            : const DecorationImage(
-                                image: AssetImage(
-                                    'assets/images/recdat_blue.png'), // Cambia por la ruta correcta de tu imagen local
-                                fit: BoxFit.contain,
-                              ),
-                  ),
+                      shape: BoxShape.circle,
+                      color: RecdatStyles.backgroundLoader,
+                      image: _userLogged?.profilePic == null ||
+                              _userLogged?.profilePic == ""
+                          ? _selectedImage != null
+                              ? DecorationImage(
+                                  image: FileImage(_selectedImage!),
+                                  fit: BoxFit.cover,
+                                )
+                              : const DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/default_avatar.jpg'),
+                                  fit: BoxFit.contain,
+                                )
+                          : DecorationImage(
+                              image: NetworkImage(_userLogged!.profilePic!),
+                              fit: BoxFit.cover,
+                            )),
                 ),
-                Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 80,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: _isActive
-                            ? RecdatStyles.activePill
-                            : RecdatStyles.inactivePill,
-                      ),
-                      child: Center(
-                          child: Text(
-                        _isActive ? "activo" : "inactivo",
-                        style: const TextStyle(color: RecdatStyles.whiteColor),
+                if (_userLogged?.rol == UserRole.teacher.value)
+                  Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 80,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: _isActive
+                              ? RecdatStyles.activePill
+                              : RecdatStyles.inactivePill,
+                        ),
+                        child: Center(
+                            child: Text(
+                          _isActive ? "activo" : "inactivo",
+                          style:
+                              const TextStyle(color: RecdatStyles.whiteColor),
+                        )),
                       )),
-                    )),
                 Positioned(
                     right: 0,
                     top: 0,
                     child: Container(
-                      width: 40,
-                      height: 40,
+                      width: 35,
+                      height: 35,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         color: RecdatStyles.defaultColor,
@@ -192,7 +191,7 @@ class _SettingsViewState extends State<SettingsView> {
                         },
                         child: const Icon(
                           Icons.edit,
-                          color: RecdatStyles.segundaryButtonColor,
+                          color: RecdatStyles.blueDarkColor,
                         ),
                       )),
                     )),
@@ -206,7 +205,7 @@ class _SettingsViewState extends State<SettingsView> {
               controller: _userNameController,
               icon: Icons.person,
               color: RecdatStyles.textFieldLight,
-              enabled: false,
+              enabled: (_userLogged?.rol == UserRole.admin.value),
             ),
             const SizedBox(
               height: 20,
@@ -216,7 +215,7 @@ class _SettingsViewState extends State<SettingsView> {
               controller: _userSurnameController,
               icon: Icons.person,
               color: RecdatStyles.textFieldLight,
-              enabled: false,
+              enabled: (_userLogged?.rol == UserRole.admin.value),
             ),
             const SizedBox(
               height: 20,
@@ -226,7 +225,7 @@ class _SettingsViewState extends State<SettingsView> {
               controller: _userSecondSurnameController,
               icon: Icons.person,
               color: RecdatStyles.textFieldLight,
-              enabled: false,
+              enabled: (_userLogged?.rol == UserRole.admin.value),
             ),
             const SizedBox(
               height: 20,
@@ -250,13 +249,14 @@ class _SettingsViewState extends State<SettingsView> {
             const SizedBox(
               height: 20,
             ),
-            const SizedBox(
-              width: double.infinity,
-              child: Text(
-                "Cursos asignados:",
-                textAlign: TextAlign.left,
+            if (_userLogged?.rol == UserRole.teacher.value)
+              const SizedBox(
+                width: double.infinity,
+                child: Text(
+                  "Cursos asignados:",
+                  textAlign: TextAlign.left,
+                ),
               ),
-            ),
             Wrap(
               spacing: 8.0,
               children: _courses.map((course) {
@@ -273,7 +273,7 @@ class _SettingsViewState extends State<SettingsView> {
             const SizedBox(
               width: double.infinity,
               child: Text(
-                "Si cambias la contraseña te recomendamos cerrar y volver a iniciar sesión",
+                "El siguiente campo corresponde a la contraseña, si la cambias te recomendamos cerrar y volver a iniciar sesión",
                 textAlign: TextAlign.left,
               ),
             ),
@@ -285,8 +285,9 @@ class _SettingsViewState extends State<SettingsView> {
               controller: _userPasswordController,
               icon: Icons.lock,
               color: RecdatStyles.textFieldLight,
+              isPassword: true,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             const SizedBox(
               width: double.infinity,
               child: Text(
@@ -312,14 +313,16 @@ class _SettingsViewState extends State<SettingsView> {
               color: RecdatStyles.textFieldLight,
               enabled: true,
             ),
-            const SizedBox(
-              height: 40,
-            ),
-            RecdatButtonAsync(
-              onPressed: () async => _openSchedule(),
-              text: "Ver horario",
-              color: "success",
-            ),
+            if (_userLogged?.rol == UserRole.teacher.value)
+              const SizedBox(
+                height: 40,
+              ),
+            if (_userLogged?.rol == UserRole.teacher.value)
+              RecdatButtonAsync(
+                onPressed: () async => _openSchedule(),
+                text: "Ver horario",
+                color: "success",
+              ),
             const SizedBox(
               height: 20,
             ),

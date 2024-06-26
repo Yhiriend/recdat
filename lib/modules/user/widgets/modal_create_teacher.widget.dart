@@ -28,6 +28,9 @@ class _ModalCreateTeacherWidgetState extends State<ModalCreateTeacherWidget> {
   final TextEditingController teacherSurnameController =
       TextEditingController();
 
+  final TextEditingController teacherLastSurnameController =
+      TextEditingController();
+
   final TextEditingController teacherEmailController = TextEditingController();
 
   final TextEditingController teacherCoursesAsignedController =
@@ -90,6 +93,13 @@ class _ModalCreateTeacherWidgetState extends State<ModalCreateTeacherWidget> {
               ),
               const SizedBox(height: 10),
               RecdatTextfield(
+                icon: Icons.text_snippet,
+                placeholder: "Segundo apellido",
+                controller: teacherLastSurnameController,
+                color: RecdatStyles.textFieldLight,
+              ),
+              const SizedBox(height: 10),
+              RecdatTextfield(
                 icon: Icons.email,
                 placeholder: "Correo electronico",
                 controller: teacherEmailController,
@@ -110,13 +120,18 @@ class _ModalCreateTeacherWidgetState extends State<ModalCreateTeacherWidget> {
                   final authProvider =
                       Provider.of<AuthProvider>(context, listen: false);
                   final teacherProvider =
-                      Provider.of<TeacherProvider>(context, listen: false);
-                  final String defaultPassword =
-                      teacherEmailController.text.trim().split("@")[0];
+                      Provider.of<UserProvider>(context, listen: false);
+                  final String defaultPassword = teacherEmailController.text
+                      .trim()
+                      .split("@")[0]
+                      .toLowerCase();
                   final teacher = UserModel(
                       name: teacherNameController.text.trim().toUpperCase(),
                       surname:
                           teacherSurnameController.text.trim().toUpperCase(),
+                      lastSurname: teacherLastSurnameController.text
+                          .trim()
+                          .toUpperCase(),
                       email: teacherEmailController.text.trim().toLowerCase(),
                       rol: UserRole.teacher.value,
                       createdAt: RecdatDateUtils.currentDate(),

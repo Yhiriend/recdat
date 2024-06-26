@@ -80,10 +80,12 @@ class CardCourseWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 10.0),
                     Text(
-                      _truncateText(description, 3),
+                      _truncateText(
+                          description == "" ? "Sin descripción" : description,
+                          3),
                       style: const TextStyle(
                         fontSize: 16.0,
-                        color: RecdatStyles.defaultTextColor,
+                        color: Color.fromARGB(255, 167, 167, 167),
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

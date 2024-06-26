@@ -9,9 +9,11 @@ class RecdatTextfield extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType type;
   final bool enabled;
+  final bool isPassword;
 
   const RecdatTextfield({
     Key? key,
+    this.isPassword = false,
     this.enabled = true,
     required this.placeholder,
     required this.controller,
@@ -29,11 +31,18 @@ class RecdatTextfield extends StatefulWidget {
 class _RecdatTextfieldState extends State<RecdatTextfield> {
   bool _hasError = false;
   late TextEditingController _controller;
+  bool _obscureText = true;
 
   @override
   void initState() {
     super.initState();
     _controller = widget.controller;
+  }
+
+  void _togglePasswordView() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
   }
 
   @override
@@ -50,6 +59,7 @@ class _RecdatTextfieldState extends State<RecdatTextfield> {
             enabled: widget.enabled,
             controller: _controller,
             cursorColor: RecdatStyles.cursorColor,
+            obscureText: widget.isPassword ? _obscureText : false,
             style: widget.enabled
                 ? TextStyle(
                     color: widget.color == RecdatStyles.textFieldLight
@@ -75,6 +85,15 @@ class _RecdatTextfieldState extends State<RecdatTextfield> {
                   ? Icon(
                       widget.icon,
                       color: RecdatStyles.defaultColor,
+                    )
+                  : null,
+              suffixIcon: widget.isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                        color: RecdatStyles.defaultColor,
+                      ),
+                      onPressed: _togglePasswordView,
                     )
                   : null,
             ),

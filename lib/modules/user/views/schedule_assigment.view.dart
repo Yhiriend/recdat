@@ -48,8 +48,7 @@ class _ScheduleAssigmentViewState extends State<ScheduleAssigmentView> {
   }
 
   Future<List<DropdownOption>> _fetchTeachers() async {
-    final teacherProvider =
-        Provider.of<TeacherProvider>(context, listen: false);
+    final teacherProvider = Provider.of<UserProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     String uid = authProvider.uid;
     await teacherProvider.fetchUsers(context, uid);
@@ -78,8 +77,7 @@ class _ScheduleAssigmentViewState extends State<ScheduleAssigmentView> {
 
   Future<void> _uploadSchedule() async {
     if (_schedule != null && _teacherSelected != null) {
-      final teacherProvider =
-          Provider.of<TeacherProvider>(context, listen: false);
+      final teacherProvider = Provider.of<UserProvider>(context, listen: false);
       await teacherProvider.uploadPDFFile(
           context, _schedule!, _teacherSelected!.value);
     } else {

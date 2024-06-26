@@ -70,8 +70,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
   }
 
   void _updateTeacher() async {
-    final teacherProvider =
-        Provider.of<TeacherProvider>(context, listen: false);
+    final teacherProvider = Provider.of<UserProvider>(context, listen: false);
     final teacherUpdate = UserModel(
         instituteUid: _teacher.instituteUid,
         uid: _teacher.uid,
@@ -92,8 +91,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
   }
 
   Future<File?> _getSchedulePDF() async {
-    final teacherProvider =
-        Provider.of<TeacherProvider>(context, listen: false);
+    final teacherProvider = Provider.of<UserProvider>(context, listen: false);
     return await teacherProvider.getTeacherSchedule(context, _teacher.uid!);
   }
 

@@ -63,7 +63,7 @@ class _QrcodeViewState extends State<QrcodeView> {
     final isAdmin = userRol == UserRole.admin.value;
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50.0),
+        padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -73,8 +73,8 @@ class _QrcodeViewState extends State<QrcodeView> {
                   alignment: Alignment.center,
                   children: [
                     SizedBox(
-                      width: 260,
-                      height: 260,
+                      width: 267,
+                      height: 267,
                       child: Image.asset(
                         'assets/images/frameqr.png',
                         fit: BoxFit.cover,

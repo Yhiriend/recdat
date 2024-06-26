@@ -22,8 +22,7 @@ class CardTeacherWidget extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userUid = authProvider.user?.uid;
     final courseProvider = Provider.of<CourseProvider>(context, listen: false);
-    final teacherProvider =
-        Provider.of<TeacherProvider>(context, listen: false);
+    final teacherProvider = Provider.of<UserProvider>(context, listen: false);
     return Card(
       color: RecdatStyles.whiteColor,
       shape: RoundedRectangleBorder(
@@ -47,19 +46,16 @@ class CardTeacherWidget extends StatelessWidget {
                       color: RecdatStyles.opaquePrimaryBackgroundColor,
                     ),
                     child: Center(
-                      child: teacher.profilePic != null ||
-                              teacher.profilePic != ""
-                          ? Image.network(
-                              teacher.profilePic!,
-                              width: 58,
-                              height: 58,
-                              fit: BoxFit.cover,
-                            )
-                          : const Icon(
-                              Icons.face_rounded,
-                              size: 58,
-                              color: RecdatStyles.opaquePrimaryForegroundColor,
-                            ),
+                      child:
+                          teacher.profilePic == null || teacher.profilePic == ""
+                              ? Image.asset("assets/images/default_avatar.jpg")
+                              : Image.network(
+                                  teacher.profilePic ??
+                                      "https://quayshousing.org.uk/wp-content/uploads/2022/11/avatar-large-square-150x150.jpg",
+                                  width: 58,
+                                  height: 58,
+                                  fit: BoxFit.cover,
+                                ),
                     ),
                   ),
                 ),

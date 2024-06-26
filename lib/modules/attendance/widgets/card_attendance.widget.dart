@@ -57,7 +57,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
           setState(() {
             _canEdit = false;
             final teacherProvider =
-                Provider.of<TeacherProvider>(context, listen: false);
+                Provider.of<UserProvider>(context, listen: false);
 
             teacherProvider.updateAttendanceCanEdit(
                 context, _userUUID, _attendance!.uuid);
@@ -183,9 +183,9 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                         Stack(children: [
                           IconButton(
                             onPressed: () async {
-                              final teacherProvider =
-                                  Provider.of<TeacherProvider>(context,
-                                      listen: false);
+                              final teacherProvider = Provider.of<UserProvider>(
+                                  context,
+                                  listen: false);
                               await teacherProvider
                                   .deleteAttendance(
                                       context: context,
