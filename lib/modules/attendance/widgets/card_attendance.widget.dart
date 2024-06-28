@@ -25,8 +25,8 @@ class CardAttendanceWidget extends StatefulWidget {
 }
 
 class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
-  bool _canEdit = true;
-  int _counter = 60;
+  bool? _canEdit;
+  int? _counter;
   Timer? _timer;
   String _userUUID = "";
   Attendance? _attendance;
@@ -37,15 +37,16 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
     _canEdit = widget.attendance.canEdit;
     _userUUID = widget.userUUID;
     _attendance = widget.attendance;
+    _counter = _canEdit! ? 60 : 0;
     isChangeEnabled();
   }
 
   void isChangeEnabled() {
-    if (_canEdit) {
+    if (_canEdit!) {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
-          _counter--;
-          if (_counter <= 0) {
+          _counter = (_counter ?? 0) - 1;
+          if (_counter! <= 0) {
             _canEdit = false;
             _timer?.cancel();
           }
@@ -172,7 +173,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                     ),
                   ],
                 ),
-                if (_canEdit)
+                if (_canEdit!)
                   Positioned(
                     top: 0,
                     right: 0,

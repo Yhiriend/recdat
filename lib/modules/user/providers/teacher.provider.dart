@@ -278,9 +278,6 @@ class UserProvider with ChangeNotifier {
           if (userIndex != -1) {
             _userList[userIndex] = user;
           }
-
-          showSnackBar(context, "Attendance actualizado exitosamente!",
-              SnackBarType.success);
         } else {
           showSnackBar(context, "Attendance no encontrado", SnackBarType.error);
         }

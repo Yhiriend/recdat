@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/model/attendance.model.dart';
@@ -25,6 +26,8 @@ class ModalCreateAttendanceWidget extends StatefulWidget {
   State<ModalCreateAttendanceWidget> createState() =>
       _ModalCreateAttendanceWidgetState();
 }
+
+final databaseReference = FirebaseDatabase.instance.ref();
 
 class _ModalCreateAttendanceWidgetState
     extends State<ModalCreateAttendanceWidget> {
@@ -138,6 +141,19 @@ class _ModalCreateAttendanceWidgetState
                       .addAttendance(context, userUid, attendance)
                       .then((_) async {
                     await authProvider.syncUserDataByUid(context, userUid);
+
+                    Map<String, dynamic> attendanceData = {
+                      "title": attendance.title,
+                      "body": attendance.description,
+                      "createdAt": attendance.createdAt,
+                      "uuid": attendance.uuid
+                    };
+                    databaseReference
+                        .child(attendance.createdAt.split(" ")[0])
+                        .child(userUid)
+                        .child('attendances')
+                        .child(attendance.uuid)
+                        .set(attendanceData);
                     Navigator.of(context).pop();
                   });
                 },
