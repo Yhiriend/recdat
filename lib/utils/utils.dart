@@ -98,6 +98,31 @@ class RecdatDateUtils {
     final String formatted = formatter.format(now);
     return formatted;
   }
+
+  static String formatTimeDifference(String dateTimeString) {
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    DateTime now = DateTime.now();
+
+    Duration difference = now.difference(dateTime);
+
+    if (difference.inSeconds < 60) {
+      return 'hace menos de 1 minuto';
+    } else if (difference.inMinutes < 60) {
+      int minutes = difference.inMinutes;
+      return 'hace $minutes minutos';
+    } else if (difference.inHours < 24) {
+      int hours = difference.inHours;
+      return hours == 1 ? 'hace una hora' : 'hace $hours horas';
+    } else {
+      int days = difference.inDays;
+      if (days < 7) {
+        return days == 1 ? 'hace 1 día' : 'hace $days días';
+      } else {
+        int weeks = (days / 7).floor();
+        return weeks == 1 ? 'hace 1 semana' : 'hace $weeks semanas';
+      }
+    }
+  }
 }
 
 class CourseOptionsUtils {

@@ -8,6 +8,7 @@ class RecdatInputDate extends StatefulWidget {
   final String? color;
   final String? Function(String?)? validator;
   final bool enabled;
+  final ValueChanged<DateTime?>? onChanged; // Nueva propiedad onChanged
 
   const RecdatInputDate({
     Key? key,
@@ -17,6 +18,7 @@ class RecdatInputDate extends StatefulWidget {
     this.icon,
     this.validator,
     this.color,
+    this.onChanged, // Añadir onChanged al constructor
   }) : super(key: key);
 
   @override
@@ -45,6 +47,11 @@ class _RecdatInputDateState extends State<RecdatInputDate> {
       setState(() {
         _controller.text = "${pickedDate.toLocal()}".split(' ')[0];
       });
+
+      // Llamar a onChanged con la fecha seleccionada
+      if (widget.onChanged != null) {
+        widget.onChanged!(pickedDate);
+      }
     }
   }
 

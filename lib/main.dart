@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/course/views/courses.view.dart';
+import 'package:recdat/modules/notifications/providers/notification.provider.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/modules/user/views/create_teacher.view.dart';
 import 'package:recdat/modules/user/views/schedule_assigment.view.dart';
 import 'package:recdat/modules/user/views/teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
+import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/utils/routes.dart';
 import 'package:recdat/views/home.view.dart';
 import 'package:recdat/views/login.view.dart';
@@ -52,10 +54,12 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CourseProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider())
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        color: RecdatStyles.whiteColor,
         home: Navigator(
           initialRoute: '/',
           onGenerateRoute: (settings) {

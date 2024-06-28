@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/views/attendance.view.dart';
@@ -37,6 +34,7 @@ class _HomeViewState extends State<HomeView> {
     final isAdmin = userRol == UserRole.admin.value;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: RecdatStyles.whiteColor,
         appBar: AppBar(
           backgroundColor: RecdatStyles.blueDarkColor,
           title: Text(
