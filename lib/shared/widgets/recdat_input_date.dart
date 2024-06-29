@@ -67,11 +67,13 @@ class _RecdatInputDateState extends State<RecdatInputDate> {
             onTap: () => _selectDate(context),
             child: AbsorbPointer(
               child: TextFormField(
+                textAlign: TextAlign.start,
+                textDirection: TextDirection.ltr,
                 enabled: widget.enabled,
                 controller: _controller,
                 cursorColor: Colors.blue,
                 style: widget.enabled
-                    ? TextStyle(
+                    ? const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
                       )

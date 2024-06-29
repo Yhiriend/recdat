@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/model/attendance.model.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
@@ -137,12 +138,13 @@ class _ModalCreateAttendanceWidgetState
                       .addAttendance(context, userUid, attendance)
                       .then((_) async {
                     await authProvider.syncUserDataByUid(context, userUid);
-
+                    final UserModel user = authProvider.user!;
                     Map<String, dynamic> attendanceData = {
-                      "title": attendance.title,
+                      "title": "${user.name} ${user.surname} no asistirá hoy.",
                       "body": attendance.description,
                       "createdAt": attendance.createdAt,
-                      "uuid": attendance.uuid
+                      "uuid": attendance.uuid,
+                      "createdBy": userUid
                     };
                     databaseReference
                         .child(attendance.createdAt.split(" ")[0])

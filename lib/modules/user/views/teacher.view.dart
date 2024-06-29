@@ -90,7 +90,6 @@ class _TeachersViewState extends State<TeachersView> {
                 itemCount: teacherProvider.userList.length,
                 itemBuilder: (context, index) {
                   final teacher = teacherProvider.userList[index];
-                  print("TEACHER PIC: ${teacher.profilePic}");
                   return CardTeacherWidget(teacher: teacher);
                 },
               );

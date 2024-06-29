@@ -100,6 +100,7 @@ class _QrcodeViewState extends State<QrcodeView> {
                           Text(
                             lastQRDate,
                             style: const TextStyle(
+                                fontSize: 12,
                                 color: RecdatStyles.blueDarkColor),
                           )
                         ]))
