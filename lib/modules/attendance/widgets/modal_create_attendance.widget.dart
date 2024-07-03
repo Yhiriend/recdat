@@ -17,7 +17,7 @@ import 'package:recdat/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class ModalCreateAttendanceWidget extends StatefulWidget {
-  ModalCreateAttendanceWidget({super.key});
+  const ModalCreateAttendanceWidget({super.key});
 
   @override
   State<ModalCreateAttendanceWidget> createState() =>
@@ -40,21 +40,6 @@ class _ModalCreateAttendanceWidgetState
   @override
   void initState() {
     super.initState();
-  }
-
-  Future<void> _openFilePicker() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['pdf', 'jpg', 'png', 'jpeg'],
-      allowMultiple: false,
-    );
-
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _selectedFile = File(result.files.single.path!);
-        _fileName = result.files.single.name;
-      });
-    }
   }
 
   _onFileChange(File file) {
@@ -147,7 +132,7 @@ class _ModalCreateAttendanceWidgetState
                       "createdBy": userUid
                     };
                     databaseReference
-                        .child(attendance.createdAt.split(" ")[0])
+                        .child(attendance.createdAt.toString())
                         .child(userUid)
                         .child('attendances')
                         .child(attendance.uuid)

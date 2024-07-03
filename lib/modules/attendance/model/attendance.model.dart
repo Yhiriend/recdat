@@ -2,7 +2,7 @@ class Attendance {
   String uuid;
   String title;
   String description;
-  String createdAt;
+  DateTime? createdAt;
   String filepath;
   String type;
   bool canEdit;
@@ -23,7 +23,8 @@ class Attendance {
       canEdit: map['canEdit'] ?? false,
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      createdAt: map['createdAt'] ?? '',
+      createdAt:
+          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
       filepath: map['filepath'] ?? '',
       type: map['type'] ?? '',
     );

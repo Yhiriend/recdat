@@ -1,10 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/notifications/providers/notification.provider.dart';
 import 'package:recdat/modules/notifications/views/notification_details.view.dart';
-import 'package:recdat/shared/widgets/recdat_input_date.dart';
 import 'package:recdat/utils/utils.dart';
 
 class AdminNotificationsView extends StatefulWidget {
@@ -17,169 +15,81 @@ class AdminNotificationsView extends StatefulWidget {
 class _AdminNotificationsViewState extends State<AdminNotificationsView> {
   late NotificationProvider _notificationProvider;
   late DatabaseReference _databaseReference;
-  late TextEditingController _filterStartDate;
-  late TextEditingController _filterEndDate;
 
   @override
   void initState() {
     super.initState();
-    DateTime now = DateTime.now().toUtc().subtract(const Duration(hours: 5));
-    String today = DateFormat('yyyy-MM-dd').format(now);
-
-    _filterStartDate = TextEditingController(text: today);
-    _filterEndDate = TextEditingController(text: today);
-
+    _databaseReference = FirebaseDatabase.instance.ref();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _notificationProvider =
           Provider.of<NotificationProvider>(context, listen: false);
-      _filterAttendancesByDate();
+      _listenToDatabase();
     });
   }
 
-  Future<void> _filterAttendancesByDate() async {
-    final startDate = _filterStartDate.text;
-    final endDate = _filterEndDate.text;
-
-    if (startDate.isEmpty || endDate.isEmpty) {
-      return;
-    }
-
-    final startDateTime =
-        DateTime.parse(startDate).toUtc().subtract(const Duration(hours: 5));
-    final endDateTime = DateTime.parse(endDate)
-        .toUtc()
-        .add(const Duration(days: 1))
-        .subtract(const Duration(hours: 5));
-
+  void _listenToDatabase() {
     _notificationProvider.setLoading(true);
 
-    try {
-      final snapshot = await FirebaseDatabase.instance.ref().get();
+    _databaseReference.onValue.listen((event) {
+      final snapshot = event.snapshot;
       if (snapshot.value != null) {
         Map<String, dynamic> allData =
             Map<String, dynamic>.from(snapshot.value as Map);
-        List<Map<String, dynamic>> filteredList = [];
+        List<Map<String, dynamic>> allAttendances = [];
 
         allData.forEach((dateKey, users) {
           if (users is Map) {
-            DateTime date = DateTime.parse(dateKey);
-            if (date.isAfter(startDateTime) && date.isBefore(endDateTime)) {
-              users.forEach((userKey, userValue) {
-                if (userValue is Map && userValue['attendances'] != null) {
-                  Map<String, dynamic> attendances =
-                      Map<String, dynamic>.from(userValue['attendances']);
-                  attendances.forEach((attendanceKey, attendanceValue) {
-                    if (attendanceValue is Map &&
-                        attendanceValue['createdAt'] != null) {
-                      final createdAt =
-                          DateTime.parse(attendanceValue['createdAt']);
-                      if (createdAt.isAfter(startDateTime) &&
-                          createdAt.isBefore(endDateTime)) {
-                        filteredList
-                            .add(Map<String, dynamic>.from(attendanceValue));
-                      }
-                    }
-                  });
-                }
-              });
-            }
+            users.forEach((userKey, userValue) {
+              if (userValue is Map && userValue['attendances'] != null) {
+                Map<String, dynamic> attendances =
+                    Map<String, dynamic>.from(userValue['attendances']);
+                attendances.forEach((attendanceKey, attendanceValue) {
+                  if (attendanceValue is Map) {
+                    allAttendances
+                        .add(Map<String, dynamic>.from(attendanceValue));
+                  }
+                });
+              }
+            });
           }
         });
 
-        _notificationProvider.setAttendances(filteredList);
+        // Sort attendances by createdAt in descending order
+        allAttendances.sort((a, b) {
+          DateTime dateA = DateTime.parse(a['createdAt']);
+          DateTime dateB = DateTime.parse(b['createdAt']);
+          return dateB.compareTo(dateA); // Newest first
+        });
+
+        _notificationProvider.setAttendances(allAttendances);
       } else {
         _notificationProvider.setAttendances([]);
       }
-    } catch (e) {
-      debugPrint('Error filtering data: $e');
-      _notificationProvider.setAttendances([]);
-    } finally {
       _notificationProvider.setLoading(false);
-    }
+    }, onError: (error) {
+      debugPrint('Error listening to database: $error');
+      _notificationProvider.setAttendances([]);
+      _notificationProvider.setLoading(false);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color.fromARGB(115, 0, 0, 0),
-                    width: 1.0,
-                  ),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Desde",
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        fontSize: 15,
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.015,
-                    ),
-                    Expanded(
-                      child: RecdatInputDate(
-                        placeholder: "Fecha",
-                        controller: _filterStartDate,
-                        onChanged: (date) {
-                          // Handle date filter change if needed
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.03,
-                    ),
-                    const Text(
-                      "Hasta",
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        fontSize: 15,
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.015,
-                    ),
-                    Expanded(
-                      child: RecdatInputDate(
-                        placeholder: "Fecha",
-                        controller: _filterEndDate,
-                        onChanged: (date) {
-                          // Handle date filter change if needed
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: _filterAttendancesByDate,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Consumer<NotificationProvider>(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Consumer<NotificationProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (provider.attendances.isEmpty) {
-                  return Center(child: Text('No attendances found'));
+                  return const Center(child: Text('No attendances found'));
                 }
                 return ListView.builder(
-                  shrinkWrap: true,
                   itemCount: provider.attendances.length,
                   itemBuilder: (context, index) {
                     var attendance = provider.attendances[index];
@@ -214,8 +124,8 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
                 );
               },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

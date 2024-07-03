@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_dropdown.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/standalone.dart' as tz;
 
 class SnackBarType {
   final String value;
@@ -56,7 +53,7 @@ void showSnackBar(BuildContext? context, String text, SnackBarType type) {
           ],
         ),
         backgroundColor: backgroundColor,
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -88,18 +85,14 @@ class RecdatCollections {
 class RecdatDateUtils {
   RecdatDateUtils._();
 
-  static String currentDate() {
-    tz.initializeTimeZones();
-    final location = tz.getLocation('America/Bogota');
-    final now = tz.TZDateTime.now(location);
-    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-    final String formatted = formatter.format(now);
-    return formatted;
+  static DateTime currentDate() {
+    final now = DateTime.now();
+    return now;
   }
 
   static String formatTimeDifference(String dateTimeString) {
     DateTime dateTime = DateTime.parse(dateTimeString);
-    DateTime now = DateTime.now();
+    DateTime now = currentDate();
 
     Duration difference = now.difference(dateTime);
 

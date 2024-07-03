@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class CourseOptions {
   final String uid;
   final String name;
@@ -12,8 +10,8 @@ class CourseModel {
   String? name;
   String? description;
   String? grade;
-  String? createdAt;
-  String? updatedAt;
+  DateTime? createdAt;
+  DateTime? updatedAt;
   String? type;
 
   CourseModel(
@@ -31,8 +29,10 @@ class CourseModel {
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       grade: map['grade'] ?? '',
-      createdAt: map['createdAt'] ?? '',
-      updatedAt: map['updatedAt'] ?? '',
+      createdAt:
+          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
+      updatedAt:
+          map['updatedAt'] != null ? DateTime.parse(map['updatedAt']) : null,
       type: map['type'] ?? '',
     );
   }

@@ -12,13 +12,13 @@ class RecdatAlert extends StatelessWidget {
   final Function onSubmit;
 
   const RecdatAlert({
-    Key? key,
+    super.key,
     required this.alertType,
     required this.title,
     required this.message,
     required this.buttonText,
     required this.onSubmit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,14 +100,14 @@ class CardDialog extends StatelessWidget {
   final Function onSubmit;
 
   const CardDialog({
-    Key? key,
+    super.key,
     this.backgroundColor,
     this.iconColor,
     required this.title,
     required this.message,
     required this.buttonText,
     required this.onSubmit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +129,7 @@ class CardDialog extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             title,
-            style: TextStyle(fontSize: 25),
+            style: const TextStyle(fontSize: 25),
           ),
           const SizedBox(height: 4),
           Text(message),
@@ -179,13 +179,13 @@ class CardDialog extends StatelessWidget {
                     }
                   });
                 },
-                child: Text(buttonText),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: iconColor,
                   foregroundColor: const Color(0xff2a303e),
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 28),
                 ),
+                child: Text(buttonText),
               )
             ],
           )

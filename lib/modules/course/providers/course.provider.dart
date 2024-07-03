@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class CourseProvider with ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   List<CourseModel> _courseList = [];
   bool _isLoading = false;
 
   List<CourseModel> get courseList => _courseList;
   bool get isLoading => _isLoading;
-
-  CourseProvider() {}
 
   Future<void> fetchCourses(BuildContext context, String instituteId) async {
     _isLoading = true;

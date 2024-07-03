@@ -161,10 +161,6 @@ class CardTeacherWidget extends StatelessWidget {
     return '${words.sublist(0, maxWords).join(' ')}...';
   }
 
-  String _splitText(String grade) {
-    return grade.split(" ")[0].trim().toString();
-  }
-
   Widget _buildCourseTypeBadge(String email, bool isActive) {
     Color badgeColor;
 

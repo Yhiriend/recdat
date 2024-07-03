@@ -83,7 +83,7 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
                     width: 20,
                   ),
                   Text(
-                    _attendance?.createdAt ?? "Sin fecha",
+                    _attendance?.createdAt.toString() ?? "Sin fecha",
                     style: const TextStyle(fontSize: 16),
                   )
                 ],

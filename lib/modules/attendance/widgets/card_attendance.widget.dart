@@ -161,7 +161,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                         ),
                         const SizedBox(height: 10.0),
                         Text(
-                          _attendance!.createdAt,
+                          _attendance!.createdAt.toString(),
                           style: const TextStyle(
                             fontSize: 16.0,
                             color: RecdatStyles.parraphLightColor,

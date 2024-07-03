@@ -28,7 +28,8 @@ class _QrcodeViewState extends State<QrcodeView> {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final UserModel? userData = authProvider.user;
       if (userData!.isComplete() == true) {
-        final String currentDate = RecdatDateUtils.currentDate();
+        final String currentDate =
+            RecdatDateUtils.currentDate().toString().split(".")[0];
         final QRModel qrData = QRModel(
             uid: userData.uid,
             name: userData.name,

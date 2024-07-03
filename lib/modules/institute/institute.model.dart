@@ -4,7 +4,7 @@ class InstituteModel {
   String? uid;
   String? name;
   List<CourseModel>? courses;
-  String? createdAt;
+  DateTime? createdAt;
 
   InstituteModel({
     required this.uid,
@@ -20,7 +20,8 @@ class InstituteModel {
       courses: (map['courses'] as List<dynamic>?)
           ?.map((course) => CourseModel.fromMap(course))
           .toList(),
-      createdAt: map['createdAt'] ?? '',
+      createdAt:
+          map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
     );
   }
 

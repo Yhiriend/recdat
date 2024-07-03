@@ -328,4 +328,31 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> assignEntry(BuildContext context, String userId,
+      List<UserEntryAssignment> newEntryAssignments) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      DocumentReference userRef =
+          _firebaseFirestore.collection("users").doc(userId);
+
+      // Convertir la lista de UserEntryAssignment a una lista de mapas
+      List<Map<String, dynamic>> entryAssignmentsMap =
+          newEntryAssignments.map((assignment) => assignment.toMap()).toList();
+
+      // Actualizar el campo 'entryAssigments' con la nueva lista
+      await userRef.update({'entryAssigments': entryAssignmentsMap});
+
+      showSnackBar(context, "Asignaciones actualizadas exitosamente!",
+          SnackBarType.success);
+    } catch (e) {
+      showSnackBar(context, "Ups! no se pudo actualizar las asignaciones",
+          SnackBarType.error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

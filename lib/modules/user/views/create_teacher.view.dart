@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
-import 'package:recdat/shared/widgets/recdat_multiselect.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
 
 class CreateTeacherView extends StatefulWidget {

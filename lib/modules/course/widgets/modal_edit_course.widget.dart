@@ -21,7 +21,7 @@ class ModalEditCourseWidget extends StatelessWidget {
   final String courseArea;
   final String courseGrade;
   final String courseUid;
-  final String courseCreatedAt;
+  final DateTime courseCreatedAt;
 
   ModalEditCourseWidget(
       {super.key,

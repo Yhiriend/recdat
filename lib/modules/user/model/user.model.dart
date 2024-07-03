@@ -19,12 +19,13 @@ class UserModel {
   String? email;
   String? phone;
   String? rol;
-  String? createdAt;
-  String? updatedAt;
+  DateTime? createdAt;
+  DateTime? updatedAt;
   String? profilePic;
   bool isActive;
   List<CourseModel>? courses;
   List<Attendance>? attendances;
+  List<UserEntryAssignment>? entryAssigments;
   String password;
   String? question;
   String? answer;
@@ -45,6 +46,7 @@ class UserModel {
       this.profilePic,
       this.courses,
       this.attendances,
+      this.entryAssigments,
       required this.isActive,
       required this.password});
 
@@ -60,8 +62,10 @@ class UserModel {
         email: map['email'] ?? '',
         phone: map['phone'] ?? '',
         rol: map['rol'] ?? '',
-        createdAt: map['createdAt'] ?? '',
-        updatedAt: map['updatedAt'] ?? '',
+        createdAt:
+            map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
+        updatedAt:
+            map['updatedAt'] != null ? DateTime.parse(map['updatedAt']) : null,
         profilePic: map['profilePic'],
         isActive: map['isActive'] ?? false,
         courses: map['courses'] != null
@@ -71,6 +75,10 @@ class UserModel {
         attendances: map['attendances'] != null
             ? List<Attendance>.from((map['attendances'] as List)
                 .map((item) => Attendance.fromMap(item)))
+            : [],
+        entryAssigments: map['entryAssigments'] != null
+            ? List<UserEntryAssignment>.from((map['entryAssigments'] as List)
+                .map((item) => UserEntryAssignment.fromMap(item)))
             : [],
         password: map['password'] ?? '');
   }
@@ -87,13 +95,16 @@ class UserModel {
       "email": email,
       "phone": phone,
       "rol": rol,
-      "createdAt": createdAt,
-      "updatedAt": updatedAt,
+      "createdAt": createdAt?.toIso8601String(),
+      "updatedAt": updatedAt?.toIso8601String(),
       "profilePic": profilePic,
       "isActive": isActive,
       "courses": courses?.map((course) => course.toMap()).toList(),
       'attendances':
           attendances?.map((attendance) => attendance.toMap()).toList(),
+      'entryAssigments': entryAssigments
+          ?.map((entryAssigments) => entryAssigments.toMap())
+          .toList(),
       "password": password,
     };
   }
@@ -104,5 +115,37 @@ class UserModel {
         surname.isNotEmpty &&
         email!.isNotEmpty &&
         rol!.isNotEmpty);
+  }
+}
+
+class UserEntryAssignment {
+  final String day;
+  String hour;
+
+  UserEntryAssignment({
+    required this.day,
+    this.hour = "",
+  });
+
+  void clearHour() {
+    hour = "";
+  }
+
+  void setHour(String newHour) {
+    hour = newHour;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'day': day,
+      'hour': hour,
+    };
+  }
+
+  factory UserEntryAssignment.fromMap(Map<String, dynamic> map) {
+    return UserEntryAssignment(
+      day: map['day'] ?? '',
+      hour: map['hour'] ?? '',
+    );
   }
 }
