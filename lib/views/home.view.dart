@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/views/attendance.view.dart';
 import 'package:recdat/modules/qr/qr_frame.dart';
+import 'package:recdat/modules/reports/views/general_report.view.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
@@ -83,12 +84,8 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                   Container(
-                    color: Colors.green,
-                    child: const Center(
-                      child: QRFrame(
-                        qrData: "hello",
-                      ),
-                    ),
+                    color: RecdatStyles.whiteColor,
+                    child: const Center(child: GeneralReportView()),
                   ),
                   Container(
                     color: RecdatStyles.whiteColor,
