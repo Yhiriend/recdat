@@ -64,16 +64,18 @@ class LocalNotifications {
         payload: payload);
   }
 
-  static Future showScheduledNotification(
-      {required String title,
-      required String body,
-      required String payload}) async {
-    tz.initializeTimeZones();
+  static Future showScheduledNotification({
+    required String title,
+    required String body,
+    required String payload,
+    required tz.TZDateTime scheduledDate,
+  }) async {
     await _flutterLocalNotificationsPlugin.zonedSchedule(
         2,
         title,
         body,
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        //tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        scheduledDate,
         const NotificationDetails(
           android: AndroidNotificationDetails('channel 3', 'your channel name',
               channelDescription: 'your channel description',
