@@ -12,6 +12,7 @@ import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_dropdown.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/hasher.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/pdf_viewer.view.dart';
 
@@ -25,7 +26,7 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   late UserModel? _userLogged;
   late bool _isActive;
-  late List<CourseModel> _courses;
+  late List<CourseModel> _courses = [];
 
   final TextEditingController _userNameController = TextEditingController();
 
@@ -47,15 +48,20 @@ class _SettingsViewState extends State<SettingsView> {
   File? _selectedImage;
   dynamic _profilePic;
 
+  String? _oldPass = "";
+
   @override
   void initState() {
     super.initState();
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     _userLogged = authProvider.user;
-    _setUserValues(_userLogged!);
+    if (_userLogged != null) {
+      _setUserValues(_userLogged!);
+    }
   }
 
   void _setUserValues(UserModel user) async {
+    _oldPass = user.password;
     _userNameController.text = user.name;
     _userSurnameController.text = user.surname;
     _userSecondSurnameController.text = user.lastSurname ?? "";
@@ -85,7 +91,12 @@ class _SettingsViewState extends State<SettingsView> {
       _profilePic = await userProvider.uploadFile(
           context, _selectedImage!, _userLogged!.uid!);
     }
+    var passHasChanged = false;
+    if (_oldPass != _userPasswordController.text.trim()) {
+      passHasChanged = true;
+    }
     final userUpdated = UserModel(
+        entryAssigments: _userLogged!.entryAssigments,
         instituteUid: _userLogged!.instituteUid,
         uid: _userLogged!.uid,
         name: _userLogged!.name,
@@ -97,7 +108,9 @@ class _SettingsViewState extends State<SettingsView> {
         isActive: _userLogged!.isActive,
         createdAt: _userLogged!.createdAt,
         updatedAt: RecdatDateUtils.currentDate().toString(),
-        password: _userPasswordController.text.trim(),
+        password: passHasChanged
+            ? hashPassword(_userPasswordController.text.trim())
+            : _oldPass!,
         courses: _userLogged!.courses,
         question: _userSecurityQuestionController.text.trim().toLowerCase(),
         answer: _userSecurityAnswerController.text.trim().toLowerCase(),

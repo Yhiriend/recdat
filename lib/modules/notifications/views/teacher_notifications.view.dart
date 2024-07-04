@@ -19,7 +19,7 @@ class TeacherNotificationsView extends StatefulWidget {
 }
 
 class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
-  late List<UserEntryAssignment> _daysOfWeek;
+  late List<UserEntryAssignment> _daysOfWeekState = [];
 
   @override
   void initState() {
@@ -33,11 +33,11 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
 
   void _initializeAssignments() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.syncUserDataByUid(context, authProvider.uid);
+    await authProvider.syncUserDataByUid(context);
 
     final user = authProvider.user;
     // Inicializa la lista con los valores predeterminados si initialAssignments es null o vacío
-    _daysOfWeek = [
+    var _daysOfWeek = [
       UserEntryAssignment(day: "Monday"),
       UserEntryAssignment(day: "Tuesday"),
       UserEntryAssignment(day: "Wednesday"),
@@ -47,6 +47,10 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
       UserEntryAssignment(day: "Sunday"),
     ];
 
+    setState(() {
+      _daysOfWeekState = _daysOfWeek;
+    });
+
     // Actualiza los valores de _daysOfWeek si el usuario tiene entryAssignments definido
     if (user != null && user.entryAssigments != null) {
       _daysOfWeek.forEach((day) {
@@ -54,8 +58,11 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
           (assignment) => assignment.day == day.day,
           orElse: () => UserEntryAssignment(day: day.day, hour: ""),
         );
-        day.hour =
-            assignment.hour; // Actualiza la hora para el día correspondiente
+        day.hour = assignment.hour;
+      });
+
+      setState(() {
+        _daysOfWeekState = _daysOfWeek;
       });
     }
   }
@@ -73,13 +80,13 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
   void scheduleNotifications() {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.user;
+
     tz.initializeTimeZones();
 
     if (user != null && user.entryAssigments != null) {
-      final now = tz.TZDateTime.now(
-          tz.local); // Obtén la fecha y hora actual en la zona horaria local
-
-      _daysOfWeek.forEach((day) {
+      final now = tz.TZDateTime.now(tz.getLocation('America/Bogota'));
+      print("NOW $now");
+      _daysOfWeekState.forEach((day) {
         final assignment = user.entryAssigments!.firstWhere(
           (assignment) => assignment.day == day.day,
           orElse: () => UserEntryAssignment(day: day.day, hour: ""),
@@ -99,19 +106,34 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
             hour = 0;
           }
 
-          // Crea el DateTime programado en la zona horaria local
+          // Crea el DateTime programado en la zona horaria de Colombia
           final scheduledDateTime = tz.TZDateTime(
-            tz.local,
+            tz.getLocation('America/Bogota'),
             now.year,
             now.month,
             now.day,
             hour,
-            minute,
+            (minute + 3),
           );
+          print("SCHEDULED $scheduledDateTime");
+          // Verifica si la fecha es la misma y la hora programada es mayor
+          if (scheduledDateTime.year == now.year &&
+              scheduledDateTime.month == now.month &&
+              scheduledDateTime.day == now.day &&
+              scheduledDateTime.hour > now.hour) {
+            // Programa la notificación si la hora programada es mayor a la actual
 
-          // Verifica si la fecha programada es en el futuro
-          if (scheduledDateTime.isAfter(now)) {
-            // Programa la notificación si la fecha es futura
+            print("HAS BEEN PROGRAMED");
+            LocalNotifications.showScheduledNotification(
+              title: "Registro Pendiente",
+              body:
+                  "Recuerda que debes registrarte en la institución antes de ${assignment.hour}",
+              payload: "",
+              scheduledDate: scheduledDateTime,
+            );
+          } else if (scheduledDateTime.isAfter(now)) {
+            LocalNotifications.cancelAll();
+
             LocalNotifications.showScheduledNotification(
               title: "Registro Pendiente",
               body:
@@ -151,7 +173,7 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
                     DataColumn(label: Text('Day')),
                     DataColumn(label: Text('Hour')),
                   ],
-                  rows: _daysOfWeek.asMap().entries.map((entry) {
+                  rows: _daysOfWeekState.asMap().entries.map((entry) {
                     int index = entry.key;
                     UserEntryAssignment dayEntry = entry.value;
                     return DataRow(

@@ -32,6 +32,7 @@ dependencies:
   encrypt: ^5.0.3
   flutter_local_notifications: ^17.2.1
   rxdart: ^0.28.0
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:

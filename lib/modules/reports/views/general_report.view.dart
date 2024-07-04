@@ -165,12 +165,6 @@ class _GeneralReportViewState extends State<GeneralReportView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_title),
-        actions: [
-          ElevatedButton(
-            onPressed: () {},
-            child: Text("Descargar"),
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

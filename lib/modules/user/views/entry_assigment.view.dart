@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Asegúrate de tener Provider en tus dependencias
+import 'package:provider/provider.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
-import 'package:recdat/shared/widgets/recdat_button_async.dart'; // Ajusta esta ruta según tu estructura
+import 'package:recdat/shared/widgets/recdat_button_async.dart';
 
 class EntryAssigmentView extends StatefulWidget {
   final String userId; // Recibe el userId
@@ -39,7 +39,7 @@ class _EntryAssigmentViewState extends State<EntryAssigmentView> {
         UserEntryAssignment(day: "Sunday"),
       ];
     } else {
-      _daysOfWeek = widget.initialAssignments!;
+      _daysOfWeek = List.from(widget.initialAssignments!);
     }
   }
 
@@ -50,7 +50,10 @@ class _EntryAssigmentViewState extends State<EntryAssigmentView> {
     );
     if (picked != null) {
       setState(() {
-        _daysOfWeek[index].setHour(picked.format(context));
+        // Convertir a formato HH:mm (24 horas)
+        String formattedHour =
+            '${picked.hour}:${picked.minute.toString().padLeft(2, '0')}';
+        _daysOfWeek[index].setHour(formattedHour);
       });
     }
   }
@@ -63,6 +66,8 @@ class _EntryAssigmentViewState extends State<EntryAssigmentView> {
 
   void _saveAssignments() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    // Puedes guardar directamente _daysOfWeek, asumiendo que ya están en formato HH:mm
     await userProvider.assignEntry(context, widget.userId, _daysOfWeek);
 
     // Puedes mostrar un mensaje de éxito o navegar a otra pantalla si es necesario

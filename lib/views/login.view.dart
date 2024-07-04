@@ -6,6 +6,7 @@ import 'package:recdat/shared/widgets/recdat_textfield.dart';
 import 'package:recdat/utils/routes.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/home.view.dart';
+import 'package:recdat/views/register.view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -137,8 +138,10 @@ class _LoginViewState extends State<LoginView> {
                       children: [
                         TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(
-                                  context, RecdatRoutes.register);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RegisterView()));
                             },
                             child: const Text(
                               "Registrarse como administrador",

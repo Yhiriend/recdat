@@ -88,7 +88,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
         .remove();
 
     // Sincronizar los datos del usuario después de eliminar la asistencia
-    authProvider.syncUserDataByUid(context, _userUUID);
+    authProvider.syncUserDataByUid(context);
   }
 
   @override

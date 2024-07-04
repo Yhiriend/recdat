@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
+import 'package:recdat/modules/course/views/courses.view.dart';
 import 'package:recdat/modules/qr/model/qr.model.dart';
 import 'package:recdat/modules/qr/qr_frame.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
+import 'package:recdat/modules/user/views/teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
@@ -40,11 +42,11 @@ class _QrcodeViewState extends State<QrcodeView> {
             date: currentDate);
         final String qrDataStringified = jsonEncode(qrData);
 
-        final String encryptedQRData = encryptString(qrDataStringified);
+        //final String encryptedQRData = encryptString(qrDataStringified);
 
         await Future.delayed(const Duration(seconds: 3));
         setState(() {
-          lastQRData = encryptedQRData;
+          lastQRData = qrDataStringified;
           lastQRDate = currentDate;
         });
         showSnackBar(context, "QR actualizado 😉", SnackBarType.success);
@@ -132,14 +134,20 @@ class _QrcodeViewState extends State<QrcodeView> {
                     child: const Icon(Icons.school),
                     label: "Cursos",
                     onTap: () {
-                      Navigator.pushNamed(context, RecdatRoutes.courses);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const CoursesView()));
                     }),
                 SpeedDialChild(
                     foregroundColor: RecdatStyles.blueDarkColor,
                     child: const Icon(Icons.groups_rounded),
                     label: "Profesores",
                     onTap: () {
-                      Navigator.pushNamed(context, RecdatRoutes.teachers);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const TeachersView()));
                     })
               ],
             )

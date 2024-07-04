@@ -460,4 +460,70 @@ class UserProvider with ChangeNotifier {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>>
+      fetchJustifiedVsUnjustifiedAttendance() async {
+    List<Map<String, dynamic>> result = [];
+
+    try {
+      QuerySnapshot snapshot =
+          await _firebaseFirestore.collection("users").get();
+      Map<String, Map<String, int>> weeklyAttendance = {};
+
+      for (var doc in snapshot.docs) {
+        UserModel user = UserModel.fromMap(doc.data() as Map<String, dynamic>);
+        List<Attendance>? attendances = user.attendances;
+
+        if (attendances != null) {
+          for (var attendance in attendances) {
+            if (attendance.createdAt == null)
+              continue; // Skip if createdAt is null
+
+            DateTime createdAt = DateTime.parse(attendance.createdAt!);
+            int weekOfYear = _getWeekOfYear(createdAt);
+
+            if (!weeklyAttendance.containsKey(weekOfYear.toString())) {
+              weeklyAttendance[weekOfYear.toString()] = {
+                'justificadas': 0,
+                'noJustificadas': 0
+              };
+            }
+
+            if (attendance.filepath != null &&
+                attendance.filepath!.isNotEmpty) {
+              weeklyAttendance[weekOfYear.toString()]!['justificadas'] =
+                  (weeklyAttendance[weekOfYear.toString()]!['justificadas'] ??
+                          0) +
+                      1;
+            } else {
+              weeklyAttendance[weekOfYear.toString()]!['noJustificadas'] =
+                  (weeklyAttendance[weekOfYear.toString()]!['noJustificadas'] ??
+                          0) +
+                      1;
+            }
+          }
+        }
+      }
+
+      weeklyAttendance.forEach((week, counts) {
+        result.add({
+          'date': week,
+          'justificadas': counts['justificadas'] ?? 0,
+          'noJustificadas': counts['noJustificadas'] ?? 0,
+        });
+      });
+    } catch (e) {
+      print("Error fetching justified vs unjustified attendance data: $e");
+    }
+
+    return result;
+  }
+
+  int _getWeekOfYear(DateTime date) {
+    final startOfYear = DateTime(date.year, 1, 1);
+    final firstMonday = startOfYear.weekday;
+    final daysSinceFirstMonday = date.difference(startOfYear).inDays + 1;
+
+    return ((daysSinceFirstMonday - 1) / 7).ceil() + 1;
+  }
 }

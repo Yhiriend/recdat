@@ -5,6 +5,7 @@ import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/hasher.dart';
 import 'package:recdat/utils/utils.dart';
 import 'dart:core';
 
@@ -106,7 +107,7 @@ class _RegisterViewState extends State<RegisterView> {
         rol: UserRole.admin.value,
         isActive: true,
         createdAt: RecdatDateUtils.currentDate().toString(),
-        password: passwordController.text.trim());
+        password: hashPassword(passwordController.text.trim()));
     ap.saveUserDataToFirebase(
         context: context,
         userModel: userModel,

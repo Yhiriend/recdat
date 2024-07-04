@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:recdat/modules/institute/institute.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart' as user_model;
+import 'package:recdat/utils/hasher.dart';
 import 'package:recdat/utils/utils.dart';
+import 'package:recdat/views/welcome.view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -218,7 +220,10 @@ class AuthProvider with ChangeNotifier {
 
         final userData = userDoc.data() as Map<String, dynamic>;
 
-        if (userData['password'] == password) {
+        final dbPass = userData['password'];
+        final enterPass = password;
+
+        if (verifyPassword(enterPass, dbPass)) {
           final userModel = user_model.UserModel.fromMap(userData);
 
           setUser(userModel);
@@ -227,6 +232,7 @@ class AuthProvider with ChangeNotifier {
 
           return true;
         }
+        showSnackBar(context, "Credenciales inválidas", SnackBarType.error);
         return false;
       }
       throw FirebaseAuthException(
@@ -258,18 +264,25 @@ class AuthProvider with ChangeNotifier {
       _isSignedIn = false;
       _uid = null;
       await _firebaseAuth.signOut();
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => WelcomeView()));
       notifyListeners();
     } catch (e) {
       showSnackBar(context, "Error al cerrar sesión: $e", SnackBarType.error);
     }
   }
 
-  Future<void> syncUserDataByUid(BuildContext context, String uid) async {
+  Future<void> syncUserDataByUid(BuildContext context) async {
     _isLoading = true;
     notifyListeners();
     try {
+      print("UUID ${user?.uid?.isEmpty}");
+      if (user == null) {
+        await signOut(context);
+        return;
+      }
       DocumentSnapshot doc =
-          await _firebaseFirestore.collection("users").doc(uid).get();
+          await _firebaseFirestore.collection("users").doc(user!.uid).get();
       if (doc.exists) {
         _user =
             user_model.UserModel.fromMap(doc.data() as Map<String, dynamic>);

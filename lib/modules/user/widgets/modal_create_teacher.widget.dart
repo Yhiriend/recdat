@@ -11,6 +11,7 @@ import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_multiselect.dart';
 import 'package:recdat/shared/widgets/recdat_tagging.widget.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/hasher.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
@@ -136,7 +137,7 @@ class _ModalCreateTeacherWidgetState extends State<ModalCreateTeacherWidget> {
                       rol: UserRole.teacher.value,
                       createdAt: RecdatDateUtils.currentDate().toString(),
                       updatedAt: RecdatDateUtils.currentDate().toString(),
-                      password: defaultPassword,
+                      password: hashPassword(defaultPassword),
                       uid: const Uuid().v4(),
                       isActive: true,
                       courses: _currentAreas);

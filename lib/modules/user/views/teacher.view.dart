@@ -3,6 +3,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
+import 'package:recdat/modules/user/views/schedule_assigment.view.dart';
 import 'package:recdat/modules/user/widgets/card_teacher.widget.dart';
 import 'package:recdat/modules/user/widgets/modal_create_teacher.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
@@ -122,7 +123,10 @@ class _TeachersViewState extends State<TeachersView> {
                 child: const Icon(Icons.assignment_add),
                 label: "Asignacion de horarios",
                 onTap: () {
-                  Navigator.pushNamed(context, RecdatRoutes.scheduleAssigment);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ScheduleAssigmentView()));
                 })
           ],
         ),

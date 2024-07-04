@@ -75,6 +75,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
     final teacherProvider = Provider.of<UserProvider>(context, listen: false);
     final teacherUpdate = UserModel(
         instituteUid: _teacher.instituteUid,
+        entryAssigments: _teacher.entryAssigments,
         uid: _teacher.uid,
         name: widget.teacherNameController.text.trim().toUpperCase(),
         surname: widget.teacherSurnameController.text.trim().toUpperCase(),

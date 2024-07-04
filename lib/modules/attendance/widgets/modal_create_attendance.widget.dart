@@ -138,7 +138,7 @@ class _ModalCreateAttendanceWidgetState
                         .child(attendance.uuid)
                         .set(attendanceData);
 
-                    await authProvider.syncUserDataByUid(context, userUid);
+                    await authProvider.syncUserDataByUid(context);
 
                     Navigator.of(context).pop();
                   });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/modules/attendance/widgets/card_attendance.widget.dart';
@@ -28,6 +29,16 @@ class _AttendanceViewState extends State<AttendanceView> {
     super.initState();
     _filterStartDateController = TextEditingController();
     _filterEndDateController = TextEditingController();
+
+    _filterStartDate = DateTime.now();
+    _filterEndDate = DateTime.now();
+
+    // Establecer el texto de los controladores con la fecha actual
+    _filterStartDateController.text =
+        DateFormat('yyyy-MM-dd').format(_filterStartDate!);
+    _filterEndDateController.text =
+        DateFormat('yyyy-MM-dd').format(_filterEndDate!);
+    _filterAttendancesByDate();
   }
 
   @override
@@ -161,13 +172,13 @@ class _AttendanceViewState extends State<AttendanceView> {
                           ColorFiltered(
                             colorFilter: const ColorFilter.mode(
                                 RecdatStyles.darkTextColor, BlendMode.srcIn),
-                            child: Image.asset('assets/images/book.png'),
+                            child: Icon(Icons.block),
                           ),
                           const Text(
-                            "No hay cursos",
+                            "Tu usuario esta desincronizado",
                             style: TextStyle(
                                 color: RecdatStyles.darkTextColor,
-                                fontSize: 30),
+                                fontSize: 12),
                           ),
                         ],
                       ),

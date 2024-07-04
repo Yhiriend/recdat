@@ -46,8 +46,7 @@ class _HomeViewState extends State<HomeView> {
           actions: [
             IconButton(
                 onPressed: () async {
-                  await authProvider.syncUserDataByUid(
-                      context, authProvider.uid);
+                  await authProvider.syncUserDataByUid(context);
                 },
                 icon: const Icon(
                   Icons.sync,

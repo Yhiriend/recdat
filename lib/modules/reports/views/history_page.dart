@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
+import 'package:recdat/modules/user/providers/teacher.provider.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -7,45 +10,23 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  String _selectedTeacher = 'Teacher 1';
+  String _selectedTeacher = ''; // Inicializamos con un valor vacío
   List<Map<String, dynamic>> _attendanceHistory = [];
 
   @override
-  void initState() {
-    super.initState();
-    _loadAttendanceData();
-  }
-
-  void _loadAttendanceData() {
-    // Datos fijos para dos profesores
-    final data = {
-      'Teacher 1': [
-        {"date": "2024-07-15", "status": "Absent"},
-        {"date": "2024-07-14", "status": "Present", "arrival_time": "08:06:00"},
-        {"date": "2024-07-13", "status": "Present", "arrival_time": "08:04:00"},
-        {"date": "2024-07-12", "status": "Present", "arrival_time": "08:15:00"},
-        {"date": "2024-07-11", "status": "Absent"},
-        {"date": "2024-07-10", "status": "Present", "arrival_time": "08:07:00"},
-        {"date": "2024-07-09", "status": "Present", "arrival_time": "08:01:00"},
-      ],
-      'Teacher 2': [
-        {"date": "2024-07-15", "status": "Present", "arrival_time": "08:00:00"},
-        {"date": "2024-07-14", "status": "Absent"},
-        {"date": "2024-07-13", "status": "Present", "arrival_time": "08:10:00"},
-        {"date": "2024-07-12", "status": "Present", "arrival_time": "08:05:00"},
-        {"date": "2024-07-11", "status": "Present", "arrival_time": "08:02:00"},
-        {"date": "2024-07-10", "status": "Absent"},
-        {"date": "2024-07-09", "status": "Present", "arrival_time": "08:03:00"},
-      ],
-    };
-
-    setState(() {
-      _attendanceHistory = data[_selectedTeacher] ?? [];
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final teachers = userProvider.userList.map((user) => user.name).toList();
+
+    // Verifica y ajusta _selectedTeacher si es necesario
+    if (_selectedTeacher.isEmpty && teachers.isNotEmpty) {
+      _selectedTeacher =
+          teachers.first; // Asigna el primer elemento como predeterminado
+    } else if (!teachers.contains(_selectedTeacher)) {
+      // Si _selectedTeacher no está en la lista, reinicia a un valor seguro
+      _selectedTeacher = teachers.isNotEmpty ? teachers.first : '';
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -55,11 +36,12 @@ class _HistoryPageState extends State<HistoryPage> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedTeacher = newValue!;
-                _loadAttendanceData();
+                final selectedUser = userProvider.userList
+                    .firstWhere((user) => user.name == newValue);
+                _loadAttendanceData(selectedUser);
               });
             },
-            items: <String>['Teacher 1', 'Teacher 2']
-                .map<DropdownMenuItem<String>>((String value) {
+            items: teachers.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),
@@ -92,5 +74,37 @@ class _HistoryPageState extends State<HistoryPage> {
         ],
       ),
     );
+  }
+
+  void _loadAttendanceData(UserModel user) {
+    setState(() {
+      _attendanceHistory =
+          []; // Limpiamos la lista antes de cargar nuevos datos
+      if (user.attendances != null) {
+        _attendanceHistory = user.attendances!.map((attendance) {
+          DateTime parsedDate;
+
+          // Verificar si la fecha tiene milisegundos
+          if (attendance.createdAt!.contains(".")) {
+            parsedDate = DateTime.parse(attendance.createdAt!);
+          } else {
+            // Añadir ".000000" para que el parseador DateTime lo reconozca correctamente
+            parsedDate = DateTime.parse("${attendance.createdAt}.000000");
+          }
+
+          final formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
+          final status = attendance.type == 'ATTENDANCE' ? 'Present' : 'Absent';
+          final arrivalTime = attendance.type == 'ATTENDANCE'
+              ? DateFormat('HH:mm:ss').format(parsedDate)
+              : 'N/A';
+
+          return {
+            "date": formattedDate,
+            "status": status,
+            "arrival_time": arrivalTime,
+          };
+        }).toList();
+      }
+    });
   }
 }
