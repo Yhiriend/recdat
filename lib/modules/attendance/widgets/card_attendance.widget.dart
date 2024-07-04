@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/model/attendance.model.dart';
@@ -30,7 +31,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
   Timer? _timer;
   String _userUUID = "";
   Attendance? _attendance;
-
+  final databaseReference = FirebaseDatabase.instance.ref();
   @override
   void initState() {
     super.initState();
@@ -66,6 +67,28 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
         }
       });
     }
+  }
+
+  void _deleteAttendance() async {
+    final teacherProvider = Provider.of<UserProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    await teacherProvider.deleteAttendance(
+      context: context,
+      userUid: _userUUID,
+      attendanceUid: _attendance!.uuid,
+    );
+
+    // Eliminar el registro de Firebase Realtime Database
+    databaseReference
+        .child(_attendance!.createdAt!.split(" ")[0])
+        .child(_userUUID)
+        .child('attendances')
+        .child(_attendance!.uuid)
+        .remove();
+
+    // Sincronizar los datos del usuario después de eliminar la asistencia
+    authProvider.syncUserDataByUid(context, _userUUID);
   }
 
   @override
@@ -161,7 +184,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                         ),
                         const SizedBox(height: 10.0),
                         Text(
-                          _attendance!.createdAt.toString(),
+                          _attendance!.createdAt.toString().split(".")[0],
                           style: const TextStyle(
                             fontSize: 16.0,
                             color: RecdatStyles.parraphLightColor,
@@ -184,21 +207,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                         Stack(children: [
                           IconButton(
                             onPressed: () async {
-                              final teacherProvider = Provider.of<UserProvider>(
-                                  context,
-                                  listen: false);
-                              await teacherProvider
-                                  .deleteAttendance(
-                                      context: context,
-                                      userUid: _userUUID,
-                                      attendanceUid: _attendance!.uuid)
-                                  .then((_) {
-                                final authProvider = Provider.of<AuthProvider>(
-                                    context,
-                                    listen: false);
-                                authProvider.syncUserDataByUid(
-                                    context, _userUUID);
-                              });
+                              _deleteAttendance();
                             },
                             icon: const Icon(Icons.delete,
                                 color: RecdatStyles.iconDefaulColor),

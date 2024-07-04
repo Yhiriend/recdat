@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:recdat/modules/reports/views/general_page.dart';
 import 'package:recdat/modules/reports/views/history_page.dart';
 import 'package:recdat/modules/reports/views/justified_vs_unjustified_page.dart';
 import 'package:recdat/modules/reports/views/page_index_widget.dart';
 import 'package:recdat/modules/reports/views/punctuality_page.dart';
+import 'package:recdat/modules/user/providers/teacher.provider.dart';
+import 'package:recdat/providers/auth.providers.dart';
 
 class GeneralReportView extends StatefulWidget {
   const GeneralReportView({super.key});
@@ -14,18 +17,10 @@ class GeneralReportView extends StatefulWidget {
 }
 
 class _GeneralReportViewState extends State<GeneralReportView> {
-  final List<Map<String, dynamic>> attendanceData = [
-    // tu lista de datos de asistencia
-  ];
-
-  final List<Map<String, dynamic>> punctualityRecords = [
-    // tu lista de registros de puntualidad
-  ];
-
-  late final List<Map<String, dynamic>> weeklyAttendanceData;
-  late final List<Map<String, dynamic>> punctualityData;
-  late final String currentMonthYear;
-  late final int totalAttendanceCurrentMonth;
+  List<Map<String, dynamic>> weeklyAttendanceData = [];
+  List<Map<String, dynamic>> punctualityData = [];
+  String currentMonthYear = '';
+  int totalAttendanceCurrentMonth = 0;
   int _pageIndex = 0;
   String _title = "Reporte General";
   String _graphicTitle = "";
@@ -33,37 +28,84 @@ class _GeneralReportViewState extends State<GeneralReportView> {
   @override
   void initState() {
     super.initState();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
     final now = DateTime.now();
     currentMonthYear = DateFormat('MMM yyyy').format(now);
-    totalAttendanceCurrentMonth = _calculateTotalAttendanceForMonth();
-    weeklyAttendanceData = _calculateWeeklyAttendance();
-    punctualityData = _calculatePunctualityData();
+
+    // Fetch data from Firestore
+    await _fetchAttendanceData();
+    await _fetchPunctualityData();
+
+    setState(() {
+      // Aquí se actualizarán los valores de weeklyAttendanceData y totalAttendanceCurrentMonth
+      // una vez se obtengan los datos de Firestore
+    });
   }
 
-  int _calculateTotalAttendanceForMonth() {
-    return 15;
+  Future<void> _fetchAttendanceData() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final attendanceData = await userProvider.fetchMonthlyAttendanceData();
+
+    // Procesar los datos obtenidos para calcular el total y los datos semanales
+    totalAttendanceCurrentMonth = attendanceData.fold<int>(
+        0, (sum, item) => (sum + item['attendances'].length) as int);
+    weeklyAttendanceData = _calculateWeeklyAttendance(attendanceData);
+    setState(() {
+      _graphicTitle =
+          'Month: $currentMonthYear\nTotal Attendances: $totalAttendanceCurrentMonth';
+    });
+    print(weeklyAttendanceData);
   }
 
-  List<Map<String, dynamic>> _calculateWeeklyAttendance() {
-    List<Map<String, dynamic>> data = [
-      {'day': 'Lunes', 'attendances': 10},
-      {'day': 'Martes', 'attendances': 12},
-      {'day': 'Miércoles', 'attendances': 8},
-      {'day': 'Jueves', 'attendances': 15},
-      {'day': 'Viernes', 'attendances': 11},
-    ];
-    return data;
+  Future<void> _fetchPunctualityData() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    punctualityData =
+        await userProvider.calculatePunctualityData(authProvider.uid);
+  }
+
+  List<Map<String, dynamic>> _calculateWeeklyAttendance(
+      List<Map<String, dynamic>> attendanceData) {
+    Map<String, int> dailyData = {};
+
+    for (var record in attendanceData) {
+      record.forEach((key, value) {
+        if (value is List) {
+          for (var item in value) {
+            if (item is Map && item.containsKey('entry_date')) {
+              DateTime date = DateTime.parse(item['entry_date']);
+              String dayOfMonth = DateFormat('dd').format(date);
+
+              if (dailyData.containsKey(dayOfMonth)) {
+                dailyData[dayOfMonth] = dailyData[dayOfMonth]! + 1;
+              } else {
+                dailyData[dayOfMonth] = 1;
+              }
+            }
+          }
+        }
+      });
+    }
+
+    return dailyData.entries
+        .map((entry) => {'day': entry.key, 'attendances': entry.value})
+        .toList();
   }
 
   List<Map<String, dynamic>> _calculatePunctualityData() {
-    List<Map<String, dynamic>> data = [
+    return [
       {'date': '2024-07-01', 'average_delay': 5.5},
       {'date': '2024-07-02', 'average_delay': 7.2},
       {'date': '2024-07-03', 'average_delay': 4.8},
       {'date': '2024-07-04', 'average_delay': 6.1},
       {'date': '2024-07-05', 'average_delay': 3.9},
+      {'date': '2024-07-06', 'average_delay': 4.9},
+      {'date': '2024-07-07', 'average_delay': 3.9},
+      {'date': '2024-07-08', 'average_delay': 2.9},
     ];
-    return data;
   }
 
   void _handlePageSelected(int index) {
@@ -84,7 +126,7 @@ class _GeneralReportViewState extends State<GeneralReportView> {
           _title = "Histórico Asis. Individual";
           break;
         case 3:
-          _title = "Asis. Justificadas vs No-justificadas";
+          _title = "Asis. Justif. vs No-justif.";
           _graphicTitle = "justificadas vs no-justificadas";
           break;
         default:
@@ -106,14 +148,11 @@ class _GeneralReportViewState extends State<GeneralReportView> {
         );
         break;
       case 1:
-        pageToShow = PunctualityPage(
-          title: _title,
-          graphicTitle: _graphicTitle,
-          punctualityData: punctualityData,
-        );
+        pageToShow = PunctualityPage();
         break;
       case 2:
         pageToShow = HistoryPage();
+        break;
       case 3:
         pageToShow = JustifiedVsUnjustifiedPage();
         break;

@@ -13,7 +13,7 @@ class CardCourseWidget extends StatelessWidget {
   final String courseType;
   final String grade;
   final String courseUid;
-  final DateTime createdAt;
+  final String createdAt;
 
   const CardCourseWidget({
     required this.title,

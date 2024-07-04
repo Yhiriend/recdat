@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/views/attendance.view.dart';
+import 'package:recdat/modules/notifications/views/teacher_notifications.view.dart';
 import 'package:recdat/modules/qr/qr_frame.dart';
 import 'package:recdat/modules/reports/views/general_report.view.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
@@ -111,9 +112,9 @@ class _HomeViewState extends State<HomeView> {
                     child: const AttendanceView(),
                   ),
                   Container(
-                    color: Colors.blue,
+                    color: RecdatStyles.whiteColor,
                     child: const Center(
-                      child: Text('Notifications'),
+                      child: TeacherNotificationsView(),
                     ),
                   ),
                   Container(

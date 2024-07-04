@@ -29,6 +29,9 @@ dependencies:
   flutter_image_compress: ^2.3.0
   firebase_database: ^10.5.7
   fl_chart: ^0.68.0
+  encrypt: ^5.0.3
+  flutter_local_notifications: ^17.2.1
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:

@@ -108,7 +108,7 @@ class _ModalCreateAttendanceWidgetState
                       title:
                           attendanceTitleController.text.trim().toUpperCase(),
                       description: attendanceDescriptionController.text.trim(),
-                      createdAt: RecdatDateUtils.currentDate(),
+                      createdAt: RecdatDateUtils.currentDate().toString(),
                       filepath: "",
                       type: "NON-ATTENDANCE");
                   final userUid = authProvider.user?.uid ?? "";
@@ -122,7 +122,6 @@ class _ModalCreateAttendanceWidgetState
                   await teacherProvider
                       .addAttendance(context, userUid, attendance)
                       .then((_) async {
-                    await authProvider.syncUserDataByUid(context, userUid);
                     final UserModel user = authProvider.user!;
                     Map<String, dynamic> attendanceData = {
                       "title": "${user.name} ${user.surname} no asistirá hoy.",
@@ -131,12 +130,16 @@ class _ModalCreateAttendanceWidgetState
                       "uuid": attendance.uuid,
                       "createdBy": userUid
                     };
+                    print("CREATING ATTENDANCE REALTIME $userUid");
                     databaseReference
-                        .child(attendance.createdAt.toString())
+                        .child(attendance.createdAt!.split(" ")[0])
                         .child(userUid)
                         .child('attendances')
                         .child(attendance.uuid)
                         .set(attendanceData);
+
+                    await authProvider.syncUserDataByUid(context, userUid);
+
                     Navigator.of(context).pop();
                   });
                 },

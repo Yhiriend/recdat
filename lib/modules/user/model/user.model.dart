@@ -19,8 +19,8 @@ class UserModel {
   String? email;
   String? phone;
   String? rol;
-  DateTime? createdAt;
-  DateTime? updatedAt;
+  String? createdAt;
+  String? updatedAt;
   String? profilePic;
   bool isActive;
   List<CourseModel>? courses;
@@ -62,10 +62,8 @@ class UserModel {
         email: map['email'] ?? '',
         phone: map['phone'] ?? '',
         rol: map['rol'] ?? '',
-        createdAt:
-            map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
-        updatedAt:
-            map['updatedAt'] != null ? DateTime.parse(map['updatedAt']) : null,
+        createdAt: map['createdAt'],
+        updatedAt: map['updatedAt'],
         profilePic: map['profilePic'],
         isActive: map['isActive'] ?? false,
         courses: map['courses'] != null
@@ -95,8 +93,8 @@ class UserModel {
       "email": email,
       "phone": phone,
       "rol": rol,
-      "createdAt": createdAt?.toIso8601String(),
-      "updatedAt": updatedAt?.toIso8601String(),
+      "createdAt": createdAt,
+      "updatedAt": updatedAt,
       "profilePic": profilePic,
       "isActive": isActive,
       "courses": courses?.map((course) => course.toMap()).toList(),
@@ -147,5 +145,10 @@ class UserEntryAssignment {
       day: map['day'] ?? '',
       hour: map['hour'] ?? '',
     );
+  }
+
+  @override
+  String toString() {
+    return 'UserEntryAssigment(day: $day, hour: $hour)';
   }
 }

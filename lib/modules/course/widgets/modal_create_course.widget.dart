@@ -80,7 +80,7 @@ class ModalCreateCourseWidget extends StatelessWidget {
                           courseDescriptionController.text.trim().toString(),
                       grade: courseGradeController.text.trim().toString(),
                       type: courseAreaController.text.trim().toString(),
-                      createdAt: RecdatDateUtils.currentDate());
+                      createdAt: RecdatDateUtils.currentDate().toString());
                   final userUid = authProvider.user?.uid ?? "";
                   await courseProvider.addCourse(context, course, userUid);
                   await courseProvider

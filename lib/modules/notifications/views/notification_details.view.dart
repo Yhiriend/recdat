@@ -22,7 +22,9 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
   @override
   void initState() {
     super.initState();
-    getUserAttendance(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getUserAttendance(context);
+    });
   }
 
   Future<void> getUserAttendance(BuildContext context) async {
@@ -30,16 +32,20 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userLogged = authProvider.user;
     try {
+      print("USER NOTIFICATIONS $userLogged");
+      print("USER NEXT ${widget.userUuid}");
       await userProvider.fetchUsers(context, userLogged!.uid!);
       UserModel user = userProvider.userList
           .firstWhere((user) => user.uid == widget.userUuid);
 
-      Attendance? attendance = user.attendances
-          ?.firstWhere((att) => att.uuid == widget.attendanceUuid);
-      setState(() {
-        _attendance = attendance;
-        _user = user;
-      });
+      if (user.attendances!.isNotEmpty) {
+        Attendance? attendance = user.attendances
+            ?.firstWhere((att) => att.uuid == widget.attendanceUuid);
+        setState(() {
+          _attendance = attendance;
+          _user = user;
+        });
+      }
     } catch (e) {
       print("Error fetching user attendance: $e");
     }

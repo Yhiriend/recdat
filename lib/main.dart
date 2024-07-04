@@ -11,6 +11,7 @@ import 'package:recdat/modules/user/views/schedule_assigment.view.dart';
 import 'package:recdat/modules/user/views/teacher.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
+import 'package:recdat/utils/local_notifications.dart';
 import 'package:recdat/utils/routes.dart';
 import 'package:recdat/views/home.view.dart';
 import 'package:recdat/views/login.view.dart';
@@ -19,6 +20,7 @@ import 'package:recdat/views/welcome.view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await LocalNotifications.intit();
   await Firebase.initializeApp(
       options: const FirebaseOptions(
     apiKey: "AIzaSyCUj_GZeUXG9DENa-OUrT_FI-2om8gNsHQ",

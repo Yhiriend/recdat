@@ -1,14 +1,12 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
+import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/modules/attendance/widgets/card_attendance.widget.dart';
 import 'package:recdat/modules/attendance/widgets/modal_create_attendance.widget.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_input_date.dart';
-import 'package:recdat/utils/utils.dart';
 
 class AttendanceView extends StatefulWidget {
   const AttendanceView({super.key});
@@ -23,6 +21,7 @@ class _AttendanceViewState extends State<AttendanceView> {
   late TextEditingController _filterEndDateController;
   DateTime? _filterStartDate;
   DateTime? _filterEndDate;
+  List<Attendance>? _filteredAttendances = [];
 
   @override
   void initState() {
@@ -48,15 +47,19 @@ class _AttendanceViewState extends State<AttendanceView> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+    print("is after $_filterStartDate");
+    print("is before $_filterEndDate");
     final filteredAttendances =
         authProvider.user!.attendances!.where((attendance) {
-      final createdAt = attendance.createdAt!;
+      final createdAt = DateTime.parse(attendance.createdAt!);
+      print("actual date $createdAt");
+
       return createdAt.isAfter(_filterStartDate!) &&
           createdAt.isBefore(_filterEndDate!);
     }).toList();
 
     setState(() {
-      authProvider.user!.attendances = filteredAttendances;
+      _filteredAttendances = filteredAttendances;
     });
   }
 
@@ -171,9 +174,9 @@ class _AttendanceViewState extends State<AttendanceView> {
                     );
                   }
                   return ListView.builder(
-                    itemCount: authProvider.user!.attendances!.length,
+                    itemCount: _filteredAttendances!.length,
                     itemBuilder: (context, index) {
-                      final attendance = authProvider.user!.attendances![index];
+                      final attendance = _filteredAttendances![index];
                       final isDeletedNotifier = ValueNotifier<bool>(false);
                       _isDeletedNotifiers.add(isDeletedNotifier);
                       return ValueListenableBuilder<bool>(

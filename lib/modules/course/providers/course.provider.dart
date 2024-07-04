@@ -44,7 +44,7 @@ class CourseProvider with ChangeNotifier {
       DocumentReference instituteRef =
           _firebaseFirestore.collection("institutes").doc(instituteId);
 
-      course.createdAt = RecdatDateUtils.currentDate();
+      course.createdAt = RecdatDateUtils.currentDate().toString();
       String courseUid = const Uuid().v4();
       course.uid = courseUid;
 
@@ -73,7 +73,7 @@ class CourseProvider with ChangeNotifier {
 
       if (querySnapshot.docs.isNotEmpty) {
         final courseDoc = querySnapshot.docs.first;
-        course.updatedAt = RecdatDateUtils.currentDate();
+        course.updatedAt = RecdatDateUtils.currentDate().toString();
         await courseDoc.reference.update(course.toMap());
         int index = _courseList.indexWhere((c) => c.uid == course.uid);
         if (index != -1) {

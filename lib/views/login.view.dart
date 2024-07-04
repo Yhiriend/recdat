@@ -43,6 +43,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    _password.text = "123456";
+    _username.text = "yirien@recdat.com";
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFF003366),
@@ -133,12 +135,6 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     Column(
                       children: [
-                        TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "¿Olvidaste tu contraseña?",
-                              style: TextStyle(color: Color(0xBFCCCCCC)),
-                            )),
                         TextButton(
                             onPressed: () {
                               Navigator.pushNamed(

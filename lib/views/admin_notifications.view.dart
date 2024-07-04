@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/notifications/providers/notification.provider.dart';
 import 'package:recdat/modules/notifications/views/notification_details.view.dart';
+import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/utils/utils.dart';
 
 class AdminNotificationsView extends StatefulWidget {
@@ -75,6 +76,7 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -104,15 +106,18 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
                       ),
                       child: ListTile(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificationDetailsView(
-                                attendanceUuid: attendance["uuid"],
-                                userUuid: attendance["createdBy"],
+                          print("ATTENDANCE UIUI $attendance");
+                          if (authProvider.uid != attendance["createdBy"]) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NotificationDetailsView(
+                                  attendanceUuid: attendance["uuid"],
+                                  userUuid: attendance["createdBy"],
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         },
                         title: Text(attendance['title'] ?? 'No title'),
                         subtitle: Text(_truncateText(attendance['body'], 10)),

@@ -96,7 +96,7 @@ class _SettingsViewState extends State<SettingsView> {
         rol: _userLogged!.rol,
         isActive: _userLogged!.isActive,
         createdAt: _userLogged!.createdAt,
-        updatedAt: RecdatDateUtils.currentDate(),
+        updatedAt: RecdatDateUtils.currentDate().toString(),
         password: _userPasswordController.text.trim(),
         courses: _userLogged!.courses,
         question: _userSecurityQuestionController.text.trim().toLowerCase(),

@@ -98,14 +98,14 @@ class _RegisterViewState extends State<RegisterView> {
     final ap = Provider.of<AuthProvider>(context, listen: false);
     UserModel userModel = UserModel(
         uid: "",
-        name: nameController.text.trim(),
-        surname: surnameController.text.trim(),
+        name: nameController.text.trim().toUpperCase(),
+        surname: surnameController.text.trim().toUpperCase(),
         lastSurname: "",
-        email: emailController.text.trim(),
+        email: emailController.text.trim().toLowerCase(),
         phone: phoneController.text.trim(),
         rol: UserRole.admin.value,
         isActive: true,
-        createdAt: RecdatDateUtils.currentDate(),
+        createdAt: RecdatDateUtils.currentDate().toString(),
         password: passwordController.text.trim());
     ap.saveUserDataToFirebase(
         context: context,

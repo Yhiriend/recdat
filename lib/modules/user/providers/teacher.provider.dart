@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
@@ -34,7 +35,7 @@ class UserProvider with ChangeNotifier {
           .where((user) => user.rol != 'admin')
           .toList();
 
-      showSnackBar(context, "Usuarios actualizados", SnackBarType.success);
+      //showSnackBar(context, "Usuarios actualizados", SnackBarType.success);
     } catch (e) {
       showSnackBar(
           context, "Ups! no pudimos cargar los usuarios", SnackBarType.error);
@@ -353,6 +354,110 @@ class UserProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchMonthlyAttendanceData() async {
+    try {
+      final now = DateTime.now();
+      final currentMonth = now.month.toString().padLeft(2, '0');
+      final currentYear = now.year.toString();
+
+      QuerySnapshot snapshot = await _firebaseFirestore
+          .collection("assistances")
+          .where(FieldPath.documentId,
+              isGreaterThanOrEqualTo: "$currentYear-$currentMonth-01")
+          .where(FieldPath.documentId,
+              isLessThanOrEqualTo: "$currentYear-$currentMonth-31")
+          .get();
+
+      List<Map<String, dynamic>> attendanceData = snapshot.docs.map((doc) {
+        return {
+          'date': doc.id,
+          'attendances': (doc.data() as Map<String, dynamic>)['asistencias'],
+        };
+      }).toList();
+
+      return attendanceData;
+    } catch (e) {
+      print("Error fetching monthly attendance data: $e");
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> calculatePunctualityData(
+      String teacherUuid) async {
+    try {
+      if (teacherUuid == "") return [];
+      // Obtener el documento del usuario (profesor)
+      DocumentSnapshot userSnapshot =
+          await _firebaseFirestore.collection("users").doc(teacherUuid).get();
+
+      if (!userSnapshot.exists) {
+        print("Error: Usuario no encontrado");
+        return [];
+      }
+
+      // Convertir el documento a UserModel
+      UserModel user =
+          UserModel.fromMap(userSnapshot.data() as Map<String, dynamic>);
+
+      // Obtener las asistencias y las asignaciones de entrada del usuario
+      List<Attendance> attendances = user.attendances ?? [];
+      List<UserEntryAssignment> entryAssignments = user.entryAssigments ?? [];
+
+      // Filtrar las asistencias de los últimos 15 días
+      final now = DateTime.now();
+      final cutoffDate = now.subtract(Duration(days: 15));
+      List<Attendance> recentAttendances = attendances.where((attendance) {
+        DateTime createdAt = DateTime.parse(attendance.createdAt.toString());
+        return createdAt.isAfter(cutoffDate);
+      }).toList();
+
+      // Crear el mapa de asignaciones de entrada para un acceso rápido
+      Map<String, String> entryAssignmentMap = {};
+      for (var entry in entryAssignments) {
+        entryAssignmentMap[entry.day] = entry.hour;
+      }
+
+      // Calcular los retrasos
+      List<Map<String, dynamic>> punctualityData = [];
+      for (var attendance in recentAttendances) {
+        DateTime createdAt = DateTime.parse(attendance.createdAt.toString());
+        String dayOfWeek =
+            DateFormat('EEEE').format(createdAt); // Obtener el día de la semana
+
+        // Obtener la hora asignada para el día de la semana
+        String? assignedHour = entryAssignmentMap[dayOfWeek];
+
+        if (assignedHour != null && assignedHour.isNotEmpty) {
+          // Calcular el retraso
+          DateTime assignedDateTime =
+              DateFormat.jm().parse(assignedHour); // Formato de hora "7:00 AM"
+          DateTime assignedDateTimeWithDate = DateTime(
+            createdAt.year,
+            createdAt.month,
+            createdAt.day,
+            assignedDateTime.hour,
+            assignedDateTime.minute,
+          );
+
+          int delay = createdAt.difference(assignedDateTimeWithDate).inMinutes;
+          if (delay < 0)
+            delay = 0; // Si el retraso es menor que 0, entonces es puntual
+
+          // Agregar el resultado al array de datos de puntualidad
+          punctualityData.add({
+            'day': DateFormat('dd').format(createdAt), // Día del mes
+            'delay': delay,
+          });
+        }
+      }
+
+      return punctualityData;
+    } catch (e) {
+      print("Error calculating punctuality data: $e");
+      return [];
     }
   }
 }

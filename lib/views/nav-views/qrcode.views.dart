@@ -9,6 +9,7 @@ import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
+import 'package:recdat/utils/crypto.dart';
 import 'package:recdat/utils/routes.dart';
 import 'package:recdat/utils/utils.dart';
 
@@ -38,9 +39,12 @@ class _QrcodeViewState extends State<QrcodeView> {
             rol: userData.rol ?? "none",
             date: currentDate);
         final String qrDataStringified = jsonEncode(qrData);
+
+        final String encryptedQRData = encryptString(qrDataStringified);
+
         await Future.delayed(const Duration(seconds: 3));
         setState(() {
-          lastQRData = qrDataStringified;
+          lastQRData = encryptedQRData;
           lastQRDate = currentDate;
         });
         showSnackBar(context, "QR actualizado 😉", SnackBarType.success);

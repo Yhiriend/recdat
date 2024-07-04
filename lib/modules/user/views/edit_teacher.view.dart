@@ -6,12 +6,14 @@ import 'package:recdat/modules/course/course.model.dart';
 import 'package:recdat/modules/course/providers/course.provider.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
+import 'package:recdat/modules/user/views/entry_assigment.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_multiselect.dart';
 import 'package:recdat/shared/widgets/recdat_tagging.widget.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
+import 'package:recdat/utils/routes.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/pdf_viewer.view.dart';
 
@@ -83,7 +85,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
         rol: _teacher.rol,
         isActive: _isActive,
         createdAt: _teacher.createdAt,
-        updatedAt: RecdatDateUtils.currentDate(),
+        updatedAt: RecdatDateUtils.currentDate().toString(),
         password: _teacher.password,
         courses: _currentAreas,
         profilePic: _teacher.profilePic);
@@ -100,6 +102,18 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
       context,
       MaterialPageRoute(
         builder: (context) => PdfViewerView(pdfFuture: _getSchedulePDF()),
+      ),
+    );
+  }
+
+  Future<void> _openEntryAssigments() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EntryAssigmentView(
+          userId: _teacher.uid!,
+          initialAssignments: _teacher.entryAssigments ?? [],
+        ),
       ),
     );
   }
@@ -142,12 +156,7 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
                                 height: 98,
                                 fit: BoxFit.cover,
                               )
-                            : const Icon(
-                                Icons.face_rounded,
-                                size: 98,
-                                color:
-                                    RecdatStyles.opaquePrimaryForegroundColor,
-                              ),
+                            : Image.asset("assets/images/default_avatar.jpg"),
                       ),
                     ),
                   ),
@@ -251,6 +260,15 @@ class _EditTeacherWiewState extends State<EditTeacherWiew> {
               RecdatButtonAsync(
                 onPressed: () async => _openSchedule(),
                 text: "Ver horario",
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              RecdatButtonAsync(
+                onPressed: () async {
+                  _openEntryAssigments();
+                },
+                text: "Asignar entrada",
               ),
               const SizedBox(
                 height: 20,

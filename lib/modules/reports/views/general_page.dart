@@ -27,7 +27,7 @@ class GeneralPage extends StatelessWidget {
           child: BarChart(
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
-              maxY: 25, // Adjust this based on your data
+              maxY: _getMaxY(), // Adjust this based on your data
               barTouchData: BarTouchData(
                 enabled: false,
                 touchTooltipData: BarTouchTooltipData(
@@ -70,14 +70,14 @@ class GeneralPage extends StatelessWidget {
   }
 
   List<BarChartGroupData> _buildBarGroups() {
-    return weeklyAttendanceData.asMap().entries.map((entry) {
-      final index = entry.key;
-      final data = entry.value;
+    return weeklyAttendanceData.map((data) {
+      final day = data['day'];
+      final attendances = data['attendances'];
       return BarChartGroupData(
-        x: index,
+        x: int.parse(day), // Use the day as the x index
         barRods: [
           BarChartRodData(
-            toY: data['attendances'].toDouble(),
+            toY: attendances.toDouble(),
             color: Colors.blue,
             width: 16,
             borderRadius: BorderRadius.circular(4),
@@ -93,8 +93,7 @@ class GeneralPage extends StatelessWidget {
       fontWeight: FontWeight.bold,
       color: Colors.black,
     );
-    // Get the day of the month based on the index
-    final day = (value.toInt() + 1).toString().padLeft(2, '0');
+    final day = value.toInt().toString().padLeft(2, '0');
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(day, style: style),
@@ -111,5 +110,14 @@ class GeneralPage extends StatelessWidget {
       axisSide: meta.axisSide,
       child: Text(value.toInt().toString(), style: style),
     );
+  }
+
+  double _getMaxY() {
+    // Find the maximum number of attendances to set maxY
+    final maxAttendance = weeklyAttendanceData.fold<int>(0, (max, data) {
+      final attendances = data['attendances'] as int;
+      return attendances > max ? attendances : max;
+    });
+    return maxAttendance.toDouble() + 5; // Add some padding
   }
 }
