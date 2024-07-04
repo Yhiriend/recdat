@@ -12,7 +12,6 @@ import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/utils/crypto.dart';
-import 'package:recdat/utils/routes.dart';
 import 'package:recdat/utils/utils.dart';
 
 class QrcodeView extends StatefulWidget {
@@ -69,6 +68,7 @@ class _QrcodeViewState extends State<QrcodeView> {
     final userRol = authProvider.user?.rol;
     final isAdmin = userRol == UserRole.admin.value;
     return Scaffold(
+      backgroundColor: RecdatStyles.whiteColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40.0),
         child: Column(

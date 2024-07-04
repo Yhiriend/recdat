@@ -19,6 +19,8 @@ class NotificationDetailsView extends StatefulWidget {
 class _NotificationDetailsViewState extends State<NotificationDetailsView> {
   Attendance? _attendance;
   UserModel? _user;
+  bool isLoading = false;
+  String? photo = "";
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,9 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
   }
 
   Future<void> getUserAttendance(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userLogged = authProvider.user;
@@ -41,13 +46,20 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
       if (user.attendances!.isNotEmpty) {
         Attendance? attendance = user.attendances
             ?.firstWhere((att) => att.uuid == widget.attendanceUuid);
+        print("ATTENDANCE NOTIFICATION $attendance");
+        final image = await userProvider.getImageUrlByUuid(attendance!.uuid);
         setState(() {
           _attendance = attendance;
           _user = user;
+          photo = image;
         });
       }
     } catch (e) {
       print("Error fetching user attendance: $e");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -58,49 +70,63 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
         appBar: AppBar(
           title: const Text("Notificación"),
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                _attendance?.title ?? "SIN TITULO",
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                _attendance?.description ?? "Sin descripcion",
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _user?.name ?? "Sin nombre",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    _attendance?.createdAt.toString() ?? "Sin fecha",
-                    style: const TextStyle(fontSize: 16),
-                  )
-                ],
-              ),
-              Icon(
-                Icons.picture_as_pdf_rounded,
-                size: 150,
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.black54,
+                ),
               )
-            ],
-          ),
-        ),
+            : Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      _attendance?.title ?? "SIN TITULO",
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      _attendance?.description ?? "Sin descripcion",
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "${_user?.name}",
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          _attendance?.createdAt.toString() ?? "Sin fecha",
+                          style: const TextStyle(fontSize: 14),
+                        )
+                      ],
+                    ),
+                    photo != ""
+                        ? Image.network(photo!)
+                        : _attendance?.filepath != ""
+                            ? Icon(
+                                Icons.picture_as_pdf_rounded,
+                                size: 150,
+                              )
+                            : Text(
+                                "No tiene ningun adjunto",
+                                style: TextStyle(color: Colors.black45),
+                              )
+                  ],
+                ),
+              ),
       ),
     );
   }

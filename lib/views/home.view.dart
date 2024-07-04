@@ -23,7 +23,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 0;
-
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -46,7 +46,13 @@ class _HomeViewState extends State<HomeView> {
           actions: [
             IconButton(
                 onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
                   await authProvider.syncUserDataByUid(context);
+                  setState(() {
+                    isLoading = false;
+                  });
                 },
                 icon: const Icon(
                   Icons.sync,
@@ -73,55 +79,61 @@ class _HomeViewState extends State<HomeView> {
                 ))
           ],
         ),
-        body: isAdmin
-            ? IndexedStack(
-                index: _selectedIndex,
-                children: [
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: const Center(
-                      child: QrcodeView(),
-                    ),
-                  ),
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: const Center(child: GeneralReportView()),
-                  ),
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: AdminNotificationsView(),
-                  ),
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: SettingsView(),
-                  ),
-                ],
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.black54,
+                ),
               )
-            : IndexedStack(
-                index: _selectedIndex,
-                children: [
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: const Center(
-                      child: QrcodeView(),
-                    ),
+            : isAdmin
+                ? IndexedStack(
+                    index: _selectedIndex,
+                    children: [
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: const Center(
+                          child: QrcodeView(),
+                        ),
+                      ),
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: const Center(child: GeneralReportView()),
+                      ),
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: AdminNotificationsView(),
+                      ),
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: SettingsView(),
+                      ),
+                    ],
+                  )
+                : IndexedStack(
+                    index: _selectedIndex,
+                    children: [
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: const Center(
+                          child: QrcodeView(),
+                        ),
+                      ),
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: const AttendanceView(),
+                      ),
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: const Center(
+                          child: TeacherNotificationsView(),
+                        ),
+                      ),
+                      Container(
+                        color: RecdatStyles.whiteColor,
+                        child: SettingsView(),
+                      ),
+                    ],
                   ),
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: const AttendanceView(),
-                  ),
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: const Center(
-                      child: TeacherNotificationsView(),
-                    ),
-                  ),
-                  Container(
-                    color: RecdatStyles.whiteColor,
-                    child: SettingsView(),
-                  ),
-                ],
-              ),
         bottomNavigationBar: RecdatNavbar(
           onTabChanged: (index) {
             setState(() {

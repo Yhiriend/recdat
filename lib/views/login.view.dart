@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
-import 'package:recdat/utils/routes.dart';
-import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/home.view.dart';
 import 'package:recdat/views/register.view.dart';
 
@@ -44,8 +42,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    _password.text = "123456";
-    _username.text = "yirien@recdat.com";
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFF003366),

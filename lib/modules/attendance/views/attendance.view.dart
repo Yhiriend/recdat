@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
@@ -30,15 +31,18 @@ class _AttendanceViewState extends State<AttendanceView> {
     _filterStartDateController = TextEditingController();
     _filterEndDateController = TextEditingController();
 
+    // Inicialización de fechas con la fecha actual
     _filterStartDate = DateTime.now();
-    _filterEndDate = DateTime.now();
 
-    // Establecer el texto de los controladores con la fecha actual
-    _filterStartDateController.text =
-        DateFormat('yyyy-MM-dd').format(_filterStartDate!);
-    _filterEndDateController.text =
-        DateFormat('yyyy-MM-dd').format(_filterEndDate!);
-    _filterAttendancesByDate();
+    // Inicialización de _filterEndDate a las 23:59 del día actual
+    _filterEndDate = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      23,
+      59,
+      59,
+    );
   }
 
   @override
@@ -56,17 +60,25 @@ class _AttendanceViewState extends State<AttendanceView> {
       return;
     }
 
+    // Ajustar _filterEndDate a las 23:59 horas del mismo día
+    DateTime adjustedEndDate = DateTime(
+      _filterEndDate!.year,
+      _filterEndDate!.month,
+      _filterEndDate!.day,
+      23,
+      59,
+      59,
+    );
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    print("is after $_filterStartDate");
-    print("is before $_filterEndDate");
+    if (authProvider.user == null) return;
+
     final filteredAttendances =
         authProvider.user!.attendances!.where((attendance) {
       final createdAt = DateTime.parse(attendance.createdAt!);
-      print("actual date $createdAt");
-
       return createdAt.isAfter(_filterStartDate!) &&
-          createdAt.isBefore(_filterEndDate!);
+          createdAt.isBefore(adjustedEndDate);
     }).toList();
 
     setState(() {
@@ -77,6 +89,11 @@ class _AttendanceViewState extends State<AttendanceView> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: true);
+
+    if (_filteredAttendances == null || _filteredAttendances!.isEmpty) {
+      _filterAttendancesByDate();
+    }
+
     return Scaffold(
       backgroundColor: authProvider.isLoading
           ? RecdatStyles.backgroundLoader

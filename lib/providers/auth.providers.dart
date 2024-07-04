@@ -117,6 +117,11 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<void> clearPreferences() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.clear();
+  }
+
   Future<bool> checkExistingUser() async {
     DocumentSnapshot snapshot =
         await _firebaseFirestore.collection("users").doc(_uid).get();

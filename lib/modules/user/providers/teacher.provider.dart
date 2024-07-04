@@ -45,6 +45,42 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<UserModel?> getTeacherByUuid(String uuid) async {
+    try {
+      DocumentSnapshot docSnapshot =
+          await FirebaseFirestore.instance.collection("users").doc(uuid).get();
+
+      if (docSnapshot.exists) {
+        UserModel userModel =
+            UserModel.fromMap(docSnapshot.data() as Map<String, dynamic>);
+        return userModel;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error en getTeacherByUuid: $e");
+      return null;
+    }
+  }
+
+  Future<String?> getImageUrlByUuid(String uuid) async {
+    try {
+      // Construye la referencia al archivo en Firebase Storage
+      Reference ref =
+          FirebaseStorage.instance.ref().child('photo_by_user/$uuid.jpg');
+
+      // Obtiene la URL del archivo
+      String url = await ref.getDownloadURL();
+
+      // Retorna la URL obtenida
+      return url;
+    } catch (e) {
+      // Maneja cualquier error que ocurra durante la obtención de la URL
+      print("Error en getImageUrlByUuid: $e");
+      return null;
+    }
+  }
+
   Future<void> addTeacher(
       BuildContext context, UserModel user, String instituteId) async {
     _isLoading = true;
