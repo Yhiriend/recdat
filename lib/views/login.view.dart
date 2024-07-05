@@ -40,115 +40,136 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
+  onBackPressed(didPop) {
+    if (didPop) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pop(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xFF003366),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Column(
-                children: [
-                  FractionalTranslation(
-                    translation: const Offset(0.5, 0.0),
-                    child: Image.asset('assets/images/logo_recdat.png'),
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "REC",
-                        style: TextStyle(
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFCCCCCC)),
-                      ),
-                      Text(
-                        "DAT",
-                        style: TextStyle(
-                            fontSize: 50,
-                            fontWeight: FontWeight.w100,
-                            color: Color(0xFFCCCCCC)),
-                      )
-                    ],
-                  ),
-                  const Text(
-                    "MÁS FÁCIL Y MÁS RÁPIDO",
-                    style: TextStyle(
-                        color: Color(0xFFCCCCCC), fontWeight: FontWeight.w100),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        onBackPressed(didPop);
+      },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: const Color(0xFF003366),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                      child: Column(
-                        children: [
-                          RecdatTextfield(
-                            controller: _username,
-                            placeholder: "usuario",
-                            icon: Icons.person,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "Ingresa tu usuario";
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          RecdatTextfield(
-                            controller: _password,
-                            placeholder: "contraseña",
-                            icon: Icons.lock,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "Ingresa tu contraseña";
-                              }
-                              return null;
-                            },
-                          )
-                        ],
-                      ),
+                    FractionalTranslation(
+                      translation: const Offset(0.5, 0.0),
+                      child: Image.asset('assets/images/logo_recdat.png'),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                      child: RecdatButtonAsync(
-                        onPressed: () => login(context),
-                        text: "Entrar",
-                      ),
-                    ),
-                    Column(
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => RegisterView()));
-                            },
-                            child: const Text(
-                              "Registrarse como administrador",
-                              style: TextStyle(color: Color(0xBFCCCCCC)),
-                            ))
+                        Text(
+                          "REC",
+                          style: TextStyle(
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFCCCCCC)),
+                        ),
+                        Text(
+                          "DAT",
+                          style: TextStyle(
+                              fontSize: 50,
+                              fontWeight: FontWeight.w100,
+                              color: Color(0xFFCCCCCC)),
+                        )
                       ],
+                    ),
+                    const Text(
+                      "MÁS FÁCIL Y MÁS RÁPIDO",
+                      style: TextStyle(
+                          color: Color(0xFFCCCCCC),
+                          fontWeight: FontWeight.w100),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(
+                  height: 20,
+                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: Column(
+                          children: [
+                            RecdatTextfield(
+                              controller: _username,
+                              placeholder: "usuario",
+                              icon: Icons.person,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Ingresa tu usuario";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            RecdatTextfield(
+                              controller: _password,
+                              placeholder: "contraseña",
+                              icon: Icons.lock,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Ingresa tu contraseña";
+                                }
+                                return null;
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                        child: RecdatButtonAsync(
+                          onPressed: () => login(context),
+                          text: "Entrar",
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RegisterView()));
+                              },
+                              child: const Text(
+                                "Registrarse como administrador",
+                                style: TextStyle(color: Color(0xBFCCCCCC)),
+                              ))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

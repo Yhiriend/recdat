@@ -62,40 +62,47 @@ class MainApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         color: RecdatStyles.whiteColor,
-        home: Navigator(
-          initialRoute: '/',
-          onGenerateRoute: (settings) {
-            WidgetBuilder builder;
-            switch (settings.name) {
-              case '/':
-                builder = (BuildContext context) => const WelcomeView();
-                break;
-              case RecdatRoutes.login:
-                builder = (BuildContext context) => const LoginView();
-                break;
-              case RecdatRoutes.register:
-                builder = (BuildContext context) => const RegisterView();
-                break;
-              case RecdatRoutes.home:
-                builder = (BuildContext context) => const HomeView();
-                break;
-              case RecdatRoutes.createTeacher:
-                builder = (BuildContext context) => const CreateTeacherView();
-                break;
-              case RecdatRoutes.courses:
-                builder = (BuildContext context) => const CoursesView();
-                break;
-              case RecdatRoutes.teachers:
-                builder = (BuildContext context) => const TeachersView();
-                break;
-              case RecdatRoutes.scheduleAssigment:
-                builder = (BuildContext context) => ScheduleAssigmentView();
-                break;
-              default:
-                throw Exception('Invalid route: ${settings.name}');
-            }
-            return MaterialPageRoute(builder: builder, settings: settings);
+        home: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) {}
+            print("POPEANDO $result");
           },
+          child: Navigator(
+            initialRoute: '/',
+            onGenerateRoute: (settings) {
+              WidgetBuilder builder;
+              switch (settings.name) {
+                case '/':
+                  builder = (BuildContext context) => const WelcomeView();
+                  break;
+                case RecdatRoutes.login:
+                  builder = (BuildContext context) => const LoginView();
+                  break;
+                case RecdatRoutes.register:
+                  builder = (BuildContext context) => const RegisterView();
+                  break;
+                case RecdatRoutes.home:
+                  builder = (BuildContext context) => const HomeView();
+                  break;
+                case RecdatRoutes.createTeacher:
+                  builder = (BuildContext context) => const CreateTeacherView();
+                  break;
+                case RecdatRoutes.courses:
+                  builder = (BuildContext context) => const CoursesView();
+                  break;
+                case RecdatRoutes.teachers:
+                  builder = (BuildContext context) => const TeachersView();
+                  break;
+                case RecdatRoutes.scheduleAssigment:
+                  builder = (BuildContext context) => ScheduleAssigmentView();
+                  break;
+                default:
+                  throw Exception('Invalid route: ${settings.name}');
+              }
+              return MaterialPageRoute(builder: builder, settings: settings);
+            },
+          ),
         ),
         onUnknownRoute: (settings) {
           return MaterialPageRoute(

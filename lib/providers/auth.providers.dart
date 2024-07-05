@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:recdat/modules/institute/institute.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart' as user_model;
 import 'package:recdat/utils/hasher.dart';
@@ -38,10 +36,14 @@ class AuthProvider with ChangeNotifier {
   Future<void> checkFirstTimeInRecdat() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
     _isFirstTimeInRecdat = s.getBool("isFirstTimeInRecdat");
+    print("FIRTS TIME IN MY APP ${_isFirstTimeInRecdat ?? false}");
     if (_isFirstTimeInRecdat == null) {
       // Es la primera vez que se abre la aplicación
       await s.setBool("isFirstTimeInRecdat", true);
       // Puedes hacer cualquier acción adicional aquí si es necesario
+    } else {
+      s.clear();
+      print("SHARED PREFERENCES HAS BEEN REMOVED");
     }
   }
 

@@ -6,11 +6,11 @@ import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
 import 'package:recdat/utils/hasher.dart';
+import 'package:recdat/utils/local_notifications.dart';
 import 'package:recdat/utils/utils.dart';
 import 'dart:core';
 
 import 'package:recdat/views/home.view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -58,11 +58,16 @@ class _RegisterViewState extends State<RegisterView> {
     if (_formKey.currentState!.validate()) {
       final ap = Provider.of<AuthProvider>(context, listen: false);
       String phoneNumber = "+57${phoneController.text.trim()}";
-      await ap.signInWithPhone(context, phoneNumber);
-      //await Future.delayed(const Duration(seconds: 3));
-      setState(() {
-        _codeSent = true;
+      await ap.signInWithPhone(context, phoneNumber).then((_) {
+        LocalNotifications.showSimpleNotification(
+            title: "Código de verificación",
+            body: "586691 es su código de verificación",
+            payload: "payload");
+        setState(() {
+          _codeSent = true;
+        });
       });
+      //await Future.delayed(const Duration(seconds: 3));
     }
   }
 
@@ -142,13 +147,10 @@ class _RegisterViewState extends State<RegisterView> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFF003366),
-        body: Stack(
-          children: [
-            Positioned(
-              top: -MediaQuery.of(context).size.height * 0.25,
-              right: 0,
-              left: 0,
-              child: Column(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Column(
                 children: [
                   FractionalTranslation(
                     translation: const Offset(0.5, 0.0),
@@ -180,15 +182,15 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                 ],
               ),
-            ),
-            _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : _isCodePhoneValidated
-                    ? Positioned.fill(
-                        top: MediaQuery.of(context).size.height * 0.2,
-                        child: Form(
+              const SizedBox(
+                height: 40,
+              ),
+              _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : _isCodePhoneValidated
+                      ? Form(
                           key: _formKey,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -278,14 +280,12 @@ class _RegisterViewState extends State<RegisterView> {
                               ),
                             ],
                           ),
-                        ),
-                      )
-                    : Positioned.fill(
-                        top: MediaQuery.of(context).size.height * 0.2,
-                        child: Form(
+                        )
+                      : Form(
                           key: _formKey,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -336,6 +336,9 @@ class _RegisterViewState extends State<RegisterView> {
                                   ],
                                 ),
                               ),
+                              const SizedBox(
+                                height: 40,
+                              ),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 30.0),
@@ -348,22 +351,28 @@ class _RegisterViewState extends State<RegisterView> {
                               ),
                               Column(
                                 children: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(context, '/login');
-                                      },
-                                      child: const Text(
-                                        "Ya tengo una cuenta",
-                                        style:
-                                            TextStyle(color: Color(0xBFCCCCCC)),
-                                      )),
+                                  const SizedBox(
+                                    height: 40,
+                                  ),
+                                  PopScope(
+                                    canPop: false,
+                                    child: TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "Ya tengo una cuenta",
+                                          style: TextStyle(
+                                              color: Color(0xBFCCCCCC)),
+                                        )),
+                                  ),
                                 ],
                               ),
                             ],
                           ),
                         ),
-                      ),
-          ],
+            ],
+          ),
         ),
       ),
     );
