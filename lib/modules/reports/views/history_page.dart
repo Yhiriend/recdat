@@ -16,7 +16,7 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    final teachers = userProvider.userList.map((user) => user.name).toList();
+    final teachers = userProvider.userList!.map((user) => user.name).toList();
 
     // Verifica y ajusta _selectedTeacher si es necesario
     if (_selectedTeacher.isEmpty && teachers.isNotEmpty) {
@@ -36,7 +36,7 @@ class _HistoryPageState extends State<HistoryPage> {
             onChanged: (String? newValue) {
               setState(() {
                 _selectedTeacher = newValue!;
-                final selectedUser = userProvider.userList
+                final selectedUser = userProvider.userList!
                     .firstWhere((user) => user.name == newValue);
                 _loadAttendanceData(selectedUser);
               });

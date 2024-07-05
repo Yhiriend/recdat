@@ -51,7 +51,7 @@ class _PunctualityPageState extends State<PunctualityPage> {
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final selectedTeacher =
-          userProvider.userList.firstWhere((user) => user.uid == teacherId);
+          userProvider.userList!.firstWhere((user) => user.uid == teacherId);
 
       print("SELECTED TEACHER $selectedTeacher");
 
@@ -121,7 +121,7 @@ class _PunctualityPageState extends State<PunctualityPage> {
               });
             },
             items:
-                userProvider.userList.map<DropdownMenuItem<String>>((teacher) {
+                userProvider.userList!.map<DropdownMenuItem<String>>((teacher) {
               return DropdownMenuItem<String>(
                 value: teacher.uid,
                 child: Text(teacher.name),

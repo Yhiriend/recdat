@@ -16,7 +16,7 @@ class UserProvider with ChangeNotifier {
   List<UserModel> _userList = [];
   bool _isLoading = false;
 
-  List<UserModel> get userList => _userList;
+  List<UserModel>? get userList => _userList;
   bool get isLoading => _isLoading;
 
   UserProvider() {}
@@ -65,7 +65,7 @@ class UserProvider with ChangeNotifier {
 
   Future<String?> getImageUrlByUuid(String uuid) async {
     try {
-      // Construye la referencia al archivo en Firebase Storage
+      print("PHOTO UID $uuid");
       Reference ref =
           FirebaseStorage.instance.ref().child('photo_by_user/$uuid.jpg');
 

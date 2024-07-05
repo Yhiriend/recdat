@@ -52,7 +52,7 @@ class _ScheduleAssigmentViewState extends State<ScheduleAssigmentView> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     UserModel _user = authProvider.user!;
     await teacherProvider.fetchUsers(context, _user.uid!);
-    List<UserModel> teachers = teacherProvider.userList;
+    List<UserModel> teachers = teacherProvider.userList!;
     List<DropdownOption> teacherNames = teachers.map((teacher) {
       return DropdownOption(
         value: teacher.uid!,

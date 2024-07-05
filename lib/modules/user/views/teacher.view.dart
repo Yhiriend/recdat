@@ -67,7 +67,7 @@ class _TeachersViewState extends State<TeachersView> {
                 ));
               }
 
-              if (teacherProvider.userList.isEmpty) {
+              if (teacherProvider.userList!.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -88,9 +88,9 @@ class _TeachersViewState extends State<TeachersView> {
                 );
               }
               return ListView.builder(
-                itemCount: teacherProvider.userList.length,
+                itemCount: teacherProvider.userList!.length,
                 itemBuilder: (context, index) {
-                  final teacher = teacherProvider.userList[index];
+                  final teacher = teacherProvider.userList![index];
                   return CardTeacherWidget(teacher: teacher);
                 },
               );

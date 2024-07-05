@@ -37,23 +37,41 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userLogged = authProvider.user;
     try {
+      UserModel defaultUser = UserModel(
+          uid: '',
+          name: '',
+          surname: "",
+          rol: "",
+          email: "",
+          isActive: false,
+          attendances: [],
+          password: "");
       print("USER NOTIFICATIONS $userLogged");
       print("USER NEXT ${widget.userUuid}");
-      await userProvider.fetchUsers(context, userLogged!.uid!);
-      UserModel user = userProvider.userList
-          .firstWhere((user) => user.uid == widget.userUuid);
+      await userProvider.fetchUsers(context, userLogged!.uid!).then((_) async {
+        List<UserModel>? teachers = userProvider.userList;
+        if (teachers != null && teachers.isNotEmpty) {
+          print("TEACHERS ${teachers[0].uid}");
+          print("ESTOY BUSCADO A ${widget.userUuid}");
+          print("SON IGUALES? ${teachers[0].uid == widget.userUuid}");
 
-      if (user.attendances!.isNotEmpty) {
-        Attendance? attendance = user.attendances
-            ?.firstWhere((att) => att.uuid == widget.attendanceUuid);
-        print("ATTENDANCE NOTIFICATION $attendance");
-        final image = await userProvider.getImageUrlByUuid(attendance!.uuid);
-        setState(() {
-          _attendance = attendance;
-          _user = user;
-          photo = image;
-        });
-      }
+          UserModel? user = teachers.firstWhere(
+              (userFound) => userFound.uid == widget.userUuid,
+              orElse: () => defaultUser);
+          if (user.attendances!.isNotEmpty) {
+            Attendance? attendance = user.attendances
+                ?.firstWhere((att) => att.uuid == widget.attendanceUuid);
+            print("ATTENDANCE NOTIFICATION $attendance");
+            final image =
+                await userProvider.getImageUrlByUuid(attendance!.uuid);
+            setState(() {
+              _attendance = attendance;
+              _user = user;
+              photo = image;
+            });
+          }
+        }
+      });
     } catch (e) {
       print("Error fetching user attendance: $e");
     } finally {
@@ -113,7 +131,7 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
                         )
                       ],
                     ),
-                    photo != ""
+                    photo != "" || photo != null
                         ? Image.network(photo!)
                         : _attendance?.filepath != ""
                             ? Icon(
