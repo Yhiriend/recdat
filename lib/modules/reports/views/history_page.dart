@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
+import 'package:recdat/providers/auth.providers.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -12,6 +13,16 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   String _selectedTeacher = ''; // Inicializamos con un valor vacío
   List<Map<String, dynamic>> _attendanceHistory = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final teacherProvider = Provider.of<UserProvider>(context, listen: false);
+      teacherProvider.fetchUsers(context, authProvider.user!.uid!);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +44,7 @@ class _HistoryPageState extends State<HistoryPage> {
         children: [
           DropdownButton<String>(
             value: _selectedTeacher,
+            hint: const Text("Selecciona un profesor"),
             onChanged: (String? newValue) {
               setState(() {
                 _selectedTeacher = newValue!;
@@ -61,11 +73,12 @@ class _HistoryPageState extends State<HistoryPage> {
 
                 return ListTile(
                   title: Text(formattedDate),
-                  subtitle: Text('Status: $status\nArrival Time: $arrivalTime'),
+                  subtitle:
+                      Text('Estado: $status\nHora de llegada: $arrivalTime'),
                   contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
                   leading: Icon(
-                    status == 'Present' ? Icons.check_circle : Icons.cancel,
-                    color: status == 'Present' ? Colors.green : Colors.red,
+                    status == 'Presente' ? Icons.check_circle : Icons.cancel,
+                    color: status == 'Presente' ? Colors.green : Colors.red,
                   ),
                 );
               },
@@ -93,7 +106,8 @@ class _HistoryPageState extends State<HistoryPage> {
           }
 
           final formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
-          final status = attendance.type == 'ATTENDANCE' ? 'Present' : 'Absent';
+          final status =
+              attendance.type == 'ATTENDANCE' ? 'Presente' : 'Ausente';
           final arrivalTime = attendance.type == 'ATTENDANCE'
               ? DateFormat('HH:mm:ss').format(parsedDate)
               : 'N/A';

@@ -19,8 +19,14 @@ class GeneralPage extends StatelessWidget {
     return Column(
       children: [
         Text(
+          textAlign: TextAlign.center,
           graphicTitle,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const Text(
+          textAlign: TextAlign.center,
+          "Horizontal: días\nVertical: Asistencias Totales",
+          style: TextStyle(fontSize: 12),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -37,23 +43,24 @@ class GeneralPage extends StatelessWidget {
                 ),
               ),
               titlesData: FlTitlesData(
-                topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    getTitlesWidget: _getLeftTitles,
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: _getLeftTitles,
+                    ),
                   ),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    getTitlesWidget: _getBottomTitles,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: _getBottomTitles,
+                    ),
                   ),
-                ),
-              ),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false))),
               borderData: FlBorderData(
                 show: true,
                 border: Border.all(
@@ -106,10 +113,20 @@ class GeneralPage extends StatelessWidget {
       fontWeight: FontWeight.bold,
       color: Colors.black,
     );
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: Text(value.toInt().toString(), style: style),
-    );
+
+    // Mostrar la etiqueta solo si es un número entero
+    if (value % 1 == 0) {
+      return SideTitleWidget(
+        axisSide: meta.axisSide,
+        child: Text(value.toInt().toString(), style: style),
+      );
+    } else {
+      return SideTitleWidget(
+        axisSide: meta.axisSide,
+        child:
+            Text("", style: style), // Mostrar cadena vacía si no es un entero
+      );
+    }
   }
 
   double _getMaxY() {

@@ -95,19 +95,6 @@ class _GeneralReportViewState extends State<GeneralReportView> {
         .toList();
   }
 
-  List<Map<String, dynamic>> _calculatePunctualityData() {
-    return [
-      {'date': '2024-07-01', 'average_delay': 5.5},
-      {'date': '2024-07-02', 'average_delay': 7.2},
-      {'date': '2024-07-03', 'average_delay': 4.8},
-      {'date': '2024-07-04', 'average_delay': 6.1},
-      {'date': '2024-07-05', 'average_delay': 3.9},
-      {'date': '2024-07-06', 'average_delay': 4.9},
-      {'date': '2024-07-07', 'average_delay': 3.9},
-      {'date': '2024-07-08', 'average_delay': 2.9},
-    ];
-  }
-
   void _handlePageSelected(int index) {
     setState(() {
       _pageIndex = index;

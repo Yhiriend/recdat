@@ -65,12 +65,14 @@ class UserProvider with ChangeNotifier {
 
   Future<String?> getImageUrlByUuid(String uuid) async {
     try {
+      if (uuid == null || uuid == "") return null;
       print("PHOTO UID $uuid");
       Reference? ref =
           FirebaseStorage.instance.ref().child('photo_by_user/$uuid.jpg') ??
               null;
 
       String url;
+      print("REFERENCE FOR IMAGE: $ref");
       // Obtiene la URL del archivo
       if (ref != null || ref != "") {
         url = await ref!.getDownloadURL();

@@ -183,9 +183,9 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _attendance!.title,
+                          _truncateText(_attendance!.title, 4),
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.normal,
                             color: RecdatStyles.darkTextColor,
                           ),

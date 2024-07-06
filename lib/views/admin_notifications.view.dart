@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/notifications/providers/notification.provider.dart';
 import 'package:recdat/modules/notifications/views/notification_details.view.dart';
+import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/utils/local_notifications.dart';
 import 'package:recdat/utils/utils.dart';
@@ -57,20 +58,28 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
         });
 
         // Sort attendances by createdAt in descending order
-        allAttendances.sort((a, b) {
-          DateTime dateA = DateTime.parse(a['createdAt']);
-          DateTime dateB = DateTime.parse(b['createdAt']);
-          return dateB.compareTo(dateA); // Newest first
-        });
+        if (allAttendances.length > 1) {
+          allAttendances.sort((a, b) {
+            DateTime dateA = DateTime.parse(a['createdAt']);
+            DateTime dateB = DateTime.parse(b['createdAt']);
+            return dateB.compareTo(dateA); // Newest first
+          });
+        }
+
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
         _notificationProvider.setAttendances(allAttendances);
-
+        print("ATTENDANCES $allAttendances");
         allAttendances.forEach((attendance) {
-          LocalNotifications.showSimpleNotification(
-            title: attendance['title'] ?? 'Nueva Asistencia',
-            body: attendance['description'] ?? 'N/A',
-            payload: attendance['uuid'] ?? 'Sin UUID',
-          );
+          print("WATHCING ${attendance["seen"]}");
+          if (attendance["seen"] == false &&
+              authProvider.user?.rol == UserRole.admin.value) {
+            LocalNotifications.showSimpleNotification(
+              title: "Nuevo Registro",
+              body: "Tienes una nueva notificación, revísala.",
+              payload: attendance['uuid'] ?? 'Sin UUID',
+            );
+          }
         });
       } else {
         _notificationProvider.setAttendances([]);
@@ -105,8 +114,10 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
                   itemBuilder: (context, index) {
                     var attendance = provider.attendances[index];
                     return Container(
-                      decoration: const BoxDecoration(
-                        border: Border(
+                      decoration: BoxDecoration(
+                        color:
+                            attendance['seen'] == true ? null : Colors.black12,
+                        border: const Border(
                           bottom: BorderSide(
                             color: Color.fromARGB(28, 0, 0, 0),
                             width: 1.0,
@@ -123,6 +134,7 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
                                 builder: (context) => NotificationDetailsView(
                                   attendanceUuid: attendance["uuid"],
                                   userUuid: attendance["createdBy"],
+                                  seen: attendance["seen"] ?? false,
                                 ),
                               ),
                             );

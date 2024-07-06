@@ -9,8 +9,14 @@ class JustifiedVsUnjustifiedPage extends StatelessWidget {
   // Datos simulados para el gráfico, incluyendo fechas
   List<Map<String, dynamic>> _getJustifiedVsUnjustifiedData() {
     return [
-      {'date': 'sem 1', 'justificadas': 10, 'noJustificadas': 11},
-      {'date': 'sem 2', 'justificadas': 12, 'noJustificadas': 8},
+      {'date': '1', 'justificadas': 6, 'noJustificadas': 4},
+      {'date': '2', 'justificadas': 4, 'noJustificadas': 2},
+      {'date': '3', 'justificadas': 7, 'noJustificadas': 3},
+      {'date': '5', 'justificadas': 2, 'noJustificadas': 1},
+      {'date': '6', 'justificadas': 6, 'noJustificadas': 4},
+      {'date': '7', 'justificadas': 4, 'noJustificadas': 2},
+      {'date': '8', 'justificadas': 7, 'noJustificadas': 3},
+      {'date': '9', 'justificadas': 2, 'noJustificadas': 1},
     ];
   }
 
@@ -103,7 +109,7 @@ class JustifiedVsUnjustifiedPage extends StatelessWidget {
                           ),
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
-                              showTitles: true,
+                              showTitles: false,
                               reservedSize: 40,
                               getTitlesWidget: (value, meta) {
                                 final style = const TextStyle(

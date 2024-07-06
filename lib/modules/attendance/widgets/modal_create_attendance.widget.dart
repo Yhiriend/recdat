@@ -93,7 +93,7 @@ class _ModalCreateAttendanceWidgetState
                 defaultIcon: Icons.image,
                 visualiceText: "",
                 fileType: FileType.custom,
-                allowedExtensions: const ['pdf', 'jpg', 'png', 'jpeg'],
+                allowedExtensions: const ['jpg', 'png', 'jpeg'],
                 onChanged: (File? file) {
                   if (file != null) {
                     _onFileChange(file);
@@ -136,7 +136,8 @@ class _ModalCreateAttendanceWidgetState
                       "body": attendance.description,
                       "createdAt": attendance.createdAt,
                       "uuid": attendance.uuid,
-                      "createdBy": userUid
+                      "createdBy": userUid,
+                      "seen": false,
                     };
                     print("CREATING ATTENDANCE REALTIME $userUid");
                     databaseReference

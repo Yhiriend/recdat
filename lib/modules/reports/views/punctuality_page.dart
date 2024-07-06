@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:recdat/modules/user/model/user.model.dart';
 import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 
@@ -18,7 +17,7 @@ class _PunctualityPageState extends State<PunctualityPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchUsers();
     });
   }
@@ -113,7 +112,7 @@ class _PunctualityPageState extends State<PunctualityPage> {
         else
           DropdownButton<String>(
             value: selectedTeacherId.isEmpty ? null : selectedTeacherId,
-            hint: Text('Select a Teacher'),
+            hint: const Text('Selecciona un profesor'),
             onChanged: (String? newValue) {
               setState(() {
                 selectedTeacherId = newValue!;
@@ -142,7 +141,7 @@ class _PunctualityPageState extends State<PunctualityPage> {
 
                 return ListTile(
                   title: Text(formattedDate),
-                  subtitle: Text('Average Delay: $averageDelay minutes'),
+                  subtitle: Text('Retraso: $averageDelay minutes'),
                   contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
                 );
               },
