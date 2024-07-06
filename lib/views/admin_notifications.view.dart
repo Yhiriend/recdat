@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:recdat/modules/notifications/providers/notification.provider.dart';
 import 'package:recdat/modules/notifications/views/notification_details.view.dart';
 import 'package:recdat/providers/auth.providers.dart';
+import 'package:recdat/utils/local_notifications.dart';
 import 'package:recdat/utils/utils.dart';
 
 class AdminNotificationsView extends StatefulWidget {
@@ -63,6 +64,14 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
         });
 
         _notificationProvider.setAttendances(allAttendances);
+
+        allAttendances.forEach((attendance) {
+          LocalNotifications.showSimpleNotification(
+            title: attendance['title'] ?? 'Nueva Asistencia',
+            body: attendance['description'] ?? 'N/A',
+            payload: attendance['uuid'] ?? 'Sin UUID',
+          );
+        });
       } else {
         _notificationProvider.setAttendances([]);
       }

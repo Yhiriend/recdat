@@ -17,7 +17,8 @@ import 'package:recdat/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
 class ModalCreateAttendanceWidget extends StatefulWidget {
-  const ModalCreateAttendanceWidget({super.key});
+  final VoidCallback onClose;
+  const ModalCreateAttendanceWidget({super.key, required this.onClose});
 
   @override
   State<ModalCreateAttendanceWidget> createState() =>
@@ -40,6 +41,13 @@ class _ModalCreateAttendanceWidgetState
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    attendanceDescriptionController.dispose();
+    attendanceTitleController.dispose();
+    super.dispose();
   }
 
   _onFileChange(File file) {
@@ -139,7 +147,7 @@ class _ModalCreateAttendanceWidgetState
                         .set(attendanceData);
 
                     await authProvider.syncUserDataByUid(context);
-
+                    widget.onClose();
                     Navigator.of(context).pop();
                   });
                 },

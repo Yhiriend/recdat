@@ -59,10 +59,13 @@ class _NotificationDetailsViewState extends State<NotificationDetailsView> {
               (userFound) => userFound.uid == widget.userUuid,
               orElse: () => defaultUser);
           if (user.attendances!.isNotEmpty) {
+            print("ESTOY BUSCADO Attendace ${widget.attendanceUuid}");
+            print(
+                "SON IGUALES? ${user.attendances![0].uuid == widget.attendanceUuid}");
             Attendance? attendance = user.attendances
                 ?.firstWhere((att) => att.uuid == widget.attendanceUuid);
             print("ATTENDANCE NOTIFICATION $attendance");
-            final image =
+            final String? image =
                 await userProvider.getImageUrlByUuid(attendance!.uuid);
             setState(() {
               _attendance = attendance;

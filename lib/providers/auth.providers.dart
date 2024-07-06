@@ -294,7 +294,6 @@ class AuthProvider with ChangeNotifier {
         _user =
             user_model.UserModel.fromMap(doc.data() as Map<String, dynamic>);
         await saveUserDataToSP();
-        showSnackBar(context, "Usuario sincronizado", SnackBarType.success);
         notifyListeners();
       }
     } catch (e) {

@@ -41,11 +41,16 @@ class _QrcodeViewState extends State<QrcodeView> {
             date: currentDate);
         final String qrDataStringified = jsonEncode(qrData);
 
-        //final String encryptedQRData = encryptString(qrDataStringified);
+        final String encryptedQRData = SimpleEncryptionService.encryptText(
+            qrDataStringified, "cec55c45e80c408482acf0589bde1631");
+        print("ENCRUPT:$encryptedQRData");
+        //final String descrypted =
+        //   EncryptionService.decryptText(encryptedQRData);
+        //print("DECRYPTED:$descrypted");
 
         await Future.delayed(const Duration(seconds: 3));
         setState(() {
-          lastQRData = qrDataStringified;
+          lastQRData = encryptedQRData;
           lastQRDate = currentDate;
         });
         showSnackBar(context, "QR actualizado 😉", SnackBarType.success);

@@ -13,12 +13,14 @@ class CardAttendanceWidget extends StatefulWidget {
   final Attendance attendance;
   final String userUUID;
   final ValueNotifier<bool> isDeletedNotifier;
+  final VoidCallback onDelete;
   const CardAttendanceWidget(
       {Key? key,
       required this.isDeletedNotifier,
       required this.isAttendance,
       required this.attendance,
-      required this.userUUID})
+      required this.userUUID,
+      required this.onDelete})
       : super(key: key);
 
   @override
@@ -32,6 +34,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
   String _userUUID = "";
   Attendance? _attendance;
   final databaseReference = FirebaseDatabase.instance.ref();
+  bool _isDeleted = false;
   @override
   void initState() {
     super.initState();
@@ -88,7 +91,12 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
         .remove();
 
     // Sincronizar los datos del usuario después de eliminar la asistencia
-    authProvider.syncUserDataByUid(context);
+
+    //authProvider.syncUserDataByUid(context);
+    widget.onDelete();
+    setState(() {
+      _isDeleted = true;
+    });
   }
 
   @override
@@ -103,7 +111,7 @@ class _CardAttendanceWidgetState extends State<CardAttendanceWidget> {
     return ValueListenableBuilder(
       valueListenable: widget.isDeletedNotifier,
       builder: (context, isDeleted, child) {
-        if (isDeleted) {
+        if (isDeleted || _isDeleted) {
           return SizedBox(); // Widget vacío si se ha eliminado
         }
 

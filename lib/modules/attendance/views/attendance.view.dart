@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:recdat/modules/attendance/model/attendance.model.dart';
 import 'package:recdat/modules/attendance/widgets/card_attendance.widget.dart';
@@ -23,7 +21,8 @@ class _AttendanceViewState extends State<AttendanceView> {
   late TextEditingController _filterEndDateController;
   DateTime? _filterStartDate;
   DateTime? _filterEndDate;
-  List<Attendance>? _filteredAttendances = [];
+  List<Attendance>?
+      _filteredAttendances; // Inicialización directa en initState()
 
   @override
   void initState() {
@@ -43,6 +42,16 @@ class _AttendanceViewState extends State<AttendanceView> {
       59,
       59,
     );
+
+    // Inicializar _filteredAttendances con todas las asistencias del usuario
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.user != null) {
+      _filteredAttendances =
+          List<Attendance>.from(authProvider.user!.attendances!);
+    }
+
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _filterAttendancesByDate());
   }
 
   @override
@@ -56,10 +65,10 @@ class _AttendanceViewState extends State<AttendanceView> {
   }
 
   Future<void> _filterAttendancesByDate() async {
-    if (_filterStartDate == null || _filterEndDate == null) {
-      return;
-    }
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
+    if (authProvider.user == null) return;
+    await authProvider.syncUserDataByUid(context);
     // Ajustar _filterEndDate a las 23:59 horas del mismo día
     DateTime adjustedEndDate = DateTime(
       _filterEndDate!.year,
@@ -70,15 +79,40 @@ class _AttendanceViewState extends State<AttendanceView> {
       59,
     );
 
+    List<Attendance> filteredAttendances;
+
+    if (_filterStartDate != null && _filterEndDate != null) {
+      filteredAttendances = authProvider.user!.attendances!.where((attendance) {
+        final createdAt = DateTime.parse(attendance.createdAt!);
+        return createdAt.isAfter(_filterStartDate!) &&
+            createdAt.isBefore(adjustedEndDate);
+      }).toList();
+    } else {
+      // Si no hay fechas seleccionadas, mostrar todas las asistencias
+      filteredAttendances = authProvider.user!.attendances!;
+    }
+
+    setState(() {
+      _filteredAttendances = filteredAttendances;
+    });
+  }
+
+  Future<void> _updateFilteredAttendances() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     if (authProvider.user == null) return;
 
-    final filteredAttendances =
+    await authProvider.syncUserDataByUid(context);
+    // Filtrar asistencias de la fecha actual
+    DateTime today = DateTime.now();
+    DateTime startOfDay = DateTime(today.year, today.month, today.day);
+    DateTime endOfDay =
+        DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+    List<Attendance> filteredAttendances =
         authProvider.user!.attendances!.where((attendance) {
       final createdAt = DateTime.parse(attendance.createdAt!);
-      return createdAt.isAfter(_filterStartDate!) &&
-          createdAt.isBefore(adjustedEndDate);
+      return createdAt.isAfter(startOfDay) && createdAt.isBefore(endOfDay);
     }).toList();
 
     setState(() {
@@ -89,10 +123,6 @@ class _AttendanceViewState extends State<AttendanceView> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: true);
-
-    if (_filteredAttendances == null || _filteredAttendances!.isEmpty) {
-      _filterAttendancesByDate();
-    }
 
     return Scaffold(
       backgroundColor: authProvider.isLoading
@@ -180,14 +210,34 @@ class _AttendanceViewState extends State<AttendanceView> {
                     ));
                   }
 
+                  if (_filteredAttendances == null ||
+                      _filteredAttendances!.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(30.0),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.rule_folder_rounded,
+                              color: RecdatStyles.defaultColor,
+                              size: 150,
+                            ),
+                            Text(
+                                "Selecciona una fecha de inicio y una fecha final para filtrar la busqueda de las assistencias e inasistensias realizadas en el intervalo de esas fechas"),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
                   if (authProvider.user == null) {
-                    return Center(
+                    return const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           ColorFiltered(
-                            colorFilter: const ColorFilter.mode(
+                            colorFilter: ColorFilter.mode(
                                 RecdatStyles.darkTextColor, BlendMode.srcIn),
                             child: Icon(Icons.block),
                           ),
@@ -219,6 +269,10 @@ class _AttendanceViewState extends State<AttendanceView> {
                             attendance: attendance,
                             userUUID: authProvider.user!.uid ?? "",
                             isDeletedNotifier: isDeletedNotifier,
+                            onDelete: () {
+                              print("on delte press");
+                              _updateFilteredAttendances();
+                            },
                           );
                         },
                       );
@@ -241,9 +295,15 @@ class _AttendanceViewState extends State<AttendanceView> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const ModalCreateAttendanceWidget();
+              return ModalCreateAttendanceWidget(
+                onClose: () {
+                  _updateFilteredAttendances();
+                },
+              );
             },
-          );
+          ).then((_) {
+            _updateFilteredAttendances();
+          });
         },
       ),
     );

@@ -9,6 +9,7 @@ import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_alert.dart';
 import 'package:recdat/shared/widgets/recdat_navbar.dart';
+import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/admin_notifications.view.dart';
 import 'package:recdat/views/nav-views/qrcode.views.dart';
 import 'package:recdat/views/settings.view.dart';
@@ -49,7 +50,10 @@ class _HomeViewState extends State<HomeView> {
                   setState(() {
                     isLoading = true;
                   });
-                  await authProvider.syncUserDataByUid(context);
+                  await authProvider.syncUserDataByUid(context).then((_) {
+                    showSnackBar(
+                        context, "Usuario sincronizado", SnackBarType.success);
+                  });
                   setState(() {
                     isLoading = false;
                   });

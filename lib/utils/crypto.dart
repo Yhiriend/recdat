@@ -1,12 +1,21 @@
-import 'package:encrypt/encrypt.dart' as encrypt;
+import 'dart:convert';
 
-String encryptString(String plainText) {
-  final key = encrypt.Key.fromUtf8(
-      'cec55c45e80c408482acf0589bde1631'); // La clave debe tener 32 caracteres
-  final iv = encrypt.IV.fromLength(16); // IV debe tener 16 bytes
+class SimpleEncryptionService {
+  static String encryptText(String text, String key) {
+    // Convertir la clave y el texto a listas de caracteres modificables
+    List<int> keyBytes = key.runes.toList();
+    List<int> textBytes = text.runes.toList();
 
-  final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    // Aplicar XOR entre cada byte del texto y la clave
+    for (int i = 0; i < textBytes.length; i++) {
+      textBytes[i] ^= keyBytes[i % keyBytes.length];
+    }
 
-  final encrypted = encrypter.encrypt(plainText, iv: iv);
-  return encrypted.base64; // Devuelve el texto cifrado en formato base64
+    // Convertir la lista de bytes a una cadena de texto
+    String encryptedText = String.fromCharCodes(textBytes);
+
+    // Codificar el texto cifrado en Base64
+    String base64Encoded = base64.encode(utf8.encode(encryptedText));
+    return base64Encoded;
+  }
 }
