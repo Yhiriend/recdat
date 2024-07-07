@@ -40,7 +40,7 @@ class PageIndexWidget extends StatelessWidget {
         SpeedDialChild(
           foregroundColor: RecdatStyles.blueDarkColor,
           child: const Icon(Icons.groups_rounded),
-          label: "Asis. justificadas vs No-justificadas",
+          label: "Inasis. justificadas vs No-justificadas",
           onTap: () => onPageSelected(3),
         ),
       ],

@@ -80,7 +80,7 @@ class _EntryAssigmentViewState extends State<EntryAssigmentView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Assignment entry'),
+        title: const Text('Asignación hora de entrada'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -89,9 +89,9 @@ class _EntryAssigmentViewState extends State<EntryAssigmentView> {
           children: [
             DataTable(
               columns: const [
-                DataColumn(label: Text('Day')),
-                DataColumn(label: Text('Hour')),
-                DataColumn(label: Text('Action')),
+                DataColumn(label: Text('Día')),
+                DataColumn(label: Text('Hora')),
+                DataColumn(label: Text('Acción')),
               ],
               rows: _daysOfWeek.asMap().entries.map((entry) {
                 int index = entry.key;
@@ -104,13 +104,11 @@ class _EntryAssigmentViewState extends State<EntryAssigmentView> {
                         onTap: () => _selectTime(context, index),
                         child: InputDecorator(
                           decoration: const InputDecoration(
-                            hintText: "Select hour",
+                            hintText: "Hora",
                             border: InputBorder.none,
                           ),
                           child: Text(
-                            dayEntry.hour.isEmpty
-                                ? "Select hour"
-                                : dayEntry.hour,
+                            dayEntry.hour.isEmpty ? "Hora" : dayEntry.hour,
                             style: const TextStyle(color: Colors.blue),
                           ),
                         ),

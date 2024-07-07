@@ -102,7 +102,7 @@ class _GeneralReportViewState extends State<GeneralReportView> {
         case 0:
           _title = "Reporte General";
           _graphicTitle =
-              'Month: $currentMonthYear\nTotal Attendances: $totalAttendanceCurrentMonth';
+              'Mes: $currentMonthYear\nAsistencias totales: $totalAttendanceCurrentMonth';
           break;
         case 1:
           _title = "Reporte de Puntualidad";
@@ -113,7 +113,7 @@ class _GeneralReportViewState extends State<GeneralReportView> {
           _title = "Histórico Asis. Individual";
           break;
         case 3:
-          _title = "Asis. Justif. vs No-justif.";
+          _title = "Inasis. Justif. vs No-justif.";
           _graphicTitle = "justificadas vs no-justificadas";
           break;
         default:

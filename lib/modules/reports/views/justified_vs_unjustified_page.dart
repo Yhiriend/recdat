@@ -27,8 +27,8 @@ class JustifiedVsUnjustifiedPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Green: Justificadas\nRed: No justificadas\nHorizontal: Semana\nVertical: Cantidad",
-          style: TextStyle(fontSize: 10),
+          "🟢 Justificadas\n🔴 No justificadas\neje x: Semana\neje y: Cantidad",
+          style: TextStyle(fontSize: 12),
         ),
       ),
       body: Padding(

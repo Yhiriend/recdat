@@ -25,7 +25,7 @@ class GeneralPage extends StatelessWidget {
         ),
         const Text(
           textAlign: TextAlign.center,
-          "Horizontal: días\nVertical: Asistencias Totales",
+          "eje x: días\neje y: Asistencias Totales",
           style: TextStyle(fontSize: 12),
         ),
         const SizedBox(height: 16),
