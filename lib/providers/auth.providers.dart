@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:recdat/modules/institute/institute.model.dart';
 import 'package:recdat/modules/user/model/user.model.dart' as user_model;
 import 'package:recdat/utils/hasher.dart';
+import 'package:recdat/utils/local_notifications.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/welcome.view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,6 +85,10 @@ class AuthProvider with ChangeNotifier {
             _verificationId = verificationId;
             showSnackBar(context, "Código de verificación enviado",
                 SnackBarType.success);
+            LocalNotifications.showSimpleNotification(
+                title: "Código de verificación",
+                body: "586691 es su código de verificación",
+                payload: "payload");
           },
           codeAutoRetrievalTimeout: (verificationId) {});
     } on FirebaseAuthException catch (e) {
@@ -302,6 +307,17 @@ class AuthProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> isAnyUserExist() async {
+    try {
+      final QuerySnapshot snapshot =
+          await _firebaseFirestore.collection("users").limit(1).get();
+      return snapshot.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking users existence: $e");
+      return false;
     }
   }
 }

@@ -6,7 +6,6 @@ import 'package:recdat/shared/global-styles/recdat.styles.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/shared/widgets/recdat_textfield.dart';
 import 'package:recdat/utils/hasher.dart';
-import 'package:recdat/utils/local_notifications.dart';
 import 'package:recdat/utils/utils.dart';
 import 'dart:core';
 
@@ -59,10 +58,6 @@ class _RegisterViewState extends State<RegisterView> {
       final ap = Provider.of<AuthProvider>(context, listen: false);
       String phoneNumber = "+57${phoneController.text.trim()}";
       await ap.signInWithPhone(context, phoneNumber).then((_) {
-        LocalNotifications.showSimpleNotification(
-            title: "Código de verificación",
-            body: "586691 es su código de verificación",
-            payload: "payload");
         setState(() {
           _codeSent = true;
         });
@@ -266,7 +261,10 @@ class _RegisterViewState extends State<RegisterView> {
                                         }
                                         return null;
                                       },
-                                    )
+                                    ),
+                                    const SizedBox(
+                                      height: 40,
+                                    ),
                                   ],
                                 ),
                               ),

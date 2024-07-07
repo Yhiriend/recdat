@@ -17,6 +17,16 @@ class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  bool _hasAdmin = false;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+      _hasAdmin = await authProvider.isAnyUserExist();
+    });
+  }
 
   Future<void> login(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -146,25 +156,28 @@ class _LoginViewState extends State<LoginView> {
                           text: "Entrar",
                         ),
                       ),
-                      Column(
-                        children: [
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const RegisterView()));
-                              },
-                              child: const Text(
-                                "Registrarse como administrador",
-                                style: TextStyle(color: Color(0xBFCCCCCC)),
-                              ))
-                        ],
-                      ),
+                      _hasAdmin == false
+                          ? Column(
+                              children: [
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const RegisterView()));
+                                    },
+                                    child: const Text(
+                                      "Registrarse como administrador",
+                                      style:
+                                          TextStyle(color: Color(0xBFCCCCCC)),
+                                    ))
+                              ],
+                            )
+                          : const SizedBox(),
                     ],
                   ),
                 ),

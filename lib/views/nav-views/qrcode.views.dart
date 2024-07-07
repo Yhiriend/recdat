@@ -75,7 +75,7 @@ class _QrcodeViewState extends State<QrcodeView> {
     return Scaffold(
       backgroundColor: RecdatStyles.whiteColor,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -85,8 +85,8 @@ class _QrcodeViewState extends State<QrcodeView> {
                   alignment: Alignment.center,
                   children: [
                     SizedBox(
-                      width: 267,
-                      height: 267,
+                      width: 300,
+                      height: 300,
                       child: Image.asset(
                         'assets/images/frameqr.png',
                         fit: BoxFit.cover,
@@ -118,9 +118,12 @@ class _QrcodeViewState extends State<QrcodeView> {
                         ]))
               ],
             ),
-            RecdatButtonAsync(
-              onPressed: () => generateQRCode(context),
-              text: "Generar QR",
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 35),
+              child: RecdatButtonAsync(
+                onPressed: () => generateQRCode(context),
+                text: "Generar QR",
+              ),
             ),
           ],
         ),
