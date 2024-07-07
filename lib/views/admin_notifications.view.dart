@@ -127,7 +127,9 @@ class _AdminNotificationsViewState extends State<AdminNotificationsView> {
                       child: ListTile(
                         onTap: () {
                           print("ATTENDANCE UIUI $attendance");
-                          if (authProvider.uid != attendance["createdBy"]) {
+                          print("USER UIUI $attendance");
+                          if (authProvider.user!.uid !=
+                              attendance["createdBy"]) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
