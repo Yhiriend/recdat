@@ -29,6 +29,11 @@ class LocalNotifications {
     _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: onNotificationTap,
         onDidReceiveBackgroundNotificationResponse: onNotificationTap);
+
+    await _flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
   }
 
   static Future showSimpleNotification(
@@ -68,25 +73,17 @@ class LocalNotifications {
     required String title,
     required String body,
     required String payload,
-    required tz.TZDateTime scheduledDate,
+    required DateTime scheduledDate,
   }) async {
-    await _flutterLocalNotificationsPlugin.zonedSchedule(
-        2,
-        title,
-        body,
-        //tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-        scheduledDate,
-        const NotificationDetails(
-          android: AndroidNotificationDetails('channel 3', 'your channel name',
-              channelDescription: 'your channel description',
-              importance: Importance.max,
-              priority: Priority.high,
-              ticker: 'ticker'),
-        ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: AndroidNotificationDetails("channelId", "channelName",
+            importance: Importance.high, priority: Priority.high));
+
+    await _flutterLocalNotificationsPlugin.zonedSchedule(0, title, body,
+        tz.TZDateTime.from(scheduledDate, tz.local), platformChannelSpecifics,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        payload: payload);
+        matchDateTimeComponents: DateTimeComponents.dateAndTime);
   }
 
   static Future cancel(int id) async {

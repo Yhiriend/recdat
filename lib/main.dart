@@ -17,10 +17,12 @@ import 'package:recdat/views/home.view.dart';
 import 'package:recdat/views/login.view.dart';
 import 'package:recdat/views/register.view.dart';
 import 'package:recdat/views/welcome.view.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalNotifications.intit();
+  tz.initializeTimeZones();
   await Firebase.initializeApp(
       options: const FirebaseOptions(
     apiKey: "AIzaSyCUj_GZeUXG9DENa-OUrT_FI-2om8gNsHQ",

@@ -78,7 +78,7 @@ class _RecdatNavbarState extends State<RecdatNavbar> {
                   ),
                   GButton(
                     icon: Icons.notifications,
-                    text: 'Notifications',
+                    text: 'Entrytime',
                   ),
                   GButton(
                     icon: Icons.settings,

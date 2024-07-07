@@ -5,6 +5,7 @@ import 'package:recdat/modules/user/providers/teacher.provider.dart';
 import 'package:recdat/providers/auth.providers.dart';
 import 'package:recdat/shared/widgets/recdat_button_async.dart';
 import 'package:recdat/utils/local_notifications.dart';
+import 'package:recdat/utils/permissions_request.dart';
 import 'package:recdat/utils/utils.dart';
 import 'package:recdat/views/home.view.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -27,7 +28,8 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       listenToNotifications();
       _initializeAssignments();
-      scheduleNotifications();
+      //scheduleNotifications();
+      //requestNotificationPermissions();
     });
   }
 
@@ -211,18 +213,28 @@ class _TeacherNotificationsViewState extends State<TeacherNotificationsView> {
                     text: "Actualizar tabla",
                   ),
                 ),
-                const SizedBox(height: 30),
+                /*const SizedBox(height: 30),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: RecdatButtonAsync(
                     onPressed: () async {
                       await Future.delayed(const Duration(seconds: 3));
+                      DateTime scheduledate =
+                          DateTime.now().add(const Duration(seconds: 20));
+                      LocalNotifications.showPeriodicNotifications(
+                          title: "SIMPLE", body: "body", payload: "payload");
+                      LocalNotifications.showScheduledNotification(
+                          title: "Scheduled",
+                          body: "programada esta cosa",
+                          payload: "",
+                          scheduledDate: scheduledate);
+                      print("PROGRAMADA LA NOTIFICACO $scheduledate");
                       showSnackBar(context, "Notificaciones sincronizadas",
                           SnackBarType.success);
                     },
                     text: "Sincronizar notificaciones",
                   ),
-                ),
+                ),*/
               ],
             ),
           ),
